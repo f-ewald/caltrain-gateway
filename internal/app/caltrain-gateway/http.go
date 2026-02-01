@@ -66,6 +66,10 @@ func proxyHandler(apiKeyPool *KeyPool) http.HandlerFunc {
 		// 2. Request Collapsing
 		// Only one goroutine will execute this function for a given key.
 		// Others will block until the first one returns.
+		type apiResponse struct {
+			statusCode int
+			body       []byte
+		}
 		data, err, shared := requestGroup.Do(cacheKey, func() (any, error) {
 			// Retrieve API key from the pool
 			apiKey, ok := apiKeyPool.GetAvailableKey()
@@ -92,9 +96,16 @@ func proxyHandler(apiKeyPool *KeyPool) http.HandlerFunc {
 				return nil, err
 			}
 
-			// 3. Store in cache
-			Cache.Set(cacheKey, body, DefaultExpiration)
-			return body, nil
+			response := &apiResponse{
+				statusCode: resp.StatusCode,
+				body:       body,
+			}
+
+			// 3. Store in cache only if status code is 200
+			if resp.StatusCode == http.StatusOK {
+				Cache.Set(cacheKey, body, DefaultExpiration)
+			}
+			return response, nil
 		})
 
 		if err != nil {
@@ -108,11 +119,13 @@ func proxyHandler(apiKeyPool *KeyPool) http.HandlerFunc {
 		}
 
 		// 4. Return result
+		response := data.(*apiResponse)
 		w.Header().Set("X-Cache", "MISS")
 		if shared {
 			w.Header().Set("X-Collapsed", "TRUE")
 		}
-		w.Write(data.([]byte))
+		w.WriteHeader(response.statusCode)
+		w.Write(response.body)
 	}
 }
 
