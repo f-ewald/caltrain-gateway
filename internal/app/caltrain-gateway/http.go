@@ -11,12 +11,14 @@ import (
 )
 
 const (
-	apiBaseURL = "http://api.511.org/"
+	defaultAPIBaseURL = "http://api.511.org/"
 )
 
 var (
 	// requestGroup manages the "inflight" requests
 	requestGroup singleflight.Group
+	// apiBaseURL can be overridden for testing
+	apiBaseURL = defaultAPIBaseURL
 )
 
 // gzipResponseWriter wraps http.ResponseWriter to provide gzip compression
@@ -51,25 +53,32 @@ func gzipMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// proxyHandler handles proxying requests to the 511 API
-func proxyHandler(apiKeyPool *KeyPool) http.HandlerFunc {
+// apiResponse holds the response from the upstream API
+type apiResponse struct {
+	statusCode  int
+	contentType string
+	body        []byte
+}
+
+// proxyHandlerWithBaseURL handles proxying requests to the 511 API with a configurable base URL
+func proxyHandlerWithBaseURL(apiKeyPool *KeyPool, baseURL string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cacheKey := r.URL.String()
 
 		// 1. Check Cache
-		if cachedResponse, found := Cache.Get(cacheKey); found {
+		if cachedData, found := Cache.Get(cacheKey); found {
+			cached := cachedData.(*apiResponse)
+			if cached.contentType != "" {
+				w.Header().Set("Content-Type", cached.contentType)
+			}
 			w.Header().Set("X-Cache", "HIT")
-			w.Write(cachedResponse.([]byte))
+			w.Write(cached.body)
 			return
 		}
 
 		// 2. Request Collapsing
 		// Only one goroutine will execute this function for a given key.
 		// Others will block until the first one returns.
-		type apiResponse struct {
-			statusCode int
-			body       []byte
-		}
 		data, err, shared := requestGroup.Do(cacheKey, func() (any, error) {
 			// Retrieve API key from the pool
 			apiKey, ok := apiKeyPool.GetAvailableKey()
@@ -81,10 +90,14 @@ func proxyHandler(apiKeyPool *KeyPool) http.HandlerFunc {
 
 			// Add API key to the request
 			q := r.URL.Query()
+
+			// Remove existing api_key if present
+			q.Del("api_key")
+
 			q.Add("api_key", apiKey.Value)
 			r.URL.RawQuery = q.Encode()
 
-			realApiUrl := apiBaseURL + r.URL.Path + "?" + r.URL.RawQuery
+			realApiUrl := baseURL + r.URL.Path + "?" + r.URL.RawQuery
 			resp, err := http.Get(realApiUrl)
 			if err != nil {
 				return nil, err
@@ -97,13 +110,14 @@ func proxyHandler(apiKeyPool *KeyPool) http.HandlerFunc {
 			}
 
 			response := &apiResponse{
-				statusCode: resp.StatusCode,
-				body:       body,
+				statusCode:  resp.StatusCode,
+				contentType: resp.Header.Get("Content-Type"),
+				body:        body,
 			}
 
 			// 3. Store in cache only if status code is 200
 			if resp.StatusCode == http.StatusOK {
-				Cache.Set(cacheKey, body, DefaultExpiration)
+				Cache.Set(cacheKey, response, DefaultExpiration)
 			}
 			return response, nil
 		})
@@ -120,6 +134,9 @@ func proxyHandler(apiKeyPool *KeyPool) http.HandlerFunc {
 
 		// 4. Return result
 		response := data.(*apiResponse)
+		if response.contentType != "" {
+			w.Header().Set("Content-Type", response.contentType)
+		}
 		w.Header().Set("X-Cache", "MISS")
 		if shared {
 			w.Header().Set("X-Collapsed", "TRUE")
@@ -127,6 +144,11 @@ func proxyHandler(apiKeyPool *KeyPool) http.HandlerFunc {
 		w.WriteHeader(response.statusCode)
 		w.Write(response.body)
 	}
+}
+
+// proxyHandler handles proxying requests to the 511 API using the default base URL
+func proxyHandler(apiKeyPool *KeyPool) http.HandlerFunc {
+	return proxyHandlerWithBaseURL(apiKeyPool, apiBaseURL)
 }
 
 // healthHandler returns a simple OK response for health checks
