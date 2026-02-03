@@ -153,3 +153,186 @@ func TestProxyHandler_NonOKStatusCode(t *testing.T) {
 		})
 	}
 }
+
+func TestAuthMiddleware(t *testing.T) {
+	tests := []struct {
+		name           string
+		secret         string
+		requestSecret  string
+		setHeader      bool
+		expectedStatus int
+		expectNext     bool
+	}{
+		{
+			name:           "no secret configured - should allow all requests",
+			secret:         "",
+			requestSecret:  "",
+			setHeader:      false,
+			expectedStatus: http.StatusOK,
+			expectNext:     true,
+		},
+		{
+			name:           "secret configured but no header provided",
+			secret:         "mysecret",
+			requestSecret:  "",
+			setHeader:      false,
+			expectedStatus: http.StatusUnauthorized,
+			expectNext:     false,
+		},
+		{
+			name:           "secret configured with wrong header",
+			secret:         "mysecret",
+			requestSecret:  "wrongsecret",
+			setHeader:      true,
+			expectedStatus: http.StatusUnauthorized,
+			expectNext:     false,
+		},
+		{
+			name:           "secret configured with correct header",
+			secret:         "mysecret",
+			requestSecret:  "mysecret",
+			setHeader:      true,
+			expectedStatus: http.StatusOK,
+			expectNext:     true,
+		},
+		{
+			name:           "empty header provided when secret required",
+			secret:         "mysecret",
+			requestSecret:  "",
+			setHeader:      true,
+			expectedStatus: http.StatusUnauthorized,
+			expectNext:     false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			nextCalled := false
+			nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				nextCalled = true
+				w.WriteHeader(http.StatusOK)
+				w.Write([]byte("next handler called"))
+			})
+
+			// Create the middleware
+			handler := authMiddleware(tt.secret, nextHandler)
+
+			// Create request
+			req := httptest.NewRequest("GET", "/test", nil)
+			if tt.setHeader {
+				req.Header.Set("X-API-SECRET", tt.requestSecret)
+			}
+
+			// Create response recorder
+			rec := httptest.NewRecorder()
+
+			// Execute the handler
+			handler(rec, req)
+
+			// Check status code
+			resp := rec.Result()
+			if resp.StatusCode != tt.expectedStatus {
+				t.Errorf("Expected status %d, got %d", tt.expectedStatus, resp.StatusCode)
+			}
+
+			// Check if next handler was called
+			if nextCalled != tt.expectNext {
+				t.Errorf("Expected next handler called: %v, got: %v", tt.expectNext, nextCalled)
+			}
+
+			// For unauthorized requests, check response body
+			if tt.expectedStatus == http.StatusUnauthorized {
+				body, _ := io.ReadAll(resp.Body)
+				if !strings.Contains(string(body), "Unauthorized") {
+					t.Errorf("Expected 'Unauthorized' in response body, got: %s", string(body))
+				}
+			}
+		})
+	}
+}
+
+func TestLogRequestMiddleware(t *testing.T) {
+	tests := []struct {
+		name       string
+		method     string
+		url        string
+		remoteAddr string
+	}{
+		{
+			name:       "GET request",
+			method:     "GET",
+			url:        "/api/test?param=value",
+			remoteAddr: "192.168.1.1:8080",
+		},
+		{
+			name:       "POST request",
+			method:     "POST",
+			url:        "/api/submit",
+			remoteAddr: "10.0.0.1:3000",
+		},
+		{
+			name:       "request with complex URL",
+			method:     "GET",
+			url:        "/api/data?format=json&limit=10&offset=20",
+			remoteAddr: "127.0.0.1:9000",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			nextCalled := false
+			var capturedRequest *http.Request
+
+			nextHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				nextCalled = true
+				capturedRequest = r
+				w.WriteHeader(http.StatusOK)
+				w.Write([]byte("success"))
+			})
+
+			// Create the middleware
+			handler := logRequestMiddleware(nextHandler)
+
+			// Create request
+			req := httptest.NewRequest(tt.method, tt.url, nil)
+			req.RemoteAddr = tt.remoteAddr
+
+			// Create response recorder
+			rec := httptest.NewRecorder()
+
+			// Execute the handler
+			handler(rec, req)
+
+			// Verify next handler was called
+			if !nextCalled {
+				t.Error("Expected next handler to be called")
+			}
+
+			// Verify request was passed through correctly
+			if capturedRequest == nil {
+				t.Error("Request was not captured by next handler")
+			} else {
+				if capturedRequest.Method != tt.method {
+					t.Errorf("Expected method %s, got %s", tt.method, capturedRequest.Method)
+				}
+				if capturedRequest.URL.String() != tt.url {
+					t.Errorf("Expected URL %s, got %s", tt.url, capturedRequest.URL.String())
+				}
+				if capturedRequest.RemoteAddr != tt.remoteAddr {
+					t.Errorf("Expected RemoteAddr %s, got %s", tt.remoteAddr, capturedRequest.RemoteAddr)
+				}
+			}
+
+			// Verify response
+			resp := rec.Result()
+			if resp.StatusCode != http.StatusOK {
+				t.Errorf("Expected status 200, got %d", resp.StatusCode)
+			}
+
+			body, _ := io.ReadAll(resp.Body)
+			if string(body) != "success" {
+				t.Errorf("Expected response body 'success', got '%s'", string(body))
+			}
+		})
+	}
+}

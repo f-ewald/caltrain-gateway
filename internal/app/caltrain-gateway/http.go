@@ -53,6 +53,35 @@ func gzipMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// authMiddleware checks for the correct secret in the request headers
+func authMiddleware(secret string, next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// If no secret is set, skip authentication
+		if secret == "" {
+			next(w, r)
+			return
+		}
+
+		providedSecret := r.Header.Get("X-API-SECRET")
+		if providedSecret != secret {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		next(w, r)
+	}
+}
+
+func logRequest(r *http.Request) {
+	fmt.Printf("Received request: %s %s from %s\n", r.Method, r.URL.String(), r.RemoteAddr)
+}
+
+func logRequestMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		logRequest(r)
+		next(w, r)
+	}
+}
+
 // apiResponse holds the response from the upstream API
 type apiResponse struct {
 	statusCode  int
@@ -157,7 +186,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // setupRoutes configures all HTTP routes
-func SetupRoutes(apiKeyPool *KeyPool) {
-	http.HandleFunc("/", gzipMiddleware(proxyHandler(apiKeyPool)))
+func SetupRoutes(apiKeyPool *KeyPool, secret string) {
+	http.HandleFunc("/", logRequestMiddleware(authMiddleware(secret, gzipMiddleware(proxyHandler(apiKeyPool)))))
 	http.HandleFunc("/up", healthHandler)
 }

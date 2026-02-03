@@ -69,3 +69,54 @@ func TestLoadAPIKeysFromEnv(t *testing.T) {
 		})
 	}
 }
+
+func TestLoadSecretFromEnv(t *testing.T) {
+	tests := []struct {
+		name     string
+		envValue string
+		setEnv   bool
+		expected string
+	}{
+		{
+			name:     "secret not set",
+			envValue: "",
+			setEnv:   false,
+			expected: "",
+		},
+		{
+			name:     "secret set",
+			envValue: "my-secret-key",
+			setEnv:   true,
+			expected: "my-secret-key",
+		},
+		{
+			name:     "empty secret set",
+			envValue: "",
+			setEnv:   true,
+			expected: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Clear any existing env var
+			os.Unsetenv("CALTRAIN_GATEWAY_SECRET")
+
+			// Set test env var if needed
+			if tt.setEnv {
+				os.Setenv("CALTRAIN_GATEWAY_SECRET", tt.envValue)
+			}
+
+			// Run the function
+			result := LoadSecretFromEnv()
+
+			// Check the result
+			if result != tt.expected {
+				t.Errorf("LoadSecretFromEnv() = %q, expected %q", result, tt.expected)
+			}
+
+			// Cleanup
+			os.Unsetenv("CALTRAIN_GATEWAY_SECRET")
+		})
+	}
+}

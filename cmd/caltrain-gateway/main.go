@@ -15,10 +15,13 @@ func main() {
 	)
 
 	if len(apiKeyPool.Keys) == 0 {
-		log.Fatal("No API keys found in environment variables 511_API_KEY_1, 511_API_KEY_2, etc.")
+		log.Fatal("No API keys found in environment variables FIVEONEONE_API_KEY_1, FIVEONEONE_API_KEY_2, etc.")
 	}
 
-	caltraingateway.SetupRoutes(apiKeyPool)
+	// Load the secret from environment variable
+	secret := caltraingateway.LoadSecretFromEnv()
+
+	caltraingateway.SetupRoutes(apiKeyPool, secret)
 
 	log.Println("Caltrain Proxy running on :8080...")
 	log.Fatal(http.ListenAndServe(":8080", nil))
