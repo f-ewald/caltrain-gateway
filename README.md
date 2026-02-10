@@ -46,7 +46,19 @@ go build -o caltrain-gateway ./cmd/caltrain-gateway
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/health` | Health check |
+| GET | `/up` | Health check |
+| GET | `/caltrain/timetable` | Get all train departures by stop ID |
+| GET | `/caltrain/timetable?weekday=Monday` | Get departures filtered by weekday |
+
+## Timetable
+
+The timetable module parses Caltrain schedule data and provides departures grouped by stop ID. Each departure includes train ID, line, direction, arrival/departure times, and destination. Schedules are filtered by day type (weekday/weekend) based on the `weekday` query parameter.
+
+Supported weekday values: `Monday`, `Tuesday`, `Wednesday`, `Thursday`, `Friday`, `Saturday`, `Sunday`
+
+## Lines
+
+Lines represent the different Caltrain services (Limited, Local, Express, etc.). Each line includes metadata such as validity dates, transport mode, public code, and monitoring status. Lines can be loaded from a local file or fetched from the 511 API.
 
 ## License
 

@@ -2,6 +2,7 @@ package caltraingateway
 
 import (
 	"compress/gzip"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -171,7 +172,12 @@ func proxyHandlerWithBaseURL(apiKeyPool *KeyPool, baseURL string) http.HandlerFu
 			w.Header().Set("X-Collapsed", "TRUE")
 		}
 		w.WriteHeader(response.statusCode)
-		w.Write(response.body)
+
+		if response.statusCode == http.StatusOK {
+			w.Write(response.body)
+		} else {
+			fmt.Fprintf(w, "Upstream API returned status code %d", response.statusCode)
+		}
 	}
 }
 
@@ -185,8 +191,59 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("OK"))
 }
 
+// timetableCollection holds the loaded timetable data for all lines
+var timetableCollection *TimetableCollection
+
+// SetTimetableCollection sets the timetable collection to be used by the timetable handler
+func SetTimetableCollection(tc *TimetableCollection) {
+	timetableCollection = tc
+}
+
+// timetableHandler returns all departures by stop ID as JSON
+// Accepts optional query parameters:
+//   - weekday (Monday, Tuesday, etc.)
+//   - station (GTFS station ID to filter results)
+func timetableHandler(w http.ResponseWriter, r *http.Request) {
+	if timetableCollection == nil {
+		http.Error(w, "Timetable not loaded", http.StatusServiceUnavailable)
+		return
+	}
+
+	// Parse weekday from query parameter
+	weekdayParam := r.URL.Query().Get("weekday")
+	var departures map[string][]TrainDeparture
+
+	if weekdayParam != "" {
+		weekday := ParseWeekday(weekdayParam)
+		if weekday == "" {
+			http.Error(w, "Invalid weekday. Valid values: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday", http.StatusBadRequest)
+			return
+		}
+		departures = timetableCollection.GetDeparturesByStopAndWeekday(weekday)
+	} else {
+		departures = timetableCollection.GetDeparturesByStop()
+	}
+
+	// Filter by station ID if provided
+	stationID := r.URL.Query().Get("station")
+	if stationID != "" {
+		if stationDepartures, exists := departures[stationID]; exists {
+			departures = map[string][]TrainDeparture{stationID: stationDepartures}
+		} else {
+			departures = map[string][]TrainDeparture{}
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(departures); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
+}
+
 // setupRoutes configures all HTTP routes
 func SetupRoutes(apiKeyPool *KeyPool, secret string) {
 	http.HandleFunc("/", logRequestMiddleware(authMiddleware(secret, gzipMiddleware(proxyHandler(apiKeyPool)))))
 	http.HandleFunc("/up", healthHandler)
+	http.HandleFunc("/caltrain/timetable", logRequestMiddleware(authMiddleware(secret, gzipMiddleware(timetableHandler))))
 }
