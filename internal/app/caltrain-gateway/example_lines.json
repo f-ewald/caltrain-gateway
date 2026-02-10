@@ -1,0 +1,57 @@
+[
+  {
+    "Id": "Limited",
+    "Name": "",
+    "FromDate": "2026-01-31T00:00:00-08:00",
+    "ToDate": "2026-08-31T23:59:00-08:00",
+    "TransportMode": "rail",
+    "PublicCode": "Limited",
+    "SiriLineRef": "LIM",
+    "Monitored": true,
+    "OperatorRef": "CT"
+  },
+  {
+    "Id": "South County",
+    "Name": "South Santa Clara County Connector",
+    "FromDate": "2026-01-31T00:00:00-08:00",
+    "ToDate": "2026-08-31T23:59:00-08:00",
+    "TransportMode": "rail",
+    "PublicCode": "South County",
+    "SiriLineRef": "SCC",
+    "Monitored": true,
+    "OperatorRef": "CT"
+  },
+  {
+    "Id": "Local Weekday",
+    "Name": "",
+    "FromDate": "2026-01-31T00:00:00-08:00",
+    "ToDate": "2026-08-31T23:59:00-08:00",
+    "TransportMode": "rail",
+    "PublicCode": "Local Weekday",
+    "SiriLineRef": "LOC",
+    "Monitored": true,
+    "OperatorRef": "CT"
+  },
+  {
+    "Id": "Local Weekend",
+    "Name": "",
+    "FromDate": "2026-01-31T00:00:00-08:00",
+    "ToDate": "2026-08-31T23:59:00-08:00",
+    "TransportMode": "rail",
+    "PublicCode": "Local Weekend",
+    "SiriLineRef": "LOC",
+    "Monitored": true,
+    "OperatorRef": "CT"
+  },
+  {
+    "Id": "Express",
+    "Name": "",
+    "FromDate": "2026-01-31T00:00:00-08:00",
+    "ToDate": "2026-08-31T23:59:00-08:00",
+    "TransportMode": "rail",
+    "PublicCode": "Express",
+    "SiriLineRef": "EXP",
+    "Monitored": true,
+    "OperatorRef": "CT"
+  }
+]

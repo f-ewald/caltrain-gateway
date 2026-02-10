@@ -336,3 +336,126 @@ func TestLogRequestMiddleware(t *testing.T) {
 		})
 	}
 }
+
+func TestTimetableHandler(t *testing.T) {
+	t.Run("timetable not loaded", func(t *testing.T) {
+		// Ensure timetable collection is nil
+		SetTimetableCollection(nil)
+
+		req := httptest.NewRequest("GET", "/caltrain/timetable", nil)
+		rec := httptest.NewRecorder()
+
+		timetableHandler(rec, req)
+
+		resp := rec.Result()
+		if resp.StatusCode != http.StatusServiceUnavailable {
+			t.Errorf("Expected status %d, got %d", http.StatusServiceUnavailable, resp.StatusCode)
+		}
+	})
+
+	t.Run("timetable loaded", func(t *testing.T) {
+		// Load the example timetable into a collection
+		tc := NewTimetableCollection()
+		tt, err := LoadTimetable("example_timetable.json")
+		if err != nil {
+			t.Fatalf("failed to load timetable: %v", err)
+		}
+		tc.AddTimetable(tt)
+		SetTimetableCollection(tc)
+
+		req := httptest.NewRequest("GET", "/caltrain/timetable", nil)
+		rec := httptest.NewRecorder()
+
+		timetableHandler(rec, req)
+
+		resp := rec.Result()
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("Expected status %d, got %d", http.StatusOK, resp.StatusCode)
+		}
+
+		// Check content type
+		contentType := resp.Header.Get("Content-Type")
+		if contentType != "application/json" {
+			t.Errorf("Expected Content-Type 'application/json', got '%s'", contentType)
+		}
+
+		// Check that body contains JSON with departures
+		body, _ := io.ReadAll(resp.Body)
+		if !strings.Contains(string(body), "70261") {
+			t.Error("Expected response to contain stop ID '70261'")
+		}
+		if !strings.Contains(string(body), "Limited") {
+			t.Error("Expected response to contain line 'Limited'")
+		}
+	})
+
+	t.Run("with weekday filter", func(t *testing.T) {
+		// Load the example timetable into a collection
+		tc := NewTimetableCollection()
+		tt, err := LoadTimetable("example_timetable.json")
+		if err != nil {
+			t.Fatalf("failed to load timetable: %v", err)
+		}
+		tc.AddTimetable(tt)
+		SetTimetableCollection(tc)
+
+		// Test with Monday (should return results - weekday schedule)
+		req := httptest.NewRequest("GET", "/caltrain/timetable?weekday=Monday", nil)
+		rec := httptest.NewRecorder()
+
+		timetableHandler(rec, req)
+
+		resp := rec.Result()
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("Expected status %d, got %d", http.StatusOK, resp.StatusCode)
+		}
+
+		body, _ := io.ReadAll(resp.Body)
+		if !strings.Contains(string(body), "70261") {
+			t.Error("Expected response to contain stop ID '70261' for Monday")
+		}
+	})
+
+	t.Run("with weekend filter", func(t *testing.T) {
+		// Load the example timetable into a collection
+		tc := NewTimetableCollection()
+		tt, err := LoadTimetable("example_timetable.json")
+		if err != nil {
+			t.Fatalf("failed to load timetable: %v", err)
+		}
+		tc.AddTimetable(tt)
+		SetTimetableCollection(tc)
+
+		// Test with Saturday (should return empty - example has weekday only)
+		req := httptest.NewRequest("GET", "/caltrain/timetable?weekday=Saturday", nil)
+		rec := httptest.NewRecorder()
+
+		timetableHandler(rec, req)
+
+		resp := rec.Result()
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("Expected status %d, got %d", http.StatusOK, resp.StatusCode)
+		}
+
+		body, _ := io.ReadAll(resp.Body)
+		// Should return empty map for Saturday since example is weekday only
+		if string(body) != "{}\n" {
+			t.Errorf("Expected empty map for Saturday, got '%s'", string(body))
+		}
+	})
+
+	t.Run("with invalid weekday", func(t *testing.T) {
+		tc := NewTimetableCollection()
+		SetTimetableCollection(tc)
+
+		req := httptest.NewRequest("GET", "/caltrain/timetable?weekday=InvalidDay", nil)
+		rec := httptest.NewRecorder()
+
+		timetableHandler(rec, req)
+
+		resp := rec.Result()
+		if resp.StatusCode != http.StatusBadRequest {
+			t.Errorf("Expected status %d, got %d", http.StatusBadRequest, resp.StatusCode)
+		}
+	})
+}
