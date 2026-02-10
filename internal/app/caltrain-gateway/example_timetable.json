@@ -1,0 +1,4646 @@
+{
+  "Content": {
+    "ServiceFrame": {
+      "id": "SF",
+      "routes": {
+        "Route": [
+          {
+            "id": "3206643",
+            "Name": "Limited:N :Year Round starting 1/31/2026 (Weekday)",
+            "LineRef": {
+              "ref": "Limited"
+            },
+            "DirectionRef": {
+              "ref": "N "
+            },
+            "pointsInSequence": {
+              "PointOnRoute": [
+                {
+                  "id": "3206643:1",
+                  "PointRef": {
+                    "ref": "70261",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206643:2",
+                  "PointRef": {
+                    "ref": "70241",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206643:3",
+                  "PointRef": {
+                    "ref": "70231",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206643:4",
+                  "PointRef": {
+                    "ref": "70221",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206643:5",
+                  "PointRef": {
+                    "ref": "70211",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206643:6",
+                  "PointRef": {
+                    "ref": "70201",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206643:7",
+                  "PointRef": {
+                    "ref": "70191",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206643:8",
+                  "PointRef": {
+                    "ref": "70171",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206643:9",
+                  "PointRef": {
+                    "ref": "70161",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206643:10",
+                  "PointRef": {
+                    "ref": "70141",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206643:11",
+                  "PointRef": {
+                    "ref": "70111",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206643:12",
+                  "PointRef": {
+                    "ref": "70091",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206643:13",
+                  "PointRef": {
+                    "ref": "70061",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206643:14",
+                  "PointRef": {
+                    "ref": "70041",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206643:15",
+                  "PointRef": {
+                    "ref": "70021",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206643:16",
+                  "PointRef": {
+                    "ref": "70011",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "3206644",
+            "Name": "Limited:S :Year Round starting 1/31/2026 (Weekday)",
+            "LineRef": {
+              "ref": "Limited"
+            },
+            "DirectionRef": {
+              "ref": "S "
+            },
+            "pointsInSequence": {
+              "PointOnRoute": [
+                {
+                  "id": "3206644:1",
+                  "PointRef": {
+                    "ref": "70012",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206644:2",
+                  "PointRef": {
+                    "ref": "70022",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206644:3",
+                  "PointRef": {
+                    "ref": "70042",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206644:4",
+                  "PointRef": {
+                    "ref": "70062",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206644:5",
+                  "PointRef": {
+                    "ref": "70092",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206644:6",
+                  "PointRef": {
+                    "ref": "70112",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206644:7",
+                  "PointRef": {
+                    "ref": "70142",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206644:8",
+                  "PointRef": {
+                    "ref": "70162",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206644:9",
+                  "PointRef": {
+                    "ref": "70172",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206644:10",
+                  "PointRef": {
+                    "ref": "70192",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206644:11",
+                  "PointRef": {
+                    "ref": "70202",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206644:12",
+                  "PointRef": {
+                    "ref": "70212",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206644:13",
+                  "PointRef": {
+                    "ref": "70222",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206644:14",
+                  "PointRef": {
+                    "ref": "70232",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206644:15",
+                  "PointRef": {
+                    "ref": "70242",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                },
+                {
+                  "id": "3206644:16",
+                  "PointRef": {
+                    "ref": "70262",
+                    "type": "ScheduledStopPointRefStructure"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "ServiceCalendarFrame": {
+      "id": "SF",
+      "dayTypes": {
+        "DayType": [
+          {
+            "id": "69802",
+            "Name": "Year Round starting 1/31/2026 (Weekday)",
+            "properties": {
+              "PropertyOfDay": {
+                "DaysOfWeek": "Monday Tuesday Wednesday Thursday Friday "
+              }
+            }
+          }
+        ]
+      },
+      "dayTypeAssignments": {
+        "DayTypeAssignment": {
+          "DayTypeRef": null
+        }
+      }
+    },
+    "TimetableFrame": [
+      {
+        "id": "Timetable:3206643",
+        "Name": "Limited:N :Year Round starting 1/31/2026 (Weekday)",
+        "frameValidityConditions": {
+          "AvailabilityCondition": {
+            "id": "Limited:N :Year Round starting 1/31/2026 (Weekday)",
+            "FromDate": "2026-01-31T00:00:00-08:00",
+            "ToDate": "2026-08-31T23:59:00-08:00",
+            "dayTypes": {
+              "DayTypeRef": {
+                "ref": "69802"
+              }
+            }
+          }
+        },
+        "vehicleJourneys": {
+          "ServiceJourney": [
+            {
+              "id": "401",
+              "SiriVehicleJourneyRef": "401",
+              "JourneyPatternView": {
+                "RouteRef": {
+                  "ref": "3206643"
+                },
+                "DirectionRef": {
+                  "ref": "N "
+                }
+              },
+              "calls": {
+                "Call": [
+                  {
+                    "order": "1",
+                    "ScheduledStopPointRef": {
+                      "ref": "70261"
+                    },
+                    "Arrival": {
+                      "Time": "05:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "05:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "2",
+                    "ScheduledStopPointRef": {
+                      "ref": "70241"
+                    },
+                    "Arrival": {
+                      "Time": "05:49:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "05:49:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "3",
+                    "ScheduledStopPointRef": {
+                      "ref": "70231"
+                    },
+                    "Arrival": {
+                      "Time": "05:54:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "05:54:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "4",
+                    "ScheduledStopPointRef": {
+                      "ref": "70221"
+                    },
+                    "Arrival": {
+                      "Time": "05:57:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "05:57:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "5",
+                    "ScheduledStopPointRef": {
+                      "ref": "70211"
+                    },
+                    "Arrival": {
+                      "Time": "06:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "6",
+                    "ScheduledStopPointRef": {
+                      "ref": "70201"
+                    },
+                    "Arrival": {
+                      "Time": "06:04:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:04:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "7",
+                    "ScheduledStopPointRef": {
+                      "ref": "70191"
+                    },
+                    "Arrival": {
+                      "Time": "06:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "8",
+                    "ScheduledStopPointRef": {
+                      "ref": "70171"
+                    },
+                    "Arrival": {
+                      "Time": "06:10:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:10:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "9",
+                    "ScheduledStopPointRef": {
+                      "ref": "70161"
+                    },
+                    "Arrival": {
+                      "Time": "06:13:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:13:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "10",
+                    "ScheduledStopPointRef": {
+                      "ref": "70141"
+                    },
+                    "Arrival": {
+                      "Time": "06:18:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:18:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "11",
+                    "ScheduledStopPointRef": {
+                      "ref": "70111"
+                    },
+                    "Arrival": {
+                      "Time": "06:25:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:25:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "12",
+                    "ScheduledStopPointRef": {
+                      "ref": "70091"
+                    },
+                    "Arrival": {
+                      "Time": "06:28:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:28:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "13",
+                    "ScheduledStopPointRef": {
+                      "ref": "70061"
+                    },
+                    "Arrival": {
+                      "Time": "06:33:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:33:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "14",
+                    "ScheduledStopPointRef": {
+                      "ref": "70041"
+                    },
+                    "Arrival": {
+                      "Time": "06:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "15",
+                    "ScheduledStopPointRef": {
+                      "ref": "70021"
+                    },
+                    "Arrival": {
+                      "Time": "06:47:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:47:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "16",
+                    "ScheduledStopPointRef": {
+                      "ref": "70011"
+                    },
+                    "Arrival": {
+                      "Time": "06:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "405",
+              "SiriVehicleJourneyRef": "405",
+              "JourneyPatternView": {
+                "RouteRef": {
+                  "ref": "3206643"
+                },
+                "DirectionRef": {
+                  "ref": "N "
+                }
+              },
+              "calls": {
+                "Call": [
+                  {
+                    "order": "1",
+                    "ScheduledStopPointRef": {
+                      "ref": "70261"
+                    },
+                    "Arrival": {
+                      "Time": "06:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "2",
+                    "ScheduledStopPointRef": {
+                      "ref": "70241"
+                    },
+                    "Arrival": {
+                      "Time": "06:49:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:49:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "3",
+                    "ScheduledStopPointRef": {
+                      "ref": "70231"
+                    },
+                    "Arrival": {
+                      "Time": "06:54:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:54:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "4",
+                    "ScheduledStopPointRef": {
+                      "ref": "70221"
+                    },
+                    "Arrival": {
+                      "Time": "06:57:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:57:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "5",
+                    "ScheduledStopPointRef": {
+                      "ref": "70211"
+                    },
+                    "Arrival": {
+                      "Time": "07:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "6",
+                    "ScheduledStopPointRef": {
+                      "ref": "70201"
+                    },
+                    "Arrival": {
+                      "Time": "07:04:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:04:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "7",
+                    "ScheduledStopPointRef": {
+                      "ref": "70191"
+                    },
+                    "Arrival": {
+                      "Time": "07:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "8",
+                    "ScheduledStopPointRef": {
+                      "ref": "70171"
+                    },
+                    "Arrival": {
+                      "Time": "07:10:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:10:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "9",
+                    "ScheduledStopPointRef": {
+                      "ref": "70161"
+                    },
+                    "Arrival": {
+                      "Time": "07:13:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:13:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "10",
+                    "ScheduledStopPointRef": {
+                      "ref": "70141"
+                    },
+                    "Arrival": {
+                      "Time": "07:18:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:18:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "11",
+                    "ScheduledStopPointRef": {
+                      "ref": "70111"
+                    },
+                    "Arrival": {
+                      "Time": "07:25:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:25:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "12",
+                    "ScheduledStopPointRef": {
+                      "ref": "70091"
+                    },
+                    "Arrival": {
+                      "Time": "07:28:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:28:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "13",
+                    "ScheduledStopPointRef": {
+                      "ref": "70061"
+                    },
+                    "Arrival": {
+                      "Time": "07:33:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:33:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "14",
+                    "ScheduledStopPointRef": {
+                      "ref": "70041"
+                    },
+                    "Arrival": {
+                      "Time": "07:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "15",
+                    "ScheduledStopPointRef": {
+                      "ref": "70021"
+                    },
+                    "Arrival": {
+                      "Time": "07:47:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:47:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "16",
+                    "ScheduledStopPointRef": {
+                      "ref": "70011"
+                    },
+                    "Arrival": {
+                      "Time": "07:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "409",
+              "SiriVehicleJourneyRef": "409",
+              "JourneyPatternView": {
+                "RouteRef": {
+                  "ref": "3206643"
+                },
+                "DirectionRef": {
+                  "ref": "N "
+                }
+              },
+              "calls": {
+                "Call": [
+                  {
+                    "order": "1",
+                    "ScheduledStopPointRef": {
+                      "ref": "70261"
+                    },
+                    "Arrival": {
+                      "Time": "07:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "2",
+                    "ScheduledStopPointRef": {
+                      "ref": "70241"
+                    },
+                    "Arrival": {
+                      "Time": "07:49:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:49:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "3",
+                    "ScheduledStopPointRef": {
+                      "ref": "70231"
+                    },
+                    "Arrival": {
+                      "Time": "07:54:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:54:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "4",
+                    "ScheduledStopPointRef": {
+                      "ref": "70221"
+                    },
+                    "Arrival": {
+                      "Time": "07:57:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:57:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "5",
+                    "ScheduledStopPointRef": {
+                      "ref": "70211"
+                    },
+                    "Arrival": {
+                      "Time": "08:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "6",
+                    "ScheduledStopPointRef": {
+                      "ref": "70201"
+                    },
+                    "Arrival": {
+                      "Time": "08:04:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:04:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "7",
+                    "ScheduledStopPointRef": {
+                      "ref": "70191"
+                    },
+                    "Arrival": {
+                      "Time": "08:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "8",
+                    "ScheduledStopPointRef": {
+                      "ref": "70171"
+                    },
+                    "Arrival": {
+                      "Time": "08:10:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:10:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "9",
+                    "ScheduledStopPointRef": {
+                      "ref": "70161"
+                    },
+                    "Arrival": {
+                      "Time": "08:13:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:13:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "10",
+                    "ScheduledStopPointRef": {
+                      "ref": "70141"
+                    },
+                    "Arrival": {
+                      "Time": "08:18:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:18:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "11",
+                    "ScheduledStopPointRef": {
+                      "ref": "70111"
+                    },
+                    "Arrival": {
+                      "Time": "08:25:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:25:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "12",
+                    "ScheduledStopPointRef": {
+                      "ref": "70091"
+                    },
+                    "Arrival": {
+                      "Time": "08:28:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:28:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "13",
+                    "ScheduledStopPointRef": {
+                      "ref": "70061"
+                    },
+                    "Arrival": {
+                      "Time": "08:33:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:33:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "14",
+                    "ScheduledStopPointRef": {
+                      "ref": "70041"
+                    },
+                    "Arrival": {
+                      "Time": "08:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "15",
+                    "ScheduledStopPointRef": {
+                      "ref": "70021"
+                    },
+                    "Arrival": {
+                      "Time": "08:47:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:47:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "16",
+                    "ScheduledStopPointRef": {
+                      "ref": "70011"
+                    },
+                    "Arrival": {
+                      "Time": "08:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "413",
+              "SiriVehicleJourneyRef": "413",
+              "JourneyPatternView": {
+                "RouteRef": {
+                  "ref": "3206643"
+                },
+                "DirectionRef": {
+                  "ref": "N "
+                }
+              },
+              "calls": {
+                "Call": [
+                  {
+                    "order": "1",
+                    "ScheduledStopPointRef": {
+                      "ref": "70261"
+                    },
+                    "Arrival": {
+                      "Time": "08:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "2",
+                    "ScheduledStopPointRef": {
+                      "ref": "70241"
+                    },
+                    "Arrival": {
+                      "Time": "08:49:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:49:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "3",
+                    "ScheduledStopPointRef": {
+                      "ref": "70231"
+                    },
+                    "Arrival": {
+                      "Time": "08:54:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:54:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "4",
+                    "ScheduledStopPointRef": {
+                      "ref": "70221"
+                    },
+                    "Arrival": {
+                      "Time": "08:57:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:57:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "5",
+                    "ScheduledStopPointRef": {
+                      "ref": "70211"
+                    },
+                    "Arrival": {
+                      "Time": "09:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "6",
+                    "ScheduledStopPointRef": {
+                      "ref": "70201"
+                    },
+                    "Arrival": {
+                      "Time": "09:04:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:04:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "7",
+                    "ScheduledStopPointRef": {
+                      "ref": "70191"
+                    },
+                    "Arrival": {
+                      "Time": "09:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "8",
+                    "ScheduledStopPointRef": {
+                      "ref": "70171"
+                    },
+                    "Arrival": {
+                      "Time": "09:10:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:10:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "9",
+                    "ScheduledStopPointRef": {
+                      "ref": "70161"
+                    },
+                    "Arrival": {
+                      "Time": "09:13:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:13:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "10",
+                    "ScheduledStopPointRef": {
+                      "ref": "70141"
+                    },
+                    "Arrival": {
+                      "Time": "09:18:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:18:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "11",
+                    "ScheduledStopPointRef": {
+                      "ref": "70111"
+                    },
+                    "Arrival": {
+                      "Time": "09:25:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:25:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "12",
+                    "ScheduledStopPointRef": {
+                      "ref": "70091"
+                    },
+                    "Arrival": {
+                      "Time": "09:28:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:28:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "13",
+                    "ScheduledStopPointRef": {
+                      "ref": "70061"
+                    },
+                    "Arrival": {
+                      "Time": "09:33:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:33:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "14",
+                    "ScheduledStopPointRef": {
+                      "ref": "70041"
+                    },
+                    "Arrival": {
+                      "Time": "09:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "15",
+                    "ScheduledStopPointRef": {
+                      "ref": "70021"
+                    },
+                    "Arrival": {
+                      "Time": "09:47:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:47:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "16",
+                    "ScheduledStopPointRef": {
+                      "ref": "70011"
+                    },
+                    "Arrival": {
+                      "Time": "09:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "417",
+              "SiriVehicleJourneyRef": "417",
+              "JourneyPatternView": {
+                "RouteRef": {
+                  "ref": "3206643"
+                },
+                "DirectionRef": {
+                  "ref": "N "
+                }
+              },
+              "calls": {
+                "Call": [
+                  {
+                    "order": "1",
+                    "ScheduledStopPointRef": {
+                      "ref": "70261"
+                    },
+                    "Arrival": {
+                      "Time": "15:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "15:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "2",
+                    "ScheduledStopPointRef": {
+                      "ref": "70241"
+                    },
+                    "Arrival": {
+                      "Time": "15:49:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "15:49:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "3",
+                    "ScheduledStopPointRef": {
+                      "ref": "70231"
+                    },
+                    "Arrival": {
+                      "Time": "15:54:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "15:54:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "4",
+                    "ScheduledStopPointRef": {
+                      "ref": "70221"
+                    },
+                    "Arrival": {
+                      "Time": "15:57:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "15:57:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "5",
+                    "ScheduledStopPointRef": {
+                      "ref": "70211"
+                    },
+                    "Arrival": {
+                      "Time": "16:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "6",
+                    "ScheduledStopPointRef": {
+                      "ref": "70201"
+                    },
+                    "Arrival": {
+                      "Time": "16:04:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:04:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "7",
+                    "ScheduledStopPointRef": {
+                      "ref": "70191"
+                    },
+                    "Arrival": {
+                      "Time": "16:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "8",
+                    "ScheduledStopPointRef": {
+                      "ref": "70171"
+                    },
+                    "Arrival": {
+                      "Time": "16:10:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:10:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "9",
+                    "ScheduledStopPointRef": {
+                      "ref": "70161"
+                    },
+                    "Arrival": {
+                      "Time": "16:13:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:13:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "10",
+                    "ScheduledStopPointRef": {
+                      "ref": "70141"
+                    },
+                    "Arrival": {
+                      "Time": "16:18:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:18:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "11",
+                    "ScheduledStopPointRef": {
+                      "ref": "70111"
+                    },
+                    "Arrival": {
+                      "Time": "16:25:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:25:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "12",
+                    "ScheduledStopPointRef": {
+                      "ref": "70091"
+                    },
+                    "Arrival": {
+                      "Time": "16:28:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:28:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "13",
+                    "ScheduledStopPointRef": {
+                      "ref": "70061"
+                    },
+                    "Arrival": {
+                      "Time": "16:33:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:33:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "14",
+                    "ScheduledStopPointRef": {
+                      "ref": "70041"
+                    },
+                    "Arrival": {
+                      "Time": "16:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "15",
+                    "ScheduledStopPointRef": {
+                      "ref": "70021"
+                    },
+                    "Arrival": {
+                      "Time": "16:47:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:47:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "16",
+                    "ScheduledStopPointRef": {
+                      "ref": "70011"
+                    },
+                    "Arrival": {
+                      "Time": "16:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "421",
+              "SiriVehicleJourneyRef": "421",
+              "JourneyPatternView": {
+                "RouteRef": {
+                  "ref": "3206643"
+                },
+                "DirectionRef": {
+                  "ref": "N "
+                }
+              },
+              "calls": {
+                "Call": [
+                  {
+                    "order": "1",
+                    "ScheduledStopPointRef": {
+                      "ref": "70261"
+                    },
+                    "Arrival": {
+                      "Time": "16:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "2",
+                    "ScheduledStopPointRef": {
+                      "ref": "70241"
+                    },
+                    "Arrival": {
+                      "Time": "16:49:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:49:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "3",
+                    "ScheduledStopPointRef": {
+                      "ref": "70231"
+                    },
+                    "Arrival": {
+                      "Time": "16:54:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:54:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "4",
+                    "ScheduledStopPointRef": {
+                      "ref": "70221"
+                    },
+                    "Arrival": {
+                      "Time": "16:57:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:57:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "5",
+                    "ScheduledStopPointRef": {
+                      "ref": "70211"
+                    },
+                    "Arrival": {
+                      "Time": "17:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "6",
+                    "ScheduledStopPointRef": {
+                      "ref": "70201"
+                    },
+                    "Arrival": {
+                      "Time": "17:04:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:04:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "7",
+                    "ScheduledStopPointRef": {
+                      "ref": "70191"
+                    },
+                    "Arrival": {
+                      "Time": "17:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "8",
+                    "ScheduledStopPointRef": {
+                      "ref": "70171"
+                    },
+                    "Arrival": {
+                      "Time": "17:10:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:10:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "9",
+                    "ScheduledStopPointRef": {
+                      "ref": "70161"
+                    },
+                    "Arrival": {
+                      "Time": "17:13:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:13:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "10",
+                    "ScheduledStopPointRef": {
+                      "ref": "70141"
+                    },
+                    "Arrival": {
+                      "Time": "17:18:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:18:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "11",
+                    "ScheduledStopPointRef": {
+                      "ref": "70111"
+                    },
+                    "Arrival": {
+                      "Time": "17:25:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:25:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "12",
+                    "ScheduledStopPointRef": {
+                      "ref": "70091"
+                    },
+                    "Arrival": {
+                      "Time": "17:28:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:28:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "13",
+                    "ScheduledStopPointRef": {
+                      "ref": "70061"
+                    },
+                    "Arrival": {
+                      "Time": "17:33:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:33:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "14",
+                    "ScheduledStopPointRef": {
+                      "ref": "70041"
+                    },
+                    "Arrival": {
+                      "Time": "17:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "15",
+                    "ScheduledStopPointRef": {
+                      "ref": "70021"
+                    },
+                    "Arrival": {
+                      "Time": "17:47:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:47:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "16",
+                    "ScheduledStopPointRef": {
+                      "ref": "70011"
+                    },
+                    "Arrival": {
+                      "Time": "17:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "425",
+              "SiriVehicleJourneyRef": "425",
+              "JourneyPatternView": {
+                "RouteRef": {
+                  "ref": "3206643"
+                },
+                "DirectionRef": {
+                  "ref": "N "
+                }
+              },
+              "calls": {
+                "Call": [
+                  {
+                    "order": "1",
+                    "ScheduledStopPointRef": {
+                      "ref": "70261"
+                    },
+                    "Arrival": {
+                      "Time": "17:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "2",
+                    "ScheduledStopPointRef": {
+                      "ref": "70241"
+                    },
+                    "Arrival": {
+                      "Time": "17:49:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:49:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "3",
+                    "ScheduledStopPointRef": {
+                      "ref": "70231"
+                    },
+                    "Arrival": {
+                      "Time": "17:54:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:54:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "4",
+                    "ScheduledStopPointRef": {
+                      "ref": "70221"
+                    },
+                    "Arrival": {
+                      "Time": "17:57:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:57:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "5",
+                    "ScheduledStopPointRef": {
+                      "ref": "70211"
+                    },
+                    "Arrival": {
+                      "Time": "18:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "6",
+                    "ScheduledStopPointRef": {
+                      "ref": "70201"
+                    },
+                    "Arrival": {
+                      "Time": "18:04:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:04:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "7",
+                    "ScheduledStopPointRef": {
+                      "ref": "70191"
+                    },
+                    "Arrival": {
+                      "Time": "18:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "8",
+                    "ScheduledStopPointRef": {
+                      "ref": "70171"
+                    },
+                    "Arrival": {
+                      "Time": "18:10:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:10:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "9",
+                    "ScheduledStopPointRef": {
+                      "ref": "70161"
+                    },
+                    "Arrival": {
+                      "Time": "18:13:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:13:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "10",
+                    "ScheduledStopPointRef": {
+                      "ref": "70141"
+                    },
+                    "Arrival": {
+                      "Time": "18:18:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:18:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "11",
+                    "ScheduledStopPointRef": {
+                      "ref": "70111"
+                    },
+                    "Arrival": {
+                      "Time": "18:25:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:25:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "12",
+                    "ScheduledStopPointRef": {
+                      "ref": "70091"
+                    },
+                    "Arrival": {
+                      "Time": "18:28:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:28:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "13",
+                    "ScheduledStopPointRef": {
+                      "ref": "70061"
+                    },
+                    "Arrival": {
+                      "Time": "18:33:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:33:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "14",
+                    "ScheduledStopPointRef": {
+                      "ref": "70041"
+                    },
+                    "Arrival": {
+                      "Time": "18:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "15",
+                    "ScheduledStopPointRef": {
+                      "ref": "70021"
+                    },
+                    "Arrival": {
+                      "Time": "18:47:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:47:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "16",
+                    "ScheduledStopPointRef": {
+                      "ref": "70011"
+                    },
+                    "Arrival": {
+                      "Time": "18:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "429",
+              "SiriVehicleJourneyRef": "429",
+              "JourneyPatternView": {
+                "RouteRef": {
+                  "ref": "3206643"
+                },
+                "DirectionRef": {
+                  "ref": "N "
+                }
+              },
+              "calls": {
+                "Call": [
+                  {
+                    "order": "1",
+                    "ScheduledStopPointRef": {
+                      "ref": "70261"
+                    },
+                    "Arrival": {
+                      "Time": "18:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "2",
+                    "ScheduledStopPointRef": {
+                      "ref": "70241"
+                    },
+                    "Arrival": {
+                      "Time": "18:49:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:49:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "3",
+                    "ScheduledStopPointRef": {
+                      "ref": "70231"
+                    },
+                    "Arrival": {
+                      "Time": "18:54:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:54:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "4",
+                    "ScheduledStopPointRef": {
+                      "ref": "70221"
+                    },
+                    "Arrival": {
+                      "Time": "18:57:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:57:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "5",
+                    "ScheduledStopPointRef": {
+                      "ref": "70211"
+                    },
+                    "Arrival": {
+                      "Time": "19:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "6",
+                    "ScheduledStopPointRef": {
+                      "ref": "70201"
+                    },
+                    "Arrival": {
+                      "Time": "19:04:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:04:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "7",
+                    "ScheduledStopPointRef": {
+                      "ref": "70191"
+                    },
+                    "Arrival": {
+                      "Time": "19:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "8",
+                    "ScheduledStopPointRef": {
+                      "ref": "70171"
+                    },
+                    "Arrival": {
+                      "Time": "19:10:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:10:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "9",
+                    "ScheduledStopPointRef": {
+                      "ref": "70161"
+                    },
+                    "Arrival": {
+                      "Time": "19:13:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:13:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "10",
+                    "ScheduledStopPointRef": {
+                      "ref": "70141"
+                    },
+                    "Arrival": {
+                      "Time": "19:18:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:18:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "11",
+                    "ScheduledStopPointRef": {
+                      "ref": "70111"
+                    },
+                    "Arrival": {
+                      "Time": "19:25:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:25:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "12",
+                    "ScheduledStopPointRef": {
+                      "ref": "70091"
+                    },
+                    "Arrival": {
+                      "Time": "19:28:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:28:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "13",
+                    "ScheduledStopPointRef": {
+                      "ref": "70061"
+                    },
+                    "Arrival": {
+                      "Time": "19:33:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:33:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "14",
+                    "ScheduledStopPointRef": {
+                      "ref": "70041"
+                    },
+                    "Arrival": {
+                      "Time": "19:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "15",
+                    "ScheduledStopPointRef": {
+                      "ref": "70021"
+                    },
+                    "Arrival": {
+                      "Time": "19:47:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:47:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  },
+                  {
+                    "order": "16",
+                    "ScheduledStopPointRef": {
+                      "ref": "70011"
+                    },
+                    "Arrival": {
+                      "Time": "19:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Francisco"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "Timetable:3206644",
+        "Name": "Limited:S :Year Round starting 1/31/2026 (Weekday)",
+        "frameValidityConditions": {
+          "AvailabilityCondition": {
+            "id": "Limited:S :Year Round starting 1/31/2026 (Weekday)",
+            "FromDate": "2026-01-31T00:00:00-08:00",
+            "ToDate": "2026-08-31T23:59:00-08:00",
+            "dayTypes": {
+              "DayTypeRef": {
+                "ref": "69802"
+              }
+            }
+          }
+        },
+        "vehicleJourneys": {
+          "ServiceJourney": [
+            {
+              "id": "404",
+              "SiriVehicleJourneyRef": "404",
+              "JourneyPatternView": {
+                "RouteRef": {
+                  "ref": "3206644"
+                },
+                "DirectionRef": {
+                  "ref": "S "
+                }
+              },
+              "calls": {
+                "Call": [
+                  {
+                    "order": "1",
+                    "ScheduledStopPointRef": {
+                      "ref": "70012"
+                    },
+                    "Arrival": {
+                      "Time": "06:48:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:48:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "2",
+                    "ScheduledStopPointRef": {
+                      "ref": "70022"
+                    },
+                    "Arrival": {
+                      "Time": "06:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "06:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "3",
+                    "ScheduledStopPointRef": {
+                      "ref": "70042"
+                    },
+                    "Arrival": {
+                      "Time": "07:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "4",
+                    "ScheduledStopPointRef": {
+                      "ref": "70062"
+                    },
+                    "Arrival": {
+                      "Time": "07:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "5",
+                    "ScheduledStopPointRef": {
+                      "ref": "70092"
+                    },
+                    "Arrival": {
+                      "Time": "07:12:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:12:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "6",
+                    "ScheduledStopPointRef": {
+                      "ref": "70112"
+                    },
+                    "Arrival": {
+                      "Time": "07:15:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:15:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "7",
+                    "ScheduledStopPointRef": {
+                      "ref": "70142"
+                    },
+                    "Arrival": {
+                      "Time": "07:22:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:22:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "8",
+                    "ScheduledStopPointRef": {
+                      "ref": "70162"
+                    },
+                    "Arrival": {
+                      "Time": "07:26:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:26:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "9",
+                    "ScheduledStopPointRef": {
+                      "ref": "70172"
+                    },
+                    "Arrival": {
+                      "Time": "07:29:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:29:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "10",
+                    "ScheduledStopPointRef": {
+                      "ref": "70192"
+                    },
+                    "Arrival": {
+                      "Time": "07:32:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:32:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "11",
+                    "ScheduledStopPointRef": {
+                      "ref": "70202"
+                    },
+                    "Arrival": {
+                      "Time": "07:36:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:36:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "12",
+                    "ScheduledStopPointRef": {
+                      "ref": "70212"
+                    },
+                    "Arrival": {
+                      "Time": "07:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "13",
+                    "ScheduledStopPointRef": {
+                      "ref": "70222"
+                    },
+                    "Arrival": {
+                      "Time": "07:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "14",
+                    "ScheduledStopPointRef": {
+                      "ref": "70232"
+                    },
+                    "Arrival": {
+                      "Time": "07:46:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:46:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "15",
+                    "ScheduledStopPointRef": {
+                      "ref": "70242"
+                    },
+                    "Arrival": {
+                      "Time": "07:51:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:51:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "16",
+                    "ScheduledStopPointRef": {
+                      "ref": "70262"
+                    },
+                    "Arrival": {
+                      "Time": "07:58:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:58:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "408",
+              "SiriVehicleJourneyRef": "408",
+              "JourneyPatternView": {
+                "RouteRef": {
+                  "ref": "3206644"
+                },
+                "DirectionRef": {
+                  "ref": "S "
+                }
+              },
+              "calls": {
+                "Call": [
+                  {
+                    "order": "1",
+                    "ScheduledStopPointRef": {
+                      "ref": "70012"
+                    },
+                    "Arrival": {
+                      "Time": "07:48:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:48:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "2",
+                    "ScheduledStopPointRef": {
+                      "ref": "70022"
+                    },
+                    "Arrival": {
+                      "Time": "07:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "07:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "3",
+                    "ScheduledStopPointRef": {
+                      "ref": "70042"
+                    },
+                    "Arrival": {
+                      "Time": "08:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "4",
+                    "ScheduledStopPointRef": {
+                      "ref": "70062"
+                    },
+                    "Arrival": {
+                      "Time": "08:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "5",
+                    "ScheduledStopPointRef": {
+                      "ref": "70092"
+                    },
+                    "Arrival": {
+                      "Time": "08:12:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:12:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "6",
+                    "ScheduledStopPointRef": {
+                      "ref": "70112"
+                    },
+                    "Arrival": {
+                      "Time": "08:15:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:15:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "7",
+                    "ScheduledStopPointRef": {
+                      "ref": "70142"
+                    },
+                    "Arrival": {
+                      "Time": "08:22:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:22:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "8",
+                    "ScheduledStopPointRef": {
+                      "ref": "70162"
+                    },
+                    "Arrival": {
+                      "Time": "08:26:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:26:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "9",
+                    "ScheduledStopPointRef": {
+                      "ref": "70172"
+                    },
+                    "Arrival": {
+                      "Time": "08:29:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:29:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "10",
+                    "ScheduledStopPointRef": {
+                      "ref": "70192"
+                    },
+                    "Arrival": {
+                      "Time": "08:32:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:32:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "11",
+                    "ScheduledStopPointRef": {
+                      "ref": "70202"
+                    },
+                    "Arrival": {
+                      "Time": "08:36:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:36:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "12",
+                    "ScheduledStopPointRef": {
+                      "ref": "70212"
+                    },
+                    "Arrival": {
+                      "Time": "08:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "13",
+                    "ScheduledStopPointRef": {
+                      "ref": "70222"
+                    },
+                    "Arrival": {
+                      "Time": "08:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "14",
+                    "ScheduledStopPointRef": {
+                      "ref": "70232"
+                    },
+                    "Arrival": {
+                      "Time": "08:46:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:46:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "15",
+                    "ScheduledStopPointRef": {
+                      "ref": "70242"
+                    },
+                    "Arrival": {
+                      "Time": "08:51:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:51:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "16",
+                    "ScheduledStopPointRef": {
+                      "ref": "70262"
+                    },
+                    "Arrival": {
+                      "Time": "08:58:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:58:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "412",
+              "SiriVehicleJourneyRef": "412",
+              "JourneyPatternView": {
+                "RouteRef": {
+                  "ref": "3206644"
+                },
+                "DirectionRef": {
+                  "ref": "S "
+                }
+              },
+              "calls": {
+                "Call": [
+                  {
+                    "order": "1",
+                    "ScheduledStopPointRef": {
+                      "ref": "70012"
+                    },
+                    "Arrival": {
+                      "Time": "08:48:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:48:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "2",
+                    "ScheduledStopPointRef": {
+                      "ref": "70022"
+                    },
+                    "Arrival": {
+                      "Time": "08:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "08:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "3",
+                    "ScheduledStopPointRef": {
+                      "ref": "70042"
+                    },
+                    "Arrival": {
+                      "Time": "09:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "4",
+                    "ScheduledStopPointRef": {
+                      "ref": "70062"
+                    },
+                    "Arrival": {
+                      "Time": "09:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "5",
+                    "ScheduledStopPointRef": {
+                      "ref": "70092"
+                    },
+                    "Arrival": {
+                      "Time": "09:12:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:12:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "6",
+                    "ScheduledStopPointRef": {
+                      "ref": "70112"
+                    },
+                    "Arrival": {
+                      "Time": "09:15:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:15:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "7",
+                    "ScheduledStopPointRef": {
+                      "ref": "70142"
+                    },
+                    "Arrival": {
+                      "Time": "09:22:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:22:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "8",
+                    "ScheduledStopPointRef": {
+                      "ref": "70162"
+                    },
+                    "Arrival": {
+                      "Time": "09:26:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:26:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "9",
+                    "ScheduledStopPointRef": {
+                      "ref": "70172"
+                    },
+                    "Arrival": {
+                      "Time": "09:29:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:29:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "10",
+                    "ScheduledStopPointRef": {
+                      "ref": "70192"
+                    },
+                    "Arrival": {
+                      "Time": "09:32:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:32:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "11",
+                    "ScheduledStopPointRef": {
+                      "ref": "70202"
+                    },
+                    "Arrival": {
+                      "Time": "09:36:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:36:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "12",
+                    "ScheduledStopPointRef": {
+                      "ref": "70212"
+                    },
+                    "Arrival": {
+                      "Time": "09:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "13",
+                    "ScheduledStopPointRef": {
+                      "ref": "70222"
+                    },
+                    "Arrival": {
+                      "Time": "09:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "14",
+                    "ScheduledStopPointRef": {
+                      "ref": "70232"
+                    },
+                    "Arrival": {
+                      "Time": "09:46:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:46:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "15",
+                    "ScheduledStopPointRef": {
+                      "ref": "70242"
+                    },
+                    "Arrival": {
+                      "Time": "09:51:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:51:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "16",
+                    "ScheduledStopPointRef": {
+                      "ref": "70262"
+                    },
+                    "Arrival": {
+                      "Time": "09:58:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "09:58:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "416",
+              "SiriVehicleJourneyRef": "416",
+              "JourneyPatternView": {
+                "RouteRef": {
+                  "ref": "3206644"
+                },
+                "DirectionRef": {
+                  "ref": "S "
+                }
+              },
+              "calls": {
+                "Call": [
+                  {
+                    "order": "1",
+                    "ScheduledStopPointRef": {
+                      "ref": "70012"
+                    },
+                    "Arrival": {
+                      "Time": "15:48:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "15:48:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "2",
+                    "ScheduledStopPointRef": {
+                      "ref": "70022"
+                    },
+                    "Arrival": {
+                      "Time": "15:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "15:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "3",
+                    "ScheduledStopPointRef": {
+                      "ref": "70042"
+                    },
+                    "Arrival": {
+                      "Time": "16:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "4",
+                    "ScheduledStopPointRef": {
+                      "ref": "70062"
+                    },
+                    "Arrival": {
+                      "Time": "16:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "5",
+                    "ScheduledStopPointRef": {
+                      "ref": "70092"
+                    },
+                    "Arrival": {
+                      "Time": "16:12:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:12:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "6",
+                    "ScheduledStopPointRef": {
+                      "ref": "70112"
+                    },
+                    "Arrival": {
+                      "Time": "16:15:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:15:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "7",
+                    "ScheduledStopPointRef": {
+                      "ref": "70142"
+                    },
+                    "Arrival": {
+                      "Time": "16:22:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:22:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "8",
+                    "ScheduledStopPointRef": {
+                      "ref": "70162"
+                    },
+                    "Arrival": {
+                      "Time": "16:26:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:26:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "9",
+                    "ScheduledStopPointRef": {
+                      "ref": "70172"
+                    },
+                    "Arrival": {
+                      "Time": "16:29:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:29:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "10",
+                    "ScheduledStopPointRef": {
+                      "ref": "70192"
+                    },
+                    "Arrival": {
+                      "Time": "16:32:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:32:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "11",
+                    "ScheduledStopPointRef": {
+                      "ref": "70202"
+                    },
+                    "Arrival": {
+                      "Time": "16:36:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:36:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "12",
+                    "ScheduledStopPointRef": {
+                      "ref": "70212"
+                    },
+                    "Arrival": {
+                      "Time": "16:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "13",
+                    "ScheduledStopPointRef": {
+                      "ref": "70222"
+                    },
+                    "Arrival": {
+                      "Time": "16:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "14",
+                    "ScheduledStopPointRef": {
+                      "ref": "70232"
+                    },
+                    "Arrival": {
+                      "Time": "16:46:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:46:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "15",
+                    "ScheduledStopPointRef": {
+                      "ref": "70242"
+                    },
+                    "Arrival": {
+                      "Time": "16:51:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:51:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "16",
+                    "ScheduledStopPointRef": {
+                      "ref": "70262"
+                    },
+                    "Arrival": {
+                      "Time": "16:58:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:58:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "420",
+              "SiriVehicleJourneyRef": "420",
+              "JourneyPatternView": {
+                "RouteRef": {
+                  "ref": "3206644"
+                },
+                "DirectionRef": {
+                  "ref": "S "
+                }
+              },
+              "calls": {
+                "Call": [
+                  {
+                    "order": "1",
+                    "ScheduledStopPointRef": {
+                      "ref": "70012"
+                    },
+                    "Arrival": {
+                      "Time": "16:48:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:48:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "2",
+                    "ScheduledStopPointRef": {
+                      "ref": "70022"
+                    },
+                    "Arrival": {
+                      "Time": "16:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "16:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "3",
+                    "ScheduledStopPointRef": {
+                      "ref": "70042"
+                    },
+                    "Arrival": {
+                      "Time": "17:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "4",
+                    "ScheduledStopPointRef": {
+                      "ref": "70062"
+                    },
+                    "Arrival": {
+                      "Time": "17:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "5",
+                    "ScheduledStopPointRef": {
+                      "ref": "70092"
+                    },
+                    "Arrival": {
+                      "Time": "17:12:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:12:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "6",
+                    "ScheduledStopPointRef": {
+                      "ref": "70112"
+                    },
+                    "Arrival": {
+                      "Time": "17:15:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:15:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "7",
+                    "ScheduledStopPointRef": {
+                      "ref": "70142"
+                    },
+                    "Arrival": {
+                      "Time": "17:22:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:22:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "8",
+                    "ScheduledStopPointRef": {
+                      "ref": "70162"
+                    },
+                    "Arrival": {
+                      "Time": "17:26:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:26:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "9",
+                    "ScheduledStopPointRef": {
+                      "ref": "70172"
+                    },
+                    "Arrival": {
+                      "Time": "17:29:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:29:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "10",
+                    "ScheduledStopPointRef": {
+                      "ref": "70192"
+                    },
+                    "Arrival": {
+                      "Time": "17:32:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:32:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "11",
+                    "ScheduledStopPointRef": {
+                      "ref": "70202"
+                    },
+                    "Arrival": {
+                      "Time": "17:36:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:36:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "12",
+                    "ScheduledStopPointRef": {
+                      "ref": "70212"
+                    },
+                    "Arrival": {
+                      "Time": "17:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "13",
+                    "ScheduledStopPointRef": {
+                      "ref": "70222"
+                    },
+                    "Arrival": {
+                      "Time": "17:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "14",
+                    "ScheduledStopPointRef": {
+                      "ref": "70232"
+                    },
+                    "Arrival": {
+                      "Time": "17:46:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:46:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "15",
+                    "ScheduledStopPointRef": {
+                      "ref": "70242"
+                    },
+                    "Arrival": {
+                      "Time": "17:51:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:51:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "16",
+                    "ScheduledStopPointRef": {
+                      "ref": "70262"
+                    },
+                    "Arrival": {
+                      "Time": "17:58:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:58:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "424",
+              "SiriVehicleJourneyRef": "424",
+              "JourneyPatternView": {
+                "RouteRef": {
+                  "ref": "3206644"
+                },
+                "DirectionRef": {
+                  "ref": "S "
+                }
+              },
+              "calls": {
+                "Call": [
+                  {
+                    "order": "1",
+                    "ScheduledStopPointRef": {
+                      "ref": "70012"
+                    },
+                    "Arrival": {
+                      "Time": "17:48:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:48:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "2",
+                    "ScheduledStopPointRef": {
+                      "ref": "70022"
+                    },
+                    "Arrival": {
+                      "Time": "17:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "17:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "3",
+                    "ScheduledStopPointRef": {
+                      "ref": "70042"
+                    },
+                    "Arrival": {
+                      "Time": "18:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "4",
+                    "ScheduledStopPointRef": {
+                      "ref": "70062"
+                    },
+                    "Arrival": {
+                      "Time": "18:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "5",
+                    "ScheduledStopPointRef": {
+                      "ref": "70092"
+                    },
+                    "Arrival": {
+                      "Time": "18:12:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:12:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "6",
+                    "ScheduledStopPointRef": {
+                      "ref": "70112"
+                    },
+                    "Arrival": {
+                      "Time": "18:15:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:15:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "7",
+                    "ScheduledStopPointRef": {
+                      "ref": "70142"
+                    },
+                    "Arrival": {
+                      "Time": "18:22:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:22:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "8",
+                    "ScheduledStopPointRef": {
+                      "ref": "70162"
+                    },
+                    "Arrival": {
+                      "Time": "18:26:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:26:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "9",
+                    "ScheduledStopPointRef": {
+                      "ref": "70172"
+                    },
+                    "Arrival": {
+                      "Time": "18:29:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:29:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "10",
+                    "ScheduledStopPointRef": {
+                      "ref": "70192"
+                    },
+                    "Arrival": {
+                      "Time": "18:32:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:32:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "11",
+                    "ScheduledStopPointRef": {
+                      "ref": "70202"
+                    },
+                    "Arrival": {
+                      "Time": "18:36:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:36:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "12",
+                    "ScheduledStopPointRef": {
+                      "ref": "70212"
+                    },
+                    "Arrival": {
+                      "Time": "18:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "13",
+                    "ScheduledStopPointRef": {
+                      "ref": "70222"
+                    },
+                    "Arrival": {
+                      "Time": "18:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "14",
+                    "ScheduledStopPointRef": {
+                      "ref": "70232"
+                    },
+                    "Arrival": {
+                      "Time": "18:46:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:46:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "15",
+                    "ScheduledStopPointRef": {
+                      "ref": "70242"
+                    },
+                    "Arrival": {
+                      "Time": "18:51:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:51:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "16",
+                    "ScheduledStopPointRef": {
+                      "ref": "70262"
+                    },
+                    "Arrival": {
+                      "Time": "18:58:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:58:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "id": "428",
+              "SiriVehicleJourneyRef": "428",
+              "JourneyPatternView": {
+                "RouteRef": {
+                  "ref": "3206644"
+                },
+                "DirectionRef": {
+                  "ref": "S "
+                }
+              },
+              "calls": {
+                "Call": [
+                  {
+                    "order": "1",
+                    "ScheduledStopPointRef": {
+                      "ref": "70012"
+                    },
+                    "Arrival": {
+                      "Time": "18:48:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:48:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "2",
+                    "ScheduledStopPointRef": {
+                      "ref": "70022"
+                    },
+                    "Arrival": {
+                      "Time": "18:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "18:53:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "3",
+                    "ScheduledStopPointRef": {
+                      "ref": "70042"
+                    },
+                    "Arrival": {
+                      "Time": "19:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:01:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "4",
+                    "ScheduledStopPointRef": {
+                      "ref": "70062"
+                    },
+                    "Arrival": {
+                      "Time": "19:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:07:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "5",
+                    "ScheduledStopPointRef": {
+                      "ref": "70092"
+                    },
+                    "Arrival": {
+                      "Time": "19:12:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:12:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "6",
+                    "ScheduledStopPointRef": {
+                      "ref": "70112"
+                    },
+                    "Arrival": {
+                      "Time": "19:15:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:15:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "7",
+                    "ScheduledStopPointRef": {
+                      "ref": "70142"
+                    },
+                    "Arrival": {
+                      "Time": "19:22:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:22:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "8",
+                    "ScheduledStopPointRef": {
+                      "ref": "70162"
+                    },
+                    "Arrival": {
+                      "Time": "19:26:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:26:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "9",
+                    "ScheduledStopPointRef": {
+                      "ref": "70172"
+                    },
+                    "Arrival": {
+                      "Time": "19:29:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:29:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "10",
+                    "ScheduledStopPointRef": {
+                      "ref": "70192"
+                    },
+                    "Arrival": {
+                      "Time": "19:32:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:32:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "11",
+                    "ScheduledStopPointRef": {
+                      "ref": "70202"
+                    },
+                    "Arrival": {
+                      "Time": "19:36:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:36:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "12",
+                    "ScheduledStopPointRef": {
+                      "ref": "70212"
+                    },
+                    "Arrival": {
+                      "Time": "19:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:39:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "13",
+                    "ScheduledStopPointRef": {
+                      "ref": "70222"
+                    },
+                    "Arrival": {
+                      "Time": "19:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:43:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "14",
+                    "ScheduledStopPointRef": {
+                      "ref": "70232"
+                    },
+                    "Arrival": {
+                      "Time": "19:46:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:46:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "15",
+                    "ScheduledStopPointRef": {
+                      "ref": "70242"
+                    },
+                    "Arrival": {
+                      "Time": "19:51:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:51:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  },
+                  {
+                    "order": "16",
+                    "ScheduledStopPointRef": {
+                      "ref": "70262"
+                    },
+                    "Arrival": {
+                      "Time": "19:58:00",
+                      "DaysOffset": "0"
+                    },
+                    "Departure": {
+                      "Time": "19:58:00",
+                      "DaysOffset": "0"
+                    },
+                    "DestinationDisplayView": {
+                      "Name": "San Jose Diridon"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
