@@ -219,6 +219,8 @@ type TrainDeparture struct {
 	DepartureTime string `json:"departureTime"` // e.g., "05:43:00"
 	Destination   string `json:"destination"`   // e.g., "San Francisco"
 	DaysOffset    string `json:"daysOffset"`    // e.g., "0"
+	OnWeekdays    bool   `json:"onWeekdays"`    // true if this departure runs on weekdays
+	OnWeekends    bool   `json:"onWeekends"`    // true if this departure runs on weekends
 }
 
 // TimetableCollection holds multiple timetables (one per line)
@@ -340,6 +342,8 @@ func (t *Timetable) GetDeparturesByStopAndWeekday(weekday Weekday) map[string][]
 					DepartureTime: call.Departure.Time,
 					Destination:   call.DestinationDisplayView.Name,
 					DaysOffset:    call.Departure.DaysOffset,
+					OnWeekdays:    t.isValidForWeekday(frame, Monday) || t.isValidForWeekday(frame, Tuesday) || t.isValidForWeekday(frame, Wednesday) || t.isValidForWeekday(frame, Thursday) || t.isValidForWeekday(frame, Friday),
+					OnWeekends:    t.isValidForWeekday(frame, Saturday) || t.isValidForWeekday(frame, Sunday),
 				}
 				result[stopID] = append(result[stopID], departure)
 			}
