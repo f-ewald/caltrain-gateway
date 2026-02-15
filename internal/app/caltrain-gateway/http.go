@@ -241,9 +241,19 @@ func timetableHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// stopsHandler returns the GTFS ID to parent station name mapping as JSON
+func stopsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(GTFSIDToParentName); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
+}
+
 // setupRoutes configures all HTTP routes
 func SetupRoutes(apiKeyPool *KeyPool, secret string) {
 	http.HandleFunc("/", logRequestMiddleware(authMiddleware(secret, gzipMiddleware(proxyHandler(apiKeyPool)))))
 	http.HandleFunc("/up", healthHandler)
 	http.HandleFunc("/caltrain/timetable", logRequestMiddleware(authMiddleware(secret, gzipMiddleware(timetableHandler))))
+	http.HandleFunc("/caltrain/stops", logRequestMiddleware(authMiddleware(secret, gzipMiddleware(stopsHandler))))
 }
