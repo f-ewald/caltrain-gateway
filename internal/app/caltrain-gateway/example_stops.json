@@ -1,0 +1,1150 @@
+{
+  "Contents": {
+    "ResponseTimestamp": "2026-02-10T20:34:35-08:00",
+    "dataObjects": {
+      "id": "CT",
+      "ScheduledStopPoint": [
+        {
+          "id": "70021",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "22nd_street",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "22nd Street Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.39188",
+            "Latitude": "37.757599"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70022",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "22nd_street",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "22nd Street Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.392404",
+            "Latitude": "37.757583"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70031",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "bayshore",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Bayshore Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.401586",
+            "Latitude": "37.709537"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70032",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "bayshore",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Bayshore Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.40198",
+            "Latitude": "37.709544"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70121",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "belmont",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Belmont Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.275738",
+            "Latitude": "37.52089"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70122",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "belmont",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Belmont Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.275816",
+            "Latitude": "37.520844"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70291",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "blossom_hill",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Blossom Hill Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-121.797643",
+            "Latitude": "37.252422"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70292",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "blossom_hill",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Blossom Hill Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-121.797683",
+            "Latitude": "37.252379"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70071",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "broadway",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Broadway Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.36265",
+            "Latitude": "37.58764"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70072",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "broadway",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Broadway Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.362708",
+            "Latitude": "37.587552"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70081",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "burlingame",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Burlingame Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.3449",
+            "Latitude": "37.580197"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70082",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "burlingame",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Burlingame Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.345075",
+            "Latitude": "37.580186"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70191",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "california_ave",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "California Avenue Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.141927",
+            "Latitude": "37.429365"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70192",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "california_ave",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "California Avenue Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.141978",
+            "Latitude": "37.429333"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70281",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "capitol",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Capitol Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-121.841955",
+            "Latitude": "37.284102"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70282",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "capitol",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Capitol Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-121.842037",
+            "Latitude": "37.284062"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70251",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "college_park",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "College Park Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-121.9146",
+            "Latitude": "37.342384"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70252",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "college_park",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "College Park Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-121.914677",
+            "Latitude": "37.342338"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70321",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "gilroy",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Gilroy Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-121.566088",
+            "Latitude": "37.003538"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70322",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "gilroy",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Gilroy Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-121.566225",
+            "Latitude": "37.003485"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70101",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "hayward_park",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Hayward Park Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.309338",
+            "Latitude": "37.552938"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70102",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "hayward_park",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Hayward Park Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.309608",
+            "Latitude": "37.552994"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70111",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "hillsdale",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Hillsdale Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.3014966366",
+            "Latitude": "37.542607659"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70112",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "hillsdale",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Hillsdale Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.301666",
+            "Latitude": "37.542536"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70231",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "lawrence",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Lawrence Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-121.997114",
+            "Latitude": "37.370598"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70232",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "lawrence",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Lawrence Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-121.997135",
+            "Latitude": "37.370484"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70161",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "menlo_park",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Menlo Park Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.182297",
+            "Latitude": "37.454856"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70162",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "menlo_park",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Menlo Park Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.182405",
+            "Latitude": "37.454745"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70061",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "place_MLBR",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Millbrae Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.386647",
+            "Latitude": "37.59988"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70062",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "place_MLBR",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Millbrae Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.386832",
+            "Latitude": "37.599797"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70301",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "morgan_hill",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Morgan Hill Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-121.650244",
+            "Latitude": "37.129363"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70302",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "morgan_hill",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Morgan Hill Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-121.650304",
+            "Latitude": "37.129321"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70211",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "mountain_view",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Mountain View Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.075956",
+            "Latitude": "37.394459"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70212",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "mountain_view",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Mountain View Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.075994",
+            "Latitude": "37.394402"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70171",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "palo_alto",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Palo Alto Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.164614",
+            "Latitude": "37.443475"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70172",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "palo_alto",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Palo Alto Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.164697",
+            "Latitude": "37.443405"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70141",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "redwood_city",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Redwood City Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.231936",
+            "Latitude": "37.486159"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70142",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "redwood_city",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Redwood City Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.232",
+            "Latitude": "37.486101"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70201",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "san_antonio",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "San Antonio Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.1070020272",
+            "Latitude": "37.4073321574"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70202",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "san_antonio",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "San Antonio Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.1071162171",
+            "Latitude": "37.4072397241"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70051",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "san_bruno",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "San Bruno Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.4115926041",
+            "Latitude": "37.6304996012"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70052",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "san_bruno",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "San Bruno Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.4117090507",
+            "Latitude": "37.6304605129"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70131",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "san_carlos",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "San Carlos Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.26015",
+            "Latitude": "37.50805"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70132",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "san_carlos",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "San Carlos Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.260266",
+            "Latitude": "37.507933"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70011",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "san_francisco",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "San Francisco Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.394992",
+            "Latitude": "37.77639"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70012",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "san_francisco",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "San Francisco Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.394935",
+            "Latitude": "37.776348"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70261",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "sj_diridon",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "San Jose Diridon Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-121.903011",
+            "Latitude": "37.329239"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70262",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "sj_diridon",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "San Jose Diridon Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-121.903173",
+            "Latitude": "37.329231"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70311",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "san_martin",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "San Martin Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-121.610049",
+            "Latitude": "37.085225"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70312",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "san_martin",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "San Martin Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-121.610936",
+            "Latitude": "37.086653"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70091",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "san_mateo",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "San Mateo Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.323851",
+            "Latitude": "37.568087"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70092",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "san_mateo",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "San Mateo Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.324092",
+            "Latitude": "37.568294"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70241",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "santa_clara",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Santa Clara Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-121.93608",
+            "Latitude": "37.353238"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70242",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "santa_clara",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Santa Clara Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-121.936135",
+            "Latitude": "37.353189"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70041",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "south_sf",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "South San Francisco Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.4049790512",
+            "Latitude": "37.6559413948"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70042",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "south_sf",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "South San Francisco Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.4049797097",
+            "Latitude": "37.6559419334"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70221",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "sunnyvale",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Sunnyvale Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-122.031372",
+            "Latitude": "37.378916"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70222",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "sunnyvale",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Sunnyvale Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-122.031423",
+            "Latitude": "37.378789"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70271",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "tamien",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Tamien Caltrain Station Northbound",
+          "Location": {
+            "Longitude": "-121.883721",
+            "Latitude": "37.31174"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        },
+        {
+          "id": "70272",
+          "Extensions": {
+            "LocationType": "0",
+            "PlatformCode": null,
+            "ParentStation": "tamien",
+            "ValidBetween": {
+              "FromDate": "2026-01-31T00:00:00-08:00",
+              "ToDate": "2026-08-31T23:59:00-08:00"
+            }
+          },
+          "Name": "Tamien Caltrain Station Southbound",
+          "Location": {
+            "Longitude": "-121.883999",
+            "Latitude": "37.31175"
+          },
+          "Url": null,
+          "StopType": "onstreetBus"
+        }
+      ]
+    }
+  }
+}
