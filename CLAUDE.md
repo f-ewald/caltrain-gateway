@@ -25,7 +25,7 @@ docker build -t caltrain-gateway .
 
 Copy `.env.example` to `.env`. Required variables:
 - `FIVEONEONE_API_KEY_1` (and optionally `_2`, `_3`, etc.) — 511.org API keys
-- `CALTRAIN_GATEWAY_SECRET` — Secret for `X-API-SECRET` header authentication (optional, skipped if empty)
+- `CALTRAIN_GATEWAY_SECRET` — Secret for `X-API-Key` header authentication (optional, skipped if empty)
 
 ## Architecture
 
@@ -39,12 +39,19 @@ Go HTTP service that proxies and caches requests to the 511.org transit API for 
   - **timetable.go** — Timetable data model (deep struct hierarchy mirroring 511 API JSON), parsing, and departure queries by stop/weekday. `TimetableCollection` aggregates multiple line timetables.
   - **lines.go** — Transit line model and loading (from file or URL)
   - **ratelimiter.go** — `KeyPool` for round-robin API key rotation with per-key rate limiting (`golang.org/x/time/rate`)
+  - **stops.go** — Static mapping of GTFS stop IDs to parent station names (e.g., `"70011"` → `"san_francisco"`)
   - **cache.go** — Global response cache (2-min TTL, `go-cache`)
   - **environment.go** — Environment variable loading
 
+### API Endpoints
+
+- `GET /up` — Health check
+- `GET /caltrain/timetable` — All departures by stop ID
+- `GET /caltrain/timetable?weekday=Monday&station=san_francisco` — Filter by weekday and/or station name
+
 ### Request Flow
 
-1. Requests go through middleware chain: logging → auth (`X-API-SECRET`) → gzip
+1. Requests go through middleware chain: auth/logging (`X-API-Key`) → gzip
 2. The proxy handler checks cache → uses `singleflight` for request collapsing → picks an API key from the pool → forwards to 511.org → caches 200 responses
 3. `/caltrain/timetable` serves pre-loaded timetable data (loaded at startup), filtered by optional `weekday` and `station` query params
 

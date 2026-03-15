@@ -54,19 +54,11 @@ func gzipMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// authMiddleware checks for the correct secret in the request headers
+// authMiddleware logs requests that don't provide a valid API key
 func authMiddleware(secret string, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// If no secret is set, skip authentication
-		if secret == "" {
-			next(w, r)
-			return
-		}
-
-		providedSecret := r.Header.Get("X-API-SECRET")
-		if providedSecret != secret {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
+		if secret != "" && r.Header.Get("X-API-Key") != secret {
+			logRequest(r)
 		}
 		next(w, r)
 	}
@@ -252,8 +244,8 @@ func stopsHandler(w http.ResponseWriter, r *http.Request) {
 
 // setupRoutes configures all HTTP routes
 func SetupRoutes(apiKeyPool *KeyPool, secret string) {
-	http.HandleFunc("/", logRequestMiddleware(authMiddleware(secret, gzipMiddleware(proxyHandler(apiKeyPool)))))
+	http.HandleFunc("/", authMiddleware(secret, gzipMiddleware(proxyHandler(apiKeyPool))))
 	http.HandleFunc("/up", healthHandler)
-	http.HandleFunc("/caltrain/timetable", logRequestMiddleware(authMiddleware(secret, gzipMiddleware(timetableHandler))))
-	http.HandleFunc("/caltrain/stops", logRequestMiddleware(authMiddleware(secret, gzipMiddleware(stopsHandler))))
+	http.HandleFunc("/caltrain/timetable", authMiddleware(secret, gzipMiddleware(timetableHandler)))
+	http.HandleFunc("/caltrain/stops", authMiddleware(secret, gzipMiddleware(stopsHandler)))
 }
