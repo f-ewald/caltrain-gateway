@@ -452,3 +452,50 @@ func TestTimetableHandler(t *testing.T) {
 		}
 	})
 }
+
+func TestServiceAlertsHandler(t *testing.T) {
+	t.Run("not loaded", func(t *testing.T) {
+		SetServiceAlerts(nil)
+
+		req := httptest.NewRequest("GET", "/caltrain/servicealerts", nil)
+		rec := httptest.NewRecorder()
+
+		serviceAlertsHandler(rec, req)
+
+		resp := rec.Result()
+		if resp.StatusCode != http.StatusServiceUnavailable {
+			t.Errorf("Expected status %d, got %d", http.StatusServiceUnavailable, resp.StatusCode)
+		}
+	})
+
+	t.Run("loaded", func(t *testing.T) {
+		sa, err := LoadServiceAlerts("example_servicealerts.json")
+		if err != nil {
+			t.Fatalf("failed to load service alerts: %v", err)
+		}
+		SetServiceAlerts(sa)
+
+		req := httptest.NewRequest("GET", "/caltrain/servicealerts", nil)
+		rec := httptest.NewRecorder()
+
+		serviceAlertsHandler(rec, req)
+
+		resp := rec.Result()
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("Expected status %d, got %d", http.StatusOK, resp.StatusCode)
+		}
+
+		contentType := resp.Header.Get("Content-Type")
+		if contentType != "application/json" {
+			t.Errorf("Expected Content-Type 'application/json', got '%s'", contentType)
+		}
+
+		body, _ := io.ReadAll(resp.Body)
+		if !strings.Contains(string(body), "gtfsRealtimeVersion") {
+			t.Error("Expected response to contain 'gtfsRealtimeVersion'")
+		}
+		if !strings.Contains(string(body), "alert") {
+			t.Error("Expected response to contain 'alert'")
+		}
+	})
+}

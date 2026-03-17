@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
 	"time"
@@ -41,13 +42,46 @@ func main() {
 		log.Println("Timetables loaded successfully")
 	}
 
+	// Load service alerts
+	sa, err := loadServiceAlerts(apiKey.Value)
+	if err != nil {
+		log.Printf("Warning: Failed to load service alerts: %v", err)
+	} else {
+		caltraingateway.SetServiceAlerts(sa)
+		log.Println("Service alerts loaded successfully")
+	}
+
+	// Periodically refresh service alerts
+	go func() {
+		ticker := time.NewTicker(5 * time.Minute)
+		defer ticker.Stop()
+		for range ticker.C {
+			key, ok := apiKeyPool.GetAvailableKey()
+			if !ok {
+				log.Println("Warning: No available API key to refresh service alerts")
+				continue
+			}
+			sa, err := loadServiceAlerts(key.Value)
+			if err != nil {
+				log.Printf("Warning: Failed to refresh service alerts: %v", err)
+				continue
+			}
+			caltraingateway.SetServiceAlerts(sa)
+			log.Println("Service alerts refreshed successfully")
+		}
+	}()
+
 	// Load the secret from environment variable
 	secret := caltraingateway.LoadSecretFromEnv()
 
 	caltraingateway.SetupRoutes(apiKeyPool, secret)
 
-	log.Println("Caltrain Proxy running on :8080...")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	listener, err := net.Listen("tcp", ":8080")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Caltrain Proxy running on %s", listener.Addr().String())
+	log.Fatal(http.Serve(listener, nil))
 }
 
 // loadAllTimetables loads all lines from the API and then loads timetables for each line
@@ -102,4 +136,26 @@ func loadAllTimetables(apiKey string) (*caltraingateway.TimetableCollection, err
 	}
 
 	return tc, nil
+}
+
+// loadServiceAlerts fetches service alerts from the 511 API
+func loadServiceAlerts(apiKey string) (*caltraingateway.ServiceAlertsResponse, error) {
+	u, err := url.Parse(baseAPIURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse base API URL: %w", err)
+	}
+
+	u.Path = "transit/servicealerts"
+	q := u.Query()
+	q.Set("agency", operatorID)
+	q.Set("format", "json")
+	q.Set("api_key", apiKey)
+	u.RawQuery = q.Encode()
+
+	log.Println("Loading service alerts from API ...")
+	sa, err := caltraingateway.LoadServiceAlertsFromURL(u.String())
+	if err != nil {
+		return nil, fmt.Errorf("failed to load service alerts: %w", err)
+	}
+	return sa, nil
 }

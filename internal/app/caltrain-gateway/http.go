@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"sync"
 
 	"golang.org/x/sync/singleflight"
 )
@@ -233,6 +234,39 @@ func timetableHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// serviceAlerts holds the loaded service alerts data
+var serviceAlerts *ServiceAlertsResponse
+var serviceAlertsMu sync.RWMutex
+
+// SetServiceAlerts updates the service alerts data (thread-safe)
+func SetServiceAlerts(sa *ServiceAlertsResponse) {
+	serviceAlertsMu.Lock()
+	defer serviceAlertsMu.Unlock()
+	serviceAlerts = sa
+}
+
+// GetServiceAlerts returns the current service alerts data (thread-safe)
+func GetServiceAlerts() *ServiceAlertsResponse {
+	serviceAlertsMu.RLock()
+	defer serviceAlertsMu.RUnlock()
+	return serviceAlerts
+}
+
+// serviceAlertsHandler returns service alerts as JSON
+func serviceAlertsHandler(w http.ResponseWriter, r *http.Request) {
+	sa := GetServiceAlerts()
+	if sa == nil {
+		http.Error(w, "Service alerts not loaded", http.StatusServiceUnavailable)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(sa); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
+}
+
 // stopsHandler returns the GTFS ID to parent station name mapping as JSON
 func stopsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -248,4 +282,5 @@ func SetupRoutes(apiKeyPool *KeyPool, secret string) {
 	http.HandleFunc("/up", healthHandler)
 	http.HandleFunc("/caltrain/timetable", authMiddleware(secret, gzipMiddleware(timetableHandler)))
 	http.HandleFunc("/caltrain/stops", authMiddleware(secret, gzipMiddleware(stopsHandler)))
+	http.HandleFunc("/caltrain/servicealerts", authMiddleware(secret, gzipMiddleware(serviceAlertsHandler)))
 }
