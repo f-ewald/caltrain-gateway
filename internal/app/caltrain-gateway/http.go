@@ -252,7 +252,7 @@ func GetServiceAlerts() *ServiceAlertsResponse {
 	return serviceAlerts
 }
 
-// serviceAlertsHandler returns service alerts as JSON
+// serviceAlertsHandler returns service alerts as JSON, optionally filtered by agency.
 func serviceAlertsHandler(w http.ResponseWriter, r *http.Request) {
 	sa := GetServiceAlerts()
 	if sa == nil {
@@ -260,10 +260,33 @@ func serviceAlertsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	result := sa
+	if agency := r.URL.Query().Get("agency"); agency != "" {
+		result = filterServiceAlertsByAgency(sa, agency)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(sa); err != nil {
+	if err := json.NewEncoder(w).Encode(result); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
+	}
+}
+
+// filterServiceAlertsByAgency returns a new ServiceAlertsResponse containing only
+// entities where at least one InformedEntity has a matching AgencyID (case-insensitive).
+func filterServiceAlertsByAgency(sa *ServiceAlertsResponse, agency string) *ServiceAlertsResponse {
+	var filtered []ServiceAlertEntity
+	for _, entity := range sa.Entity {
+		for _, ie := range entity.Alert.InformedEntity {
+			if strings.EqualFold(ie.AgencyID, agency) {
+				filtered = append(filtered, entity)
+				break
+			}
+		}
+	}
+	return &ServiceAlertsResponse{
+		Header: sa.Header,
+		Entity: filtered,
 	}
 }
 

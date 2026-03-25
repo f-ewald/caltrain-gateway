@@ -1,6 +1,7 @@
 package caltraingateway
 
 import (
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -496,6 +497,106 @@ func TestServiceAlertsHandler(t *testing.T) {
 		}
 		if !strings.Contains(string(body), "alert") {
 			t.Error("Expected response to contain 'alert'")
+		}
+	})
+
+	t.Run("filter by agency", func(t *testing.T) {
+		sa, err := parseServiceAlertsJSON([]byte(`{
+			"header": {"gtfsRealtimeVersion": "1.0", "incrementality": 0, "timestamp": 1700000000},
+			"entity": [
+				{
+					"id": "alert-ct",
+					"alert": {
+						"activePeriod": [{"start": 1700000000}],
+						"informedEntity": [{"agencyId": "CT"}],
+						"cause": 1,
+						"effect": 6
+					}
+				},
+				{
+					"id": "alert-ba",
+					"alert": {
+						"activePeriod": [{"start": 1700000000}],
+						"informedEntity": [{"agencyId": "BA"}],
+						"cause": 2,
+						"effect": 3
+					}
+				}
+			]
+		}`))
+		if err != nil {
+			t.Fatalf("failed to parse test data: %v", err)
+		}
+		SetServiceAlerts(sa)
+
+		req := httptest.NewRequest("GET", "/caltrain/servicealerts?agency=ct", nil)
+		rec := httptest.NewRecorder()
+
+		serviceAlertsHandler(rec, req)
+
+		resp := rec.Result()
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("Expected status %d, got %d", http.StatusOK, resp.StatusCode)
+		}
+
+		var result ServiceAlertsResponse
+		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+			t.Fatalf("failed to decode response: %v", err)
+		}
+
+		if len(result.Entity) != 1 {
+			t.Fatalf("Expected 1 entity, got %d", len(result.Entity))
+		}
+		if result.Entity[0].ID != "alert-ct" {
+			t.Errorf("Expected entity ID 'alert-ct', got '%s'", result.Entity[0].ID)
+		}
+	})
+
+	t.Run("filter by agency no match", func(t *testing.T) {
+		sa, err := parseServiceAlertsJSON([]byte(`{
+			"header": {"gtfsRealtimeVersion": "1.0", "incrementality": 0, "timestamp": 1700000000},
+			"entity": [
+				{
+					"id": "alert-ct",
+					"alert": {
+						"activePeriod": [{"start": 1700000000}],
+						"informedEntity": [{"agencyId": "CT"}],
+						"cause": 1,
+						"effect": 6
+					}
+				}
+			]
+		}`))
+		if err != nil {
+			t.Fatalf("failed to parse test data: %v", err)
+		}
+		SetServiceAlerts(sa)
+
+		req := httptest.NewRequest("GET", "/caltrain/servicealerts?agency=XY", nil)
+		rec := httptest.NewRecorder()
+
+		serviceAlertsHandler(rec, req)
+
+		resp := rec.Result()
+		if resp.StatusCode != http.StatusOK {
+			t.Errorf("Expected status %d, got %d", http.StatusOK, resp.StatusCode)
+		}
+
+		var result ServiceAlertsResponse
+		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+			t.Fatalf("failed to decode response: %v", err)
+		}
+
+		if result.Entity == nil {
+			// nil is acceptable as JSON encodes it as null, but we expect empty array behavior
+			if len(result.Entity) != 0 {
+				t.Errorf("Expected 0 entities, got %d", len(result.Entity))
+			}
+		} else if len(result.Entity) != 0 {
+			t.Errorf("Expected 0 entities, got %d", len(result.Entity))
+		}
+		if result.Header.GtfsRealtimeVersion != "1.0" {
+			t.Errorf("Expected header version '1.0', got '%s'", result.Header.GtfsRealtimeVersion)
 		}
 	})
 }
