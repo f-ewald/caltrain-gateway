@@ -306,4 +306,5 @@ func SetupRoutes(apiKeyPool *KeyPool, secret string) {
 	http.HandleFunc("/caltrain/timetable", authMiddleware(secret, gzipMiddleware(timetableHandler)))
 	http.HandleFunc("/caltrain/stops", authMiddleware(secret, gzipMiddleware(stopsHandler)))
 	http.HandleFunc("/caltrain/servicealerts", authMiddleware(secret, gzipMiddleware(serviceAlertsHandler)))
+	http.HandleFunc("/caltrain/scheduletype", authMiddleware(secret, gzipMiddleware(scheduleTypeHandler(apiKeyPool))))
 }
