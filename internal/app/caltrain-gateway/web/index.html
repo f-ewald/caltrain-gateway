@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caltrain Gateway</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #333;
+            max-width: 640px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        h1 { font-size: 1.4rem; margin-bottom: 4px; }
+        .uptime { color: #666; font-size: 0.9rem; margin-bottom: 24px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 8px 12px; }
+        th { border-bottom: 2px solid #ddd; font-size: 0.85rem; text-transform: uppercase; color: #666; }
+        td { border-bottom: 1px solid #eee; }
+        tr:nth-child(even) td { background: #fafafa; }
+        td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+        th:last-child { text-align: right; }
+    </style>
+</head>
+<body>
+    <h1>Caltrain Gateway</h1>
+    <p class="uptime">Uptime: <span id="uptime">-</span></p>
+    <table>
+        <thead>
+            <tr><th>Endpoint</th><th>Requests</th></tr>
+        </thead>
+        <tbody id="stats"></tbody>
+    </table>
+    <script>
+        function formatUptime(seconds) {
+            const d = Math.floor(seconds / 86400);
+            const h = Math.floor((seconds % 86400) / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = seconds % 60;
+            const parts = [];
+            if (d > 0) parts.push(d + "d");
+            if (h > 0) parts.push(h + "h");
+            if (m > 0) parts.push(m + "m");
+            parts.push(s + "s");
+            return parts.join(" ");
+        }
+
+        async function refresh() {
+            try {
+                const resp = await fetch("/ui/stats");
+                const data = await resp.json();
+                document.getElementById("uptime").textContent = formatUptime(data.uptime_seconds);
+                const tbody = document.getElementById("stats");
+                const endpoints = Object.entries(data.endpoints).sort((a, b) => a[0].localeCompare(b[0]));
+                tbody.innerHTML = endpoints
+                    .map(([path, count]) => `<tr><td>${path}</td><td>${count}</td></tr>`)
+                    .join("");
+                if (endpoints.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="2">No requests recorded yet.</td></tr>';
+                }
+            } catch (e) {
+                console.error("Failed to fetch stats:", e);
+            }
+        }
+
+        refresh();
+        setInterval(refresh, 5000);
+    </script>
+</body>
+</html>

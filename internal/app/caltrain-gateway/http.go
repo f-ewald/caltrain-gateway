@@ -2,6 +2,7 @@ package caltraingateway
 
 import (
 	"compress/gzip"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,6 +12,9 @@ import (
 
 	"golang.org/x/sync/singleflight"
 )
+
+//go:embed web/index.html
+var indexHTML []byte
 
 const (
 	defaultAPIBaseURL = "http://api.511.org/"
@@ -299,12 +303,38 @@ func stopsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// setupRoutes configures all HTTP routes
+// statsMiddleware records each request's path in the request stats.
+func statsMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		requestStats.RecordRequest(r.URL.Path)
+		next(w, r)
+	}
+}
+
+// uiHandler serves the embedded dashboard HTML page.
+func uiHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Write(indexHTML)
+}
+
+// uiStatsHandler returns uptime and per-endpoint request counts as JSON.
+func uiStatsHandler(w http.ResponseWriter, r *http.Request) {
+	uptimeSeconds, counts := requestStats.GetSnapshot()
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]any{
+		"uptime_seconds": uptimeSeconds,
+		"endpoints":      counts,
+	})
+}
+
+// SetupRoutes configures all HTTP routes.
 func SetupRoutes(apiKeyPool *KeyPool, secret string) {
-	http.HandleFunc("/", authMiddleware(secret, gzipMiddleware(proxyHandler(apiKeyPool))))
+	http.HandleFunc("/", statsMiddleware(authMiddleware(secret, gzipMiddleware(proxyHandler(apiKeyPool)))))
 	http.HandleFunc("/up", healthHandler)
-	http.HandleFunc("/caltrain/timetable", authMiddleware(secret, gzipMiddleware(timetableHandler)))
-	http.HandleFunc("/caltrain/stops", authMiddleware(secret, gzipMiddleware(stopsHandler)))
-	http.HandleFunc("/caltrain/servicealerts", authMiddleware(secret, gzipMiddleware(serviceAlertsHandler)))
-	http.HandleFunc("/caltrain/scheduletype", authMiddleware(secret, gzipMiddleware(scheduleTypeHandler(apiKeyPool))))
+	http.HandleFunc("/caltrain/timetable", statsMiddleware(authMiddleware(secret, gzipMiddleware(timetableHandler))))
+	http.HandleFunc("/caltrain/stops", statsMiddleware(authMiddleware(secret, gzipMiddleware(stopsHandler))))
+	http.HandleFunc("/caltrain/servicealerts", statsMiddleware(authMiddleware(secret, gzipMiddleware(serviceAlertsHandler))))
+	http.HandleFunc("/caltrain/scheduletype", statsMiddleware(authMiddleware(secret, gzipMiddleware(scheduleTypeHandler(apiKeyPool)))))
+	http.HandleFunc("/ui", uiHandler)
+	http.HandleFunc("/ui/stats", uiStatsHandler)
 }
