@@ -330,6 +330,7 @@ func uiStatsHandler(w http.ResponseWriter, r *http.Request) {
 // SetupRoutes configures all HTTP routes.
 func SetupRoutes(apiKeyPool *KeyPool, secret string) {
 	http.HandleFunc("/", statsMiddleware(authMiddleware(secret, gzipMiddleware(proxyHandler(apiKeyPool)))))
+	http.HandleFunc("/proxy/", statsMiddleware(authMiddleware(secret, gzipMiddleware(http.StripPrefix("/proxy", proxyHandler(apiKeyPool)).ServeHTTP))))
 	http.HandleFunc("/up", healthHandler)
 	http.HandleFunc("/caltrain/timetable", statsMiddleware(authMiddleware(secret, gzipMiddleware(timetableHandler))))
 	http.HandleFunc("/caltrain/stops", statsMiddleware(authMiddleware(secret, gzipMiddleware(stopsHandler))))

@@ -14,6 +14,8 @@
                 super();
                 this.attachShadow({ mode: "open" });
                 this._intervalId = null;
+                this._prevUptime = null;
+                this._prevCounts = {};
             }
 
             connectedCallback() {
@@ -43,6 +45,13 @@
                 return parts.join(" ");
             }
 
+            /** Applies a yellow highlight that fades out over 500ms. */
+            _highlight(el) {
+                el.classList.remove("flash");
+                void el.offsetWidth;
+                el.classList.add("flash");
+            }
+
             /** Fetches stats from the server and updates the DOM. */
             async _refresh() {
                 const url = this.getAttribute("url") || "/ui/stats";
@@ -51,7 +60,13 @@
                     const data = await resp.json();
 
                     const root = this.shadowRoot;
-                    root.getElementById("uptime").textContent = this._formatUptime(data.uptime_seconds);
+                    const uptimeStr = this._formatUptime(data.uptime_seconds);
+                    const uptimeEl = root.getElementById("uptime");
+                    uptimeEl.textContent = uptimeStr;
+                    if (this._prevUptime !== null && this._prevUptime !== uptimeStr) {
+                        this._highlight(uptimeEl);
+                    }
+                    this._prevUptime = uptimeStr;
 
                     const tbody = root.getElementById("stats");
                     const endpoints = Object.entries(data.endpoints).sort((a, b) => a[0].localeCompare(b[0]));
@@ -61,7 +76,15 @@
                         tbody.innerHTML = endpoints
                             .map(([path, count]) => `<tr><td>${path}</td><td>${count}</td></tr>`)
                             .join("");
+
+                        const rows = tbody.querySelectorAll("tr");
+                        endpoints.forEach(([path, count], i) => {
+                            if (this._prevCounts[path] !== undefined && this._prevCounts[path] !== count) {
+                                this._highlight(rows[i].querySelector("td:last-child"));
+                            }
+                        });
                     }
+                    this._prevCounts = Object.fromEntries(endpoints);
 
                     root.getElementById("last-updated").textContent = new Date().toLocaleString();
                 } catch (e) {
@@ -90,6 +113,11 @@
                         td { border-bottom: 1px solid #eee; }
                         tr:nth-child(even) td { background: #fafafa; }
                         td:last-child, th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+                        @keyframes flash-bg {
+                            from { background-color: #fff3b0; }
+                            to   { background-color: transparent; }
+                        }
+                        .flash { animation: flash-bg 500ms ease-out; }
                     </style>
                     <h1>Caltrain Gateway</h1>
                     <p class="meta">Uptime: <span id="uptime">-</span></p>
