@@ -20,6 +20,15 @@ func LoadAPIKeysFromEnv() []string {
 	return keys
 }
 
+// LoadDatabaseURLFromEnv loads the PostgreSQL connection string from the DATABASE_URL environment variable.
+func LoadDatabaseURLFromEnv() string {
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		log.Println("DATABASE_URL environment variable is not set. Running without database.")
+	}
+	return dbURL
+}
+
 // LoadSecretFromEnv loads the Caltrain Gateway secret from the CALTRAIN_GATEWAY_SECRET environment variable.
 func LoadSecretFromEnv() string {
 	secret := os.Getenv("CALTRAIN_GATEWAY_SECRET")

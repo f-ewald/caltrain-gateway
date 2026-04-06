@@ -26,6 +26,7 @@ docker build -t caltrain-gateway .
 Copy `.env.example` to `.env`. Required variables:
 - `FIVEONEONE_API_KEY_1` (and optionally `_2`, `_3`, etc.) — 511.org API keys
 - `CALTRAIN_GATEWAY_SECRET` — Secret for `X-API-Key` header authentication (optional, skipped if empty)
+- `DATABASE_URL` — PostgreSQL connection string (optional, e.g. `postgres://user:pass@localhost:5432/caltrain?sslmode=disable`). If empty, the app runs without a database.
 
 ## Architecture
 

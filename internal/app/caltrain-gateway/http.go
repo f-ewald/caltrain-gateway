@@ -338,4 +338,5 @@ func SetupRoutes(apiKeyPool *KeyPool, secret string) {
 	http.HandleFunc("/caltrain/scheduletype", statsMiddleware(authMiddleware(secret, gzipMiddleware(scheduleTypeHandler(apiKeyPool)))))
 	http.HandleFunc("/ui", uiHandler)
 	http.HandleFunc("/ui/stats", uiStatsHandler)
+	http.HandleFunc("/support", statsMiddleware(logRequestMiddleware(supportHandler)))
 }

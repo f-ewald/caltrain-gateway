@@ -74,6 +74,13 @@ func main() {
 	// Load the secret from environment variable
 	secret := caltraingateway.LoadSecretFromEnv()
 
+	// Initialize database (optional)
+	dbURL := caltraingateway.LoadDatabaseURLFromEnv()
+	if err := caltraingateway.InitDB(dbURL); err != nil {
+		log.Printf("Warning: Failed to initialize database: %v", err)
+	}
+	defer caltraingateway.CloseDB()
+
 	caltraingateway.SetupRoutes(apiKeyPool, secret)
 
 	listener, err := net.Listen("tcp", ":8080")
