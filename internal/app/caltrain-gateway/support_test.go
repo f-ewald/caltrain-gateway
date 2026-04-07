@@ -37,6 +37,27 @@ func TestSupportHandler(t *testing.T) {
 		}
 	})
 
+	t.Run("OPTIONS returns 204 with CORS headers", func(t *testing.T) {
+		req := httptest.NewRequest("OPTIONS", "/support", nil)
+		rec := httptest.NewRecorder()
+
+		supportHandler(rec, req)
+
+		resp := rec.Result()
+		if resp.StatusCode != http.StatusNoContent {
+			t.Errorf("Expected status %d, got %d", http.StatusNoContent, resp.StatusCode)
+		}
+		if origin := resp.Header.Get("Access-Control-Allow-Origin"); origin != "https://fewald.net" {
+			t.Errorf("Expected Access-Control-Allow-Origin 'https://fewald.net', got '%s'", origin)
+		}
+		if methods := resp.Header.Get("Access-Control-Allow-Methods"); methods != "POST, OPTIONS" {
+			t.Errorf("Expected Access-Control-Allow-Methods 'POST, OPTIONS', got '%s'", methods)
+		}
+		if headers := resp.Header.Get("Access-Control-Allow-Headers"); headers != "Content-Type" {
+			t.Errorf("Expected Access-Control-Allow-Headers 'Content-Type', got '%s'", headers)
+		}
+	})
+
 	t.Run("GET returns 405", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/support", nil)
 		rec := httptest.NewRecorder()
