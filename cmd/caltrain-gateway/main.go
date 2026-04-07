@@ -39,6 +39,7 @@ func main() {
 		log.Printf("Warning: Failed to load timetables: %v", err)
 	} else {
 		caltraingateway.SetTimetableCollection(tc)
+		caltraingateway.SetAPIConnected(true)
 		log.Println("Timetables loaded successfully")
 	}
 
@@ -64,9 +65,11 @@ func main() {
 			sa, err := loadServiceAlerts(key.Value)
 			if err != nil {
 				log.Printf("Warning: Failed to refresh service alerts: %v", err)
+				caltraingateway.SetAPIConnected(false)
 				continue
 			}
 			caltraingateway.SetServiceAlerts(sa)
+			caltraingateway.SetAPIConnected(true)
 			log.Println("Service alerts refreshed successfully")
 		}
 	}()

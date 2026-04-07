@@ -30,6 +30,11 @@ func NewKeyPool(strings []string, r rate.Limit, b int) *KeyPool {
 	return pool
 }
 
+// HasKeys returns true if the pool contains at least one API key.
+func (p *KeyPool) HasKeys() bool {
+	return len(p.Keys) > 0
+}
+
 // GetAvailableKey looks for any key that has a token available
 func (p *KeyPool) GetAvailableKey() (*APIKey, bool) {
 	p.mu.Lock()

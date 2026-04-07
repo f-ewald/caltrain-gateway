@@ -52,12 +52,22 @@
                 el.classList.add("flash");
             }
 
-            /** Fetches stats from the server and updates the DOM. */
+            /** Updates a status dot element to reflect a connected/disconnected state. */
+            _setStatus(el, ok) {
+                el.style.background = ok ? "#22c55e" : "#ef4444";
+                el.title = ok ? "Connected" : "Disconnected";
+            }
+
+            /** Fetches stats and health from the server and updates the DOM. */
             async _refresh() {
                 const url = this.getAttribute("url") || "/ui/stats";
                 try {
-                    const resp = await fetch(url);
-                    const data = await resp.json();
+                    const [statsResp, healthResp] = await Promise.all([
+                        fetch(url),
+                        fetch("/ui/health"),
+                    ]);
+                    const data = await statsResp.json();
+                    const health = await healthResp.json();
 
                     const root = this.shadowRoot;
                     const uptimeStr = this._formatUptime(data.uptime_seconds);
@@ -85,6 +95,10 @@
                         });
                     }
                     this._prevCounts = Object.fromEntries(endpoints);
+
+                    // Update status indicators
+                    this._setStatus(root.getElementById("api-status"), health.api);
+                    this._setStatus(root.getElementById("db-status"), health.database);
 
                     root.getElementById("last-updated").textContent = new Date().toLocaleString();
                 } catch (e) {
@@ -118,6 +132,16 @@
                             to   { background-color: transparent; }
                         }
                         .flash { animation: flash-bg 500ms ease-out; }
+                        .status-section { margin-top: 32px; }
+                        .status-section h2 { font-size: 1.1rem; margin-bottom: 12px; }
+                        .status-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 0.95rem; }
+                        .status-dot {
+                            display: inline-block;
+                            width: 12px; height: 12px;
+                            border-radius: 50%;
+                            background: #d1d5db;
+                            flex-shrink: 0;
+                        }
                     </style>
                     <h1>Caltrain Gateway</h1>
                     <p class="meta">Uptime: <span id="uptime">-</span></p>
@@ -128,6 +152,17 @@
                         </thead>
                         <tbody id="stats"></tbody>
                     </table>
+                    <div class="status-section">
+                        <h2>Service Status</h2>
+                        <div class="status-row">
+                            <span class="status-dot" id="api-status"></span>
+                            <span>511.org API</span>
+                        </div>
+                        <div class="status-row">
+                            <span class="status-dot" id="db-status"></span>
+                            <span>Database</span>
+                        </div>
+                    </div>
                 `;
             }
         }

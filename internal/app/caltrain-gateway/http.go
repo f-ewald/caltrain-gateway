@@ -25,6 +25,11 @@ var (
 	requestGroup singleflight.Group
 	// apiBaseURL can be overridden for testing
 	apiBaseURL = defaultAPIBaseURL
+
+	// apiConnected tracks whether the 511.org API is reachable,
+	// updated on startup and during periodic service alert refreshes.
+	apiConnected   bool
+	apiConnectedMu sync.RWMutex
 )
 
 // gzipResponseWriter wraps http.ResponseWriter to provide gzip compression
@@ -327,6 +332,34 @@ func uiStatsHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// SetAPIConnected updates the API connectivity status.
+func SetAPIConnected(connected bool) {
+	apiConnectedMu.Lock()
+	defer apiConnectedMu.Unlock()
+	apiConnected = connected
+}
+
+// IsAPIConnected returns the current API connectivity status.
+func IsAPIConnected() bool {
+	apiConnectedMu.RLock()
+	defer apiConnectedMu.RUnlock()
+	return apiConnected
+}
+
+// uiHealthHandler returns the connectivity status of external dependencies as JSON.
+// No secrets or connection details are exposed.
+func uiHealthHandler(w http.ResponseWriter, r *http.Request) {
+	dbOk := false
+	if DB != nil {
+		dbOk = DB.Ping() == nil
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]any{
+		"api":      IsAPIConnected(),
+		"database": dbOk,
+	})
+}
+
 // SetupRoutes configures all HTTP routes.
 func SetupRoutes(apiKeyPool *KeyPool, secret string) {
 	http.HandleFunc("/", statsMiddleware(authMiddleware(secret, gzipMiddleware(proxyHandler(apiKeyPool)))))
@@ -338,5 +371,6 @@ func SetupRoutes(apiKeyPool *KeyPool, secret string) {
 	http.HandleFunc("/caltrain/scheduletype", statsMiddleware(authMiddleware(secret, gzipMiddleware(scheduleTypeHandler(apiKeyPool)))))
 	http.HandleFunc("/ui", uiHandler)
 	http.HandleFunc("/ui/stats", uiStatsHandler)
+	http.HandleFunc("/ui/health", uiHealthHandler)
 	http.HandleFunc("/support", statsMiddleware(logRequestMiddleware(supportHandler)))
 }
