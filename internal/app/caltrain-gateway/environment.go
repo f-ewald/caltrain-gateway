@@ -2,6 +2,7 @@ package caltraingateway
 
 import (
 	"log"
+	"net/url"
 	"os"
 	"strconv"
 )
@@ -27,6 +28,23 @@ func LoadDatabaseURLFromEnv() string {
 		log.Println("DATABASE_URL environment variable is not set. Running without database.")
 	}
 	return dbURL
+}
+
+// ParseDatabaseCredentials extracts the username and password from a PostgreSQL connection URL.
+// Returns empty strings if the URL cannot be parsed or has no credentials.
+func ParseDatabaseCredentials(dbURL string) (username, password string) {
+	if dbURL == "" {
+		return "", ""
+	}
+	u, err := url.Parse(dbURL)
+	if err != nil {
+		return "", ""
+	}
+	if u.User == nil {
+		return "", ""
+	}
+	password, _ = u.User.Password()
+	return u.User.Username(), password
 }
 
 // LoadSecretFromEnv loads the Caltrain Gateway secret from the CALTRAIN_GATEWAY_SECRET environment variable.

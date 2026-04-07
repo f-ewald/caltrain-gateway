@@ -84,7 +84,8 @@ func main() {
 	}
 	defer caltraingateway.CloseDB()
 
-	caltraingateway.SetupRoutes(apiKeyPool, secret)
+	dbUsername, dbPassword := caltraingateway.ParseDatabaseCredentials(dbURL)
+	caltraingateway.SetupRoutes(apiKeyPool, secret, dbUsername, dbPassword)
 
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {

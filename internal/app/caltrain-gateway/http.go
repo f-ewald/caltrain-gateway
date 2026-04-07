@@ -2,11 +2,14 @@ package caltraingateway
 
 import (
 	"compress/gzip"
+	"crypto/subtle"
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -15,6 +18,12 @@ import (
 
 //go:embed web/index.html
 var indexHTML []byte
+
+//go:embed web/support_list.html
+var supportListHTML string
+
+//go:embed web/support_detail.html
+var supportDetailHTML string
 
 const (
 	defaultAPIBaseURL = "http://api.511.org/"
@@ -360,8 +369,84 @@ func uiHealthHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// basicAuthMiddleware protects a handler with HTTP Basic Authentication.
+func basicAuthMiddleware(expectedUser, expectedPass string, next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user, pass, ok := r.BasicAuth()
+		if !ok ||
+			subtle.ConstantTimeCompare([]byte(user), []byte(expectedUser)) != 1 ||
+			subtle.ConstantTimeCompare([]byte(pass), []byte(expectedPass)) != 1 {
+			w.Header().Set("WWW-Authenticate", `Basic realm="Admin"`)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		next(w, r)
+	}
+}
+
+// supportListHandler renders the list of all support requests.
+func supportListHandler(w http.ResponseWriter, r *http.Request) {
+	requests, err := GetAllSupportRequests()
+	if err != nil {
+		http.Error(w, "Failed to load support requests", http.StatusInternalServerError)
+		return
+	}
+	tmpl, err := template.New("list").Parse(supportListHTML)
+	if err != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	tmpl.Execute(w, struct{ Requests []SupportRequestRow }{Requests: requests})
+}
+
+// supportDetailHandler renders the details of a single support request.
+func supportDetailHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id <= 0 {
+		http.Error(w, "Invalid or missing id parameter", http.StatusBadRequest)
+		return
+	}
+	req, err := GetSupportRequestByID(id)
+	if err != nil {
+		http.Error(w, "Failed to load support request", http.StatusInternalServerError)
+		return
+	}
+	if req == nil {
+		http.Error(w, "Support request not found", http.StatusNotFound)
+		return
+	}
+	tmpl, err := template.New("detail").Parse(supportDetailHTML)
+	if err != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	tmpl.Execute(w, req)
+}
+
+// supportDeleteHandler deletes a support request and redirects to the list page.
+func supportDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id <= 0 {
+		http.Error(w, "Invalid or missing id parameter", http.StatusBadRequest)
+		return
+	}
+	if err := DeleteSupportRequest(id); err != nil {
+		http.Error(w, "Failed to delete support request", http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/admin/support", http.StatusFound)
+}
+
 // SetupRoutes configures all HTTP routes.
-func SetupRoutes(apiKeyPool *KeyPool, secret string) {
+func SetupRoutes(apiKeyPool *KeyPool, secret, dbUsername, dbPassword string) {
 	http.HandleFunc("/", statsMiddleware(authMiddleware(secret, gzipMiddleware(proxyHandler(apiKeyPool)))))
 	http.HandleFunc("/proxy/", statsMiddleware(authMiddleware(secret, gzipMiddleware(http.StripPrefix("/proxy", proxyHandler(apiKeyPool)).ServeHTTP))))
 	http.HandleFunc("/up", healthHandler)
@@ -373,4 +458,11 @@ func SetupRoutes(apiKeyPool *KeyPool, secret string) {
 	http.HandleFunc("/ui/stats", uiStatsHandler)
 	http.HandleFunc("/ui/health", uiHealthHandler)
 	http.HandleFunc("/support", statsMiddleware(logRequestMiddleware(supportHandler)))
+
+	// Admin pages — protected by basic auth using database credentials
+	if dbUsername != "" {
+		http.HandleFunc("/admin/support", basicAuthMiddleware(dbUsername, dbPassword, supportListHandler))
+		http.HandleFunc("/admin/support/detail", basicAuthMiddleware(dbUsername, dbPassword, supportDetailHandler))
+		http.HandleFunc("/admin/support/delete", basicAuthMiddleware(dbUsername, dbPassword, supportDeleteHandler))
+	}
 }
