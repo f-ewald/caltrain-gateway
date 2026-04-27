@@ -22,7 +22,14 @@ func TestLoadServiceAlerts(t *testing.T) {
 	}
 
 	if len(sa.Entity) == 0 {
-		t.Error("Expected entities in real API response")
+		t.Fatal("Expected entities in real API response")
+	}
+	first := sa.Entity[0]
+	if first.ID == "" {
+		t.Error("Expected non-empty entity ID")
+	}
+	if len(first.Alert.InformedEntity) == 0 {
+		t.Error("Expected at least one InformedEntity on the first alert")
 	}
 }
 
@@ -77,29 +84,29 @@ func TestLoadServiceAlertsFromURL_Error(t *testing.T) {
 
 func TestParseServiceAlertsWithEntities(t *testing.T) {
 	jsonData := `{
-		"header": {
-			"gtfsRealtimeVersion": "1.0",
+		"Header": {
+			"GtfsRealtimeVersion": "1.0",
 			"incrementality": 0,
-			"timestamp": 1773636456
+			"Timestamp": 1773636456
 		},
-		"entity": [
+		"Entities": [
 			{
-				"id": "alert-2001",
-				"alert": {
-					"activePeriod": [
-						{"start": 1710000000, "end": 1710100000}
+				"Id": "alert-2001",
+				"Alert": {
+					"ActivePeriods": [
+						{"Start": 1710000000, "End": 1710100000}
 					],
-					"informedEntity": [
-						{"agencyId": "CT", "stopId": "70261"}
+					"InformedEntities": [
+						{"AgencyId": "CT", "StopId": "70261"}
 					],
 					"cause": 1,
 					"effect": 6,
-					"headerText": {
-						"translation": [
-							{"text": "Weekend track work", "language": "en"}
+					"HeaderText": {
+						"Translations": [
+							{"Text": "Weekend track work", "Language": "en"}
 						]
 					},
-					"severityLevel": 3
+					"severity_level": 3
 				}
 			}
 		]

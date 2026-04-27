@@ -502,22 +502,22 @@ func TestServiceAlertsHandler(t *testing.T) {
 
 	t.Run("filter by agency", func(t *testing.T) {
 		sa, err := parseServiceAlertsJSON([]byte(`{
-			"header": {"gtfsRealtimeVersion": "1.0", "incrementality": 0, "timestamp": 1700000000},
-			"entity": [
+			"Header": {"GtfsRealtimeVersion": "1.0", "incrementality": 0, "Timestamp": 1700000000},
+			"Entities": [
 				{
-					"id": "alert-ct",
-					"alert": {
-						"activePeriod": [{"start": 1700000000}],
-						"informedEntity": [{"agencyId": "CT"}],
+					"Id": "alert-ct",
+					"Alert": {
+						"ActivePeriods": [{"Start": 1700000000}],
+						"InformedEntities": [{"AgencyId": "CT"}],
 						"cause": 1,
 						"effect": 6
 					}
 				},
 				{
-					"id": "alert-ba",
-					"alert": {
-						"activePeriod": [{"start": 1700000000}],
-						"informedEntity": [{"agencyId": "BA"}],
+					"Id": "alert-ba",
+					"Alert": {
+						"ActivePeriods": [{"Start": 1700000000}],
+						"InformedEntities": [{"AgencyId": "BA"}],
 						"cause": 2,
 						"effect": 3
 					}
@@ -554,13 +554,13 @@ func TestServiceAlertsHandler(t *testing.T) {
 
 	t.Run("filter by agency no match", func(t *testing.T) {
 		sa, err := parseServiceAlertsJSON([]byte(`{
-			"header": {"gtfsRealtimeVersion": "1.0", "incrementality": 0, "timestamp": 1700000000},
-			"entity": [
+			"Header": {"GtfsRealtimeVersion": "1.0", "incrementality": 0, "Timestamp": 1700000000},
+			"Entities": [
 				{
-					"id": "alert-ct",
-					"alert": {
-						"activePeriod": [{"start": 1700000000}],
-						"informedEntity": [{"agencyId": "CT"}],
+					"Id": "alert-ct",
+					"Alert": {
+						"ActivePeriods": [{"Start": 1700000000}],
+						"InformedEntities": [{"AgencyId": "CT"}],
 						"cause": 1,
 						"effect": 6
 					}

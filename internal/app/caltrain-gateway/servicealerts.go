@@ -15,7 +15,7 @@ import (
 // ServiceAlertsResponse represents the root GTFS-RT service alerts response
 type ServiceAlertsResponse struct {
 	Header ServiceAlertsHeader `json:"header"`
-	Entity []ServiceAlertEntity `json:"entity"`
+	Entity []ServiceAlertEntity `json:"Entities"`
 }
 
 // ServiceAlertsHeader contains metadata about the feed
@@ -33,14 +33,14 @@ type ServiceAlertEntity struct {
 
 // ServiceAlert represents the alert details
 type ServiceAlert struct {
-	ActivePeriod    []TimeRange        `json:"activePeriod"`
-	InformedEntity  []EntitySelector   `json:"informedEntity"`
+	ActivePeriod    []TimeRange        `json:"ActivePeriods"`
+	InformedEntity  []EntitySelector   `json:"InformedEntities"`
 	Cause           int                `json:"cause"`
 	Effect          int                `json:"effect"`
 	HeaderText      *TranslatedString  `json:"headerText,omitempty"`
 	DescriptionText *TranslatedString  `json:"descriptionText,omitempty"`
 	URL             *TranslatedString  `json:"url,omitempty"`
-	SeverityLevel   int                `json:"severityLevel,omitempty"`
+	SeverityLevel   int                `json:"severity_level,omitempty"`
 }
 
 // TimeRange represents an active period with start and end timestamps
@@ -60,7 +60,7 @@ type EntitySelector struct {
 
 // TranslatedString holds translations for a text field
 type TranslatedString struct {
-	Translation []Translation `json:"translation"`
+	Translation []Translation `json:"Translations"`
 }
 
 // Translation is a single translated text
@@ -148,11 +148,21 @@ func contentHash(header, description string) string {
 // last_seen_at. Errors on individual entities are logged and skipped so a single
 // bad row does not abort the batch. No-op when resp is nil or DB is not configured.
 func persistServiceAlerts(resp *ServiceAlertsResponse) {
-	if resp == nil || DB == nil {
+	if resp == nil {
 		return
 	}
+	if DB == nil {
+		log.Printf("skipping service alerts persistence: no database configured (%d entities in response)", len(resp.Entity))
+		return
+	}
+	if len(resp.Entity) == 0 {
+		log.Println("no service alert entities to persist")
+		return
+	}
+	stored, failed, skipped := 0, 0, 0
 	for _, entity := range resp.Entity {
 		if entity.ID == "" {
+			skipped++
 			continue
 		}
 		header := pickEnglish(entity.Alert.HeaderText)
@@ -172,6 +182,10 @@ func persistServiceAlerts(resp *ServiceAlertsResponse) {
 			resp.Header.Timestamp,
 		); err != nil {
 			log.Printf("failed to persist service alert %q: %v", entity.ID, err)
+			failed++
+			continue
 		}
+		stored++
 	}
+	log.Printf("service alerts persisted: %d stored, %d failed, %d skipped (no id)", stored, failed, skipped)
 }
