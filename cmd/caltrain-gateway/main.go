@@ -33,6 +33,17 @@ func main() {
 		log.Fatal("No available API key to load timetables")
 	}
 
+	// Load the secret from environment variable
+	secret := caltraingateway.LoadSecretFromEnv()
+
+	// Initialize database (optional). Must run before any code path that
+	// persists data, so the initial service alerts fetch can write to DB.
+	dbURL := caltraingateway.LoadDatabaseURLFromEnv()
+	if err := caltraingateway.InitDB(dbURL); err != nil {
+		log.Printf("Warning: Failed to initialize database: %v", err)
+	}
+	defer caltraingateway.CloseDB()
+
 	// Load all lines and timetables
 	tc, err := loadAllTimetables(apiKey.Value)
 	if err != nil {
@@ -73,16 +84,6 @@ func main() {
 			log.Println("Service alerts refreshed successfully")
 		}
 	}()
-
-	// Load the secret from environment variable
-	secret := caltraingateway.LoadSecretFromEnv()
-
-	// Initialize database (optional)
-	dbURL := caltraingateway.LoadDatabaseURLFromEnv()
-	if err := caltraingateway.InitDB(dbURL); err != nil {
-		log.Printf("Warning: Failed to initialize database: %v", err)
-	}
-	defer caltraingateway.CloseDB()
 
 	dbUsername, dbPassword := caltraingateway.ParseDatabaseCredentials(dbURL)
 	caltraingateway.SetupRoutes(apiKeyPool, secret, dbUsername, dbPassword)
