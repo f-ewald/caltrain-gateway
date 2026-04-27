@@ -2,9 +2,12 @@ package caltraingateway
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 )
@@ -76,7 +79,9 @@ func LoadServiceAlerts(filename string) (*ServiceAlertsResponse, error) {
 	return parseServiceAlertsJSON(data)
 }
 
-// LoadServiceAlertsFromURL fetches and parses service alerts JSON from a URL
+// LoadServiceAlertsFromURL fetches and parses service alerts JSON from a URL.
+// On success it also persists each entity to the database via persistServiceAlerts;
+// the persistence step is a no-op when no database is configured.
 func LoadServiceAlertsFromURL(url string) (*ServiceAlertsResponse, error) {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -93,7 +98,13 @@ func LoadServiceAlertsFromURL(url string) (*ServiceAlertsResponse, error) {
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
-	return parseServiceAlertsJSON(data)
+	parsed, err := parseServiceAlertsJSON(data)
+	if err != nil {
+		return nil, err
+	}
+
+	persistServiceAlerts(parsed)
+	return parsed, nil
 }
 
 // parseServiceAlertsJSON parses the JSON data into a ServiceAlertsResponse
@@ -106,4 +117,61 @@ func parseServiceAlertsJSON(data []byte) (*ServiceAlertsResponse, error) {
 		return nil, fmt.Errorf("failed to parse service alerts JSON: %w", err)
 	}
 	return &alerts, nil
+}
+
+// pickEnglish returns the English translation of ts when present; otherwise it
+// falls back to the first available translation, or "" when ts has no usable text.
+func pickEnglish(ts *TranslatedString) string {
+	if ts == nil || len(ts.Translation) == 0 {
+		return ""
+	}
+	for _, t := range ts.Translation {
+		if t.Language == "en" {
+			return t.Text
+		}
+	}
+	return ts.Translation[0].Text
+}
+
+// contentHash returns a hex-encoded SHA-256 of header and description joined by
+// the unit-separator byte (0x1F) to avoid boundary collisions.
+func contentHash(header, description string) string {
+	h := sha256.New()
+	h.Write([]byte(header))
+	h.Write([]byte{0x1F})
+	h.Write([]byte(description))
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+// persistServiceAlerts upserts each entity in resp to the database. Each unique
+// (entity_id, content_hash) pair is stored once; identical refreshes only bump
+// last_seen_at. Errors on individual entities are logged and skipped so a single
+// bad row does not abort the batch. No-op when resp is nil or DB is not configured.
+func persistServiceAlerts(resp *ServiceAlertsResponse) {
+	if resp == nil || DB == nil {
+		return
+	}
+	for _, entity := range resp.Entity {
+		if entity.ID == "" {
+			continue
+		}
+		header := pickEnglish(entity.Alert.HeaderText)
+		description := pickEnglish(entity.Alert.DescriptionText)
+		urlText := pickEnglish(entity.Alert.URL)
+
+		agencyID := ""
+		if len(entity.Alert.InformedEntity) > 0 {
+			agencyID = entity.Alert.InformedEntity[0].AgencyID
+		}
+
+		hash := contentHash(header, description)
+		if err := UpsertServiceAlert(
+			entity.ID, hash, agencyID,
+			entity.Alert.Cause, entity.Alert.Effect, entity.Alert.SeverityLevel,
+			header, description, urlText,
+			resp.Header.Timestamp,
+		); err != nil {
+			log.Printf("failed to persist service alert %q: %v", entity.ID, err)
+		}
+	}
 }

@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"golang.org/x/sync/singleflight"
 )
@@ -24,6 +25,15 @@ var supportListHTML string
 
 //go:embed web/support_detail.html
 var supportDetailHTML string
+
+//go:embed web/servicealerts_list.html
+var serviceAlertsListHTML string
+
+//go:embed web/servicealerts_detail.html
+var serviceAlertsDetailHTML string
+
+//go:embed web/admin_index.html
+var adminIndexHTML []byte
 
 const (
 	defaultAPIBaseURL = "http://api.511.org/"
@@ -445,6 +455,123 @@ func supportDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/admin/support", http.StatusFound)
 }
 
+// adminIndexHandler serves the embedded admin landing page. Because the route
+// is registered as "/admin/" — a subtree pattern — this handler also receives
+// any unknown /admin/... path; those are rejected with 404 so they cannot
+// silently fall through to the index.
+func adminIndexHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/admin/" && r.URL.Path != "/admin" {
+		http.NotFound(w, r)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Write(adminIndexHTML)
+}
+
+// serviceAlertsListHandler renders the list of all persisted service alerts.
+func serviceAlertsListHandler(w http.ResponseWriter, r *http.Request) {
+	alerts, err := GetAllServiceAlerts()
+	if err != nil {
+		http.Error(w, "Failed to load service alerts", http.StatusInternalServerError)
+		return
+	}
+	tmpl, err := template.New("alerts_list").Parse(serviceAlertsListHTML)
+	if err != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	tmpl.Execute(w, struct{ Alerts []ServiceAlertRow }{Alerts: alerts})
+}
+
+// serviceAlertDetailView extends a ServiceAlertRow with derived fields used by
+// the detail template.
+type serviceAlertDetailView struct {
+	*ServiceAlertRow
+	FeedTimestampUTC string
+}
+
+// serviceAlertsDetailHandler renders the details of a single persisted alert.
+func serviceAlertsDetailHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id <= 0 {
+		http.Error(w, "Invalid or missing id parameter", http.StatusBadRequest)
+		return
+	}
+	alert, err := GetServiceAlertByID(id)
+	if err != nil {
+		http.Error(w, "Failed to load service alert", http.StatusInternalServerError)
+		return
+	}
+	if alert == nil {
+		http.Error(w, "Service alert not found", http.StatusNotFound)
+		return
+	}
+	tmpl, err := template.New("alerts_detail").Parse(serviceAlertsDetailHTML)
+	if err != nil {
+		http.Error(w, "Template error", http.StatusInternalServerError)
+		return
+	}
+	view := serviceAlertDetailView{ServiceAlertRow: alert}
+	if alert.FeedTimestamp > 0 {
+		view.FeedTimestampUTC = time.Unix(alert.FeedTimestamp, 0).UTC().Format("2006-01-02 15:04:05 MST")
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	tmpl.Execute(w, view)
+}
+
+// serviceAlertsDeleteHandler deletes a persisted alert and redirects to the list page.
+func serviceAlertsDeleteHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	idStr := r.URL.Query().Get("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil || id <= 0 {
+		http.Error(w, "Invalid or missing id parameter", http.StatusBadRequest)
+		return
+	}
+	if err := DeleteServiceAlert(id); err != nil {
+		http.Error(w, "Failed to delete service alert", http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/admin/servicealerts", http.StatusFound)
+}
+
+// serviceAlertsExportHandler streams every persisted service alert as JSONL
+// (one JSON object per line). The response uses Content-Disposition: attachment
+// so browsers offer a download dialog.
+func serviceAlertsExportHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/x-ndjson")
+	w.Header().Set("Content-Disposition", `attachment; filename="service-alerts.jsonl"`)
+
+	encoder := json.NewEncoder(w)
+	flusher, _ := w.(http.Flusher)
+
+	count := 0
+	err := StreamAllServiceAlerts(func(row ServiceAlertRow) error {
+		if err := encoder.Encode(row); err != nil {
+			return err
+		}
+		count++
+		if flusher != nil && count%200 == 0 {
+			flusher.Flush()
+		}
+		return nil
+	})
+	if err != nil {
+		// Headers are already sent by this point if any rows were written;
+		// the best we can do is log and let the client see a truncated stream.
+		fmt.Printf("service alerts export failed after %d rows: %v\n", count, err)
+		return
+	}
+	if flusher != nil {
+		flusher.Flush()
+	}
+}
+
 // SetupRoutes configures all HTTP routes.
 func SetupRoutes(apiKeyPool *KeyPool, secret, dbUsername, dbPassword string) {
 	http.HandleFunc("/", statsMiddleware(authMiddleware(secret, gzipMiddleware(proxyHandler(apiKeyPool)))))
@@ -461,8 +588,13 @@ func SetupRoutes(apiKeyPool *KeyPool, secret, dbUsername, dbPassword string) {
 
 	// Admin pages — protected by basic auth using database credentials
 	if dbUsername != "" {
+		http.HandleFunc("/admin/", basicAuthMiddleware(dbUsername, dbPassword, adminIndexHandler))
 		http.HandleFunc("/admin/support", basicAuthMiddleware(dbUsername, dbPassword, supportListHandler))
 		http.HandleFunc("/admin/support/detail", basicAuthMiddleware(dbUsername, dbPassword, supportDetailHandler))
 		http.HandleFunc("/admin/support/delete", basicAuthMiddleware(dbUsername, dbPassword, supportDeleteHandler))
+		http.HandleFunc("/admin/servicealerts", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsListHandler))
+		http.HandleFunc("/admin/servicealerts/detail", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsDetailHandler))
+		http.HandleFunc("/admin/servicealerts/delete", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsDeleteHandler))
+		http.HandleFunc("/admin/servicealerts/export", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsExportHandler))
 	}
 }

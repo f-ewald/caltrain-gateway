@@ -156,3 +156,70 @@ func TestParseServiceAlertsWithEntities(t *testing.T) {
 		t.Errorf("Expected severity 3, got %d", alert.Alert.SeverityLevel)
 	}
 }
+
+func TestPickEnglish(t *testing.T) {
+	tests := []struct {
+		name string
+		in   *TranslatedString
+		want string
+	}{
+		{"nil pointer", nil, ""},
+		{"no translations", &TranslatedString{}, ""},
+		{
+			name: "english only",
+			in: &TranslatedString{Translation: []Translation{
+				{Text: "hello", Language: "en"},
+			}},
+			want: "hello",
+		},
+		{
+			name: "multiple with english",
+			in: &TranslatedString{Translation: []Translation{
+				{Text: "hola", Language: "es"},
+				{Text: "hello", Language: "en"},
+				{Text: "bonjour", Language: "fr"},
+			}},
+			want: "hello",
+		},
+		{
+			name: "multiple without english falls back to first",
+			in: &TranslatedString{Translation: []Translation{
+				{Text: "hola", Language: "es"},
+				{Text: "bonjour", Language: "fr"},
+			}},
+			want: "hola",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := pickEnglish(tc.in)
+			if got != tc.want {
+				t.Errorf("pickEnglish(%s) = %q, want %q", tc.name, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestContentHash(t *testing.T) {
+	a := contentHash("Header A", "Description A")
+	b := contentHash("Header A", "Description A")
+	if a != b {
+		t.Errorf("identical input produced different hashes: %s vs %s", a, b)
+	}
+
+	c := contentHash("Header B", "Description A")
+	if a == c {
+		t.Errorf("different headers produced same hash: %s", a)
+	}
+
+	d := contentHash("Header A", "Description B")
+	if a == d {
+		t.Errorf("different descriptions produced same hash: %s", a)
+	}
+
+	// The unit-separator must prevent boundary collisions: "AB" + "" must not
+	// hash the same as "A" + "B".
+	if contentHash("AB", "") == contentHash("A", "B") {
+		t.Errorf("boundary collision: header/description join is not unambiguous")
+	}
+}

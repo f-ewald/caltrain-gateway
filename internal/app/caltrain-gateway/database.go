@@ -49,7 +49,7 @@ func CloseDB() {
 
 // migrateSchema creates required tables if they do not already exist.
 func migrateSchema(db *sql.DB) error {
-	_, err := db.Exec(`
+	if _, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS support_requests (
 			id         SERIAL PRIMARY KEY,
 			name       TEXT        NOT NULL,
@@ -59,8 +59,71 @@ func migrateSchema(db *sql.DB) error {
 			message    TEXT        NOT NULL,
 			created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 		)
-	`)
-	return err
+	`); err != nil {
+		return err
+	}
+
+	if _, err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS service_alerts (
+			id               SERIAL      PRIMARY KEY,
+			entity_id        TEXT        NOT NULL,
+			content_hash     TEXT        NOT NULL,
+			agency_id        TEXT,
+			cause            INT,
+			effect           INT,
+			severity_level   INT,
+			header_text      TEXT,
+			description_text TEXT,
+			url              TEXT,
+			feed_timestamp   BIGINT,
+			first_seen_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+			last_seen_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+			UNIQUE (entity_id, content_hash)
+		)
+	`); err != nil {
+		return err
+	}
+
+	if _, err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_service_alerts_last_seen_at ON service_alerts(last_seen_at)`); err != nil {
+		return err
+	}
+	if _, err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_service_alerts_agency_id ON service_alerts(agency_id)`); err != nil {
+		return err
+	}
+	return nil
+}
+
+// nullable converts an empty string to a nil any so it is stored as SQL NULL
+// rather than an empty string.
+func nullable(s string) any {
+	if s == "" {
+		return nil
+	}
+	return s
+}
+
+// nullStringValue returns the contained string or "" when the sql.NullString is invalid.
+func nullStringValue(ns sql.NullString) string {
+	if ns.Valid {
+		return ns.String
+	}
+	return ""
+}
+
+// nullInt64Value returns the contained int64 or 0 when the sql.NullInt64 is invalid.
+func nullInt64Value(ns sql.NullInt64) int64 {
+	if ns.Valid {
+		return ns.Int64
+	}
+	return 0
+}
+
+// nullInt32Value returns the contained int32 as int or 0 when the sql.NullInt32 is invalid.
+func nullInt32Value(ns sql.NullInt32) int {
+	if ns.Valid {
+		return int(ns.Int32)
+	}
+	return 0
 }
 
 // SupportRequestRow represents a support request row from the database.
@@ -137,4 +200,151 @@ func InsertSupportRequest(req *supportRequest) error {
 		req.Name, req.App, req.Email, req.Type, req.Message,
 	)
 	return err
+}
+
+// ServiceAlertRow represents a single persisted service alert variant.
+type ServiceAlertRow struct {
+	ID              int
+	EntityID        string
+	ContentHash     string
+	AgencyID        string
+	Cause           int
+	Effect          int
+	SeverityLevel   int
+	HeaderText      string
+	DescriptionText string
+	URL             string
+	FeedTimestamp   int64
+	FirstSeenAt     time.Time
+	LastSeenAt      time.Time
+}
+
+const serviceAlertColumns = `id, entity_id, content_hash, agency_id, cause, effect, severity_level, header_text, description_text, url, feed_timestamp, first_seen_at, last_seen_at`
+
+// scanServiceAlertRow scans a row from a SELECT serviceAlertColumns query.
+func scanServiceAlertRow(scanner interface {
+	Scan(dest ...any) error
+}) (ServiceAlertRow, error) {
+	var (
+		r        ServiceAlertRow
+		agency   sql.NullString
+		cause    sql.NullInt32
+		effect   sql.NullInt32
+		severity sql.NullInt32
+		header   sql.NullString
+		descr    sql.NullString
+		urlStr   sql.NullString
+		feedTs   sql.NullInt64
+	)
+	if err := scanner.Scan(
+		&r.ID, &r.EntityID, &r.ContentHash, &agency, &cause, &effect, &severity,
+		&header, &descr, &urlStr, &feedTs, &r.FirstSeenAt, &r.LastSeenAt,
+	); err != nil {
+		return r, err
+	}
+	r.AgencyID = nullStringValue(agency)
+	r.Cause = nullInt32Value(cause)
+	r.Effect = nullInt32Value(effect)
+	r.SeverityLevel = nullInt32Value(severity)
+	r.HeaderText = nullStringValue(header)
+	r.DescriptionText = nullStringValue(descr)
+	r.URL = nullStringValue(urlStr)
+	r.FeedTimestamp = nullInt64Value(feedTs)
+	return r, nil
+}
+
+// UpsertServiceAlert inserts a service alert variant or refreshes its last_seen_at
+// timestamp when an identical (entity_id, content_hash) pair already exists.
+// If no database is configured (DB is nil) the call is a no-op.
+func UpsertServiceAlert(entityID, contentHash, agencyID string,
+	cause, effect, severity int, headerText, descriptionText, url string,
+	feedTimestamp int64) error {
+	if DB == nil {
+		return nil
+	}
+	_, err := DB.Exec(
+		`INSERT INTO service_alerts (entity_id, content_hash, agency_id, cause, effect,
+			severity_level, header_text, description_text, url, feed_timestamp)
+		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		 ON CONFLICT (entity_id, content_hash)
+		 DO UPDATE SET last_seen_at = NOW()`,
+		entityID, contentHash, nullable(agencyID), cause, effect, severity,
+		nullable(headerText), nullable(descriptionText), nullable(url), feedTimestamp,
+	)
+	return err
+}
+
+// GetAllServiceAlerts returns every persisted service alert ordered by most-recently
+// seen first. Returns nil, nil when the database is not configured.
+func GetAllServiceAlerts() ([]ServiceAlertRow, error) {
+	if DB == nil {
+		return nil, nil
+	}
+	rows, err := DB.Query(`SELECT ` + serviceAlertColumns + ` FROM service_alerts ORDER BY last_seen_at DESC`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []ServiceAlertRow
+	for rows.Next() {
+		r, err := scanServiceAlertRow(rows)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, r)
+	}
+	return results, rows.Err()
+}
+
+// GetServiceAlertByID returns a single persisted alert by primary key.
+// Returns nil, nil when the database is not configured or the row is not found.
+func GetServiceAlertByID(id int) (*ServiceAlertRow, error) {
+	if DB == nil {
+		return nil, nil
+	}
+	row := DB.QueryRow(`SELECT `+serviceAlertColumns+` FROM service_alerts WHERE id = $1`, id)
+	r, err := scanServiceAlertRow(row)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &r, nil
+}
+
+// DeleteServiceAlert removes a persisted service alert by primary key.
+// If no database is configured (DB is nil) the call is a no-op.
+func DeleteServiceAlert(id int) error {
+	if DB == nil {
+		return nil
+	}
+	_, err := DB.Exec(`DELETE FROM service_alerts WHERE id = $1`, id)
+	return err
+}
+
+// StreamAllServiceAlerts iterates every persisted service alert in last_seen_at
+// descending order, invoking fn for each row. Iteration stops on the first
+// error from fn or the underlying scan. No-op (returns nil) when DB is nil.
+func StreamAllServiceAlerts(fn func(ServiceAlertRow) error) error {
+	if DB == nil {
+		return nil
+	}
+	rows, err := DB.Query(`SELECT ` + serviceAlertColumns + ` FROM service_alerts ORDER BY last_seen_at DESC`)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		r, err := scanServiceAlertRow(rows)
+		if err != nil {
+			return err
+		}
+		if err := fn(r); err != nil {
+			return err
+		}
+	}
+	return rows.Err()
 }
