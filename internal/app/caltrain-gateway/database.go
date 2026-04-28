@@ -255,19 +255,32 @@ func scanServiceAlertRow(scanner interface {
 
 // UpsertServiceAlert inserts a service alert variant or refreshes its last_seen_at
 // timestamp when an identical (entity_id, content_hash) pair already exists.
-// If no database is configured (DB is nil) the call is a no-op.
+// It performs a read-modify-write so the SERIAL id sequence is not consumed on
+// every refresh cycle for already-known alerts. If no database is configured
+// (DB is nil) the call is a no-op.
 func UpsertServiceAlert(entityID, contentHash, agencyID string,
 	cause, effect, severity int, headerText, descriptionText, url string,
 	feedTimestamp int64) error {
 	if DB == nil {
 		return nil
 	}
-	_, err := DB.Exec(
+	var existingID int
+	err := DB.QueryRow(
+		`SELECT id FROM service_alerts WHERE entity_id = $1 AND content_hash = $2`,
+		entityID, contentHash,
+	).Scan(&existingID)
+	if err == nil {
+		_, err = DB.Exec(`UPDATE service_alerts SET last_seen_at = NOW() WHERE id = $1`, existingID)
+		return err
+	}
+	if err != sql.ErrNoRows {
+		return err
+	}
+	_, err = DB.Exec(
 		`INSERT INTO service_alerts (entity_id, content_hash, agency_id, cause, effect,
 			severity_level, header_text, description_text, url, feed_timestamp)
 		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-		 ON CONFLICT (entity_id, content_hash)
-		 DO UPDATE SET last_seen_at = NOW()`,
+		 ON CONFLICT (entity_id, content_hash) DO NOTHING`,
 		entityID, contentHash, nullable(agencyID), cause, effect, severity,
 		nullable(headerText), nullable(descriptionText), nullable(url), feedTimestamp,
 	)
