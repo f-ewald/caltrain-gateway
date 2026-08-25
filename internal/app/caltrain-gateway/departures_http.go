@@ -4,7 +4,6 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"net/url"
@@ -292,13 +291,8 @@ func buildDeparturesPage(rows []TrainDepartureRow, filter DepartureFilter, page,
 
 // renderDeparturesPage writes the list template.
 func renderDeparturesPage(w http.ResponseWriter, page departuresPage) {
-	tmpl, err := template.New("departures_list").Parse(departuresListHTML)
-	if err != nil {
-		http.Error(w, "Template error", http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	tmpl.Execute(w, page)
+	renderAdminPage(w, "departures_list", departuresListHTML,
+		newAdminPage(tabDepartures, "Train departures", page))
 }
 
 // departuresDetailHandler renders a single recorded departure.
@@ -316,13 +310,9 @@ func departuresDetailHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Departure not found", http.StatusNotFound)
 		return
 	}
-	tmpl, err := template.New("departures_detail").Parse(departuresDetailHTML)
-	if err != nil {
-		http.Error(w, "Template error", http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	tmpl.Execute(w, departureView{TrainDepartureRow: row})
+	renderAdminPage(w, "departures_detail", departuresDetailHTML,
+		newAdminPage(tabDepartures, "Train departure",
+			departureView{TrainDepartureRow: row}))
 }
 
 // departuresDeleteHandler removes a departure and redirects to the list.

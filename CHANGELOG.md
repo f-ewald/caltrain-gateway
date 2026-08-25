@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Unify the admin panel under a shared tabbed layout; `/admin/` now redirects to the first tab
 - Add `PORT` to configure the listen port, defaulting to `8080`. It was previously
   documented but not implemented, so setting it had no effect.
 - Track observed train departure times in the `train_departures` table by polling the 511 SIRI

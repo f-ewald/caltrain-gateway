@@ -1,77 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Service Alerts</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            color: #333;
-            max-width: min(900px, 90vw);
-            margin: 40px auto;
-            padding: 0 20px;
-            box-sizing: border-box;
-        }
-        h1 { font-size: 1.4rem; margin-bottom: 16px; }
-        .meta { color: #666; font-size: 0.9rem; margin-bottom: 24px; }
-        .actions { margin-bottom: 16px; }
-        .download-btn {
-            display: inline-block; background: #2563eb; color: #fff;
-            padding: 6px 12px; border-radius: 4px; font-size: 0.9rem;
-            text-decoration: none;
-        }
-        .download-btn:hover { background: #1d4ed8; text-decoration: none; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 8px 12px; }
-        th { border-bottom: 2px solid #ddd; font-size: 0.85rem; text-transform: uppercase; color: #666; }
-        td { border-bottom: 1px solid #eee; vertical-align: top; }
-        tr:nth-child(even) td { background: #fafafa; }
-        a { color: #2563eb; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        .empty { color: #999; font-style: italic; padding: 24px 0; }
-        .header-preview { max-width: 360px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .delete-form { display: inline; }
-        .delete-btn {
-            background: none; border: none; color: #dc2626; cursor: pointer;
-            font-size: 0.9rem; padding: 2px 6px;
-        }
-        .delete-btn:hover { text-decoration: underline; }
-    </style>
-</head>
-<body>
-    <h1>Service Alerts</h1>
-    <p class="meta">{{len .Alerts}} alert{{if ne (len .Alerts) 1}}s{{end}}</p>
-    <p class="actions"><a class="download-btn" href="/admin/servicealerts/export">Download all (JSONL)</a></p>
-    {{if .Alerts}}
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Last seen</th>
-                <th>Agency</th>
-                <th>Severity</th>
-                <th>Entity ID</th>
-                <th>Header</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {{range .Alerts}}
-            <tr>
-                <td><a href="/admin/servicealerts/detail?id={{.ID}}">{{.ID}}</a></td>
-                <td>{{.LastSeenAt.Format "2006-01-02 15:04"}}</td>
-                <td>{{if .AgencyID}}{{.AgencyID}}{{else}}&mdash;{{end}}</td>
-                <td>{{.SeverityLevel}}</td>
-                <td>{{.EntityID}}</td>
-                <td class="header-preview">{{.HeaderText}}</td>
-                <td><form class="delete-form" method="POST" action="/admin/servicealerts/delete?id={{.ID}}"><button type="submit" class="delete-btn">Delete</button></form></td>
-            </tr>
-            {{end}}
-        </tbody>
-    </table>
-    {{else}}
-    <p class="empty">No service alerts found.</p>
-    {{end}}
-</body>
-</html>
+{{define "content"}}
+{{with .Data}}
+<h1>Service alerts</h1>
+<p class="meta">{{len .Alerts}} alert{{if ne (len .Alerts) 1}}s{{end}}</p>
+<p class="actions"><a class="btn" href="/admin/servicealerts/export">Download all (JSONL)</a></p>
+{{if .Alerts}}
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Last seen</th>
+            <th>Agency</th>
+            <th>Severity</th>
+            <th>Entity ID</th>
+            <th>Header</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {{range .Alerts}}
+        <tr>
+            <td><a href="/admin/servicealerts/detail?id={{.ID}}">{{.ID}}</a></td>
+            <td class="nowrap">{{.LastSeenAt.Format "2006-01-02 15:04"}}</td>
+            <td>{{if .AgencyID}}{{.AgencyID}}{{else}}&mdash;{{end}}</td>
+            <td>{{.SeverityLevel}}</td>
+            <td>{{.EntityID}}</td>
+            <td class="truncate">{{.HeaderText}}</td>
+            <td><form class="delete-form" method="POST" action="/admin/servicealerts/delete?id={{.ID}}"><button type="submit" class="delete-btn">Delete</button></form></td>
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+{{else}}
+<p class="empty">No service alerts found.</p>
+{{end}}
+{{end}}
+{{end}}

@@ -49,6 +49,7 @@ Go HTTP service that proxies and caches requests to the 511.org transit API for 
   - **departures.go** — `DepartureTracker`: polls StopMonitoring, derives operating day / day of week / delays, and finalizes rows whose stop visit has left the feed
   - **departures_store.go** — `train_departures` row model and queries (converging upsert, paginated list, export stream, finalize sweep)
   - **departures_http.go** — Admin handlers, view model and formatting for `/admin/departures`
+  - **admin.go** — Shared admin chrome: the tab definitions, the `adminPage` wrapper and `renderAdminPage`, which renders a page's `content` block inside `web/admin_layout.html`. Every admin page goes through it, so layout and styling live in one place.
   - **lines.go** — Transit line model and loading (from file or URL)
   - **ratelimiter.go** — `KeyPool` for round-robin API key rotation with per-key rate limiting (`golang.org/x/time/rate`)
   - **stops.go** — Static mapping of GTFS stop IDs to parent station names (e.g., `"70011"` → `"san_francisco"`)

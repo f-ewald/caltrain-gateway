@@ -1,35 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Support Request #{{.ID}}</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            color: #333;
-            max-width: 640px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-        h1 { font-size: 1.4rem; margin-bottom: 4px; }
-        .back { font-size: 0.9rem; margin-bottom: 24px; }
-        a { color: #2563eb; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        dl { margin: 0; }
-        dt { font-size: 0.85rem; text-transform: uppercase; color: #666; margin-top: 16px; }
-        dd { margin: 4px 0 0 0; font-size: 1rem; }
-        .message { white-space: pre-wrap; background: #f9fafb; padding: 12px; border-radius: 4px; border: 1px solid #eee; }
-        .delete-btn {
-            background: none; border: 1px solid #dc2626; color: #dc2626; cursor: pointer;
-            font-size: 0.9rem; padding: 6px 12px; border-radius: 4px; margin-top: 24px;
-        }
-        .delete-btn:hover { background: #dc2626; color: #fff; }
-    </style>
-</head>
-<body>
-    <h1>Support Request #{{.ID}}</h1>
-    <p class="back"><a href="/admin/support">&larr; Back to list</a></p>
+{{define "content"}}
+{{with .Data}}
+<h1>Support request #{{.ID}}</h1>
+<p class="back"><a href="/admin/support">&larr; Back to support requests</a></p>
+<div class="detail">
     <dl>
         <dt>Date</dt>
         <dd>{{.CreatedAt.Format "2006-01-02 15:04:05 MST"}}</dd>
@@ -49,8 +22,10 @@
         <dt>Message</dt>
         <dd class="message">{{.Message}}</dd>
     </dl>
-    <form method="POST" action="/admin/support/delete?id={{.ID}}">
-        <button type="submit" class="delete-btn">Delete request</button>
+    <form method="POST" action="/admin/support/delete?id={{.ID}}"
+          onsubmit="return confirm('Delete this support request?');">
+        <button type="submit" class="delete-btn-lg">Delete request</button>
     </form>
-</body>
-</html>
+</div>
+{{end}}
+{{end}}

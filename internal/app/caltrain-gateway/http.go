@@ -6,7 +6,6 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"io"
 	"net/http"
 	"strconv"
@@ -31,9 +30,6 @@ var serviceAlertsListHTML string
 
 //go:embed web/servicealerts_detail.html
 var serviceAlertsDetailHTML string
-
-//go:embed web/admin_index.html
-var adminIndexHTML []byte
 
 const (
 	defaultAPIBaseURL = "http://api.511.org/"
@@ -401,13 +397,9 @@ func supportListHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to load support requests", http.StatusInternalServerError)
 		return
 	}
-	tmpl, err := template.New("list").Parse(supportListHTML)
-	if err != nil {
-		http.Error(w, "Template error", http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	tmpl.Execute(w, struct{ Requests []SupportRequestRow }{Requests: requests})
+	renderAdminPage(w, "support_list", supportListHTML,
+		newAdminPage(tabSupport, "Support requests",
+			struct{ Requests []SupportRequestRow }{Requests: requests}))
 }
 
 // supportDetailHandler renders the details of a single support request.
@@ -427,13 +419,8 @@ func supportDetailHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Support request not found", http.StatusNotFound)
 		return
 	}
-	tmpl, err := template.New("detail").Parse(supportDetailHTML)
-	if err != nil {
-		http.Error(w, "Template error", http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	tmpl.Execute(w, req)
+	renderAdminPage(w, "support_detail", supportDetailHTML,
+		newAdminPage(tabSupport, "Support request", req))
 }
 
 // supportDeleteHandler deletes a support request and redirects to the list page.
@@ -456,16 +443,16 @@ func supportDeleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // adminIndexHandler serves the embedded admin landing page. Because the route
+// adminIndexHandler redirects the admin root to the first tab. Because the route
 // is registered as "/admin/" — a subtree pattern — this handler also receives
 // any unknown /admin/... path; those are rejected with 404 so they cannot
-// silently fall through to the index.
+// silently fall through.
 func adminIndexHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/admin/" && r.URL.Path != "/admin" {
 		http.NotFound(w, r)
 		return
 	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Write(adminIndexHTML)
+	http.Redirect(w, r, adminTabs[0].Href, http.StatusFound)
 }
 
 // serviceAlertsListHandler renders the list of all persisted service alerts.
@@ -475,13 +462,9 @@ func serviceAlertsListHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to load service alerts", http.StatusInternalServerError)
 		return
 	}
-	tmpl, err := template.New("alerts_list").Parse(serviceAlertsListHTML)
-	if err != nil {
-		http.Error(w, "Template error", http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	tmpl.Execute(w, struct{ Alerts []ServiceAlertRow }{Alerts: alerts})
+	renderAdminPage(w, "servicealerts_list", serviceAlertsListHTML,
+		newAdminPage(tabServiceAlerts, "Service alerts",
+			struct{ Alerts []ServiceAlertRow }{Alerts: alerts}))
 }
 
 // serviceAlertDetailView extends a ServiceAlertRow with derived fields used by
@@ -508,17 +491,12 @@ func serviceAlertsDetailHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Service alert not found", http.StatusNotFound)
 		return
 	}
-	tmpl, err := template.New("alerts_detail").Parse(serviceAlertsDetailHTML)
-	if err != nil {
-		http.Error(w, "Template error", http.StatusInternalServerError)
-		return
-	}
 	view := serviceAlertDetailView{ServiceAlertRow: alert}
 	if alert.FeedTimestamp > 0 {
 		view.FeedTimestampUTC = time.Unix(alert.FeedTimestamp, 0).UTC().Format("2006-01-02 15:04:05 MST")
 	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	tmpl.Execute(w, view)
+	renderAdminPage(w, "servicealerts_detail", serviceAlertsDetailHTML,
+		newAdminPage(tabServiceAlerts, "Service alert", view))
 }
 
 // serviceAlertsDeleteHandler deletes a persisted alert and redirects to the list page.
