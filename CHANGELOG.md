@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.4.0 (2026-08-25)
 
 - Fix departure polling aborting on the live 511 feed, which sends `""` for boolean fields.
   Because the feed is fetched as one agency-wide document, this discarded every train in the
@@ -18,6 +18,48 @@
 - Add `DEPARTURE_TRACKING_ENABLED` and `DEPARTURE_POLL_INTERVAL` configuration
 - Embed the timezone database in the binary so operating-day calculations are correct on the
   tzdata-less Alpine runtime image
+
+## v1.3.4 (2026-05-04)
+
+- Harmonize the header design across the support and service alert list pages
+
+## v1.3.3 (2026-04-28)
+
+- Avoid consuming the ID sequence when a service alert refresh changes nothing; an unchanged
+  alert now updates `last_seen_at` instead of advancing the `SERIAL` sequence
+
+## v1.3.2 (2026-04-27)
+
+- Fix the service alerts JSON field mapping so entities and nested translations decode correctly
+- Update the example fixture and tests to match the real API response
+
+## v1.3.1 (2026-04-27)
+
+- Initialize the database before the first service alerts fetch, so alerts retrieved during
+  startup are persisted instead of silently dropped
+
+## v1.3.0 (2026-04-27)
+
+- Persist GTFS-RT service alerts to the `service_alerts` table, deduplicated by entity ID and
+  content hash so identical refreshes only update `last_seen_at`
+- Add admin pages and a JSONL export for persisted alerts
+- Add an admin landing page linking the available sections
+
+## v1.2.3 (2026-04-07)
+
+- Add admin pages to list, view and delete submitted support requests
+- Protect the admin routes with basic auth using the database credentials
+- Parse the database username and password out of `DATABASE_URL`
+
+## v1.2.2 (2026-04-07)
+
+- Answer CORS preflight `OPTIONS` requests on `/support` instead of rejecting them
+
+## v1.2.1 (2026-04-07)
+
+- Report 511 API and database connectivity on the statistics dashboard
+- Expose API key pool availability through `KeyPool.HasKeys`
+- Add `CHANGELOG.md`
 
 ## v1.2.0 (2026-04-05)
 
