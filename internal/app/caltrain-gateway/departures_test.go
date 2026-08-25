@@ -707,3 +707,97 @@ func TestStoreFunctionsAreNoOpWithoutDatabase(t *testing.T) {
 }
 
 func intPtr(value int) *int { return &value }
+
+// TestParseStopMonitoringTolerantScalars covers the scalar encodings observed
+// from the live 511 feed. A decode failure here would be severe: the feed is
+// fetched as one agency-wide document, so a single odd field would discard
+// every train in the response.
+//
+// The empty-string boolean is a real regression: 511 sends "Monitored": "",
+// which aborted the entire poll with
+// `invalid boolean string "": strconv.ParseBool: parsing "": invalid syntax`.
+func TestParseStopMonitoringTolerantScalars(t *testing.T) {
+	tests := []struct {
+		name        string
+		call        string
+		journey     string
+		wantTrain   string
+		wantStop    string
+		wantAtStop  bool
+		wantMonitor bool
+	}{
+		{
+			name:      "empty string booleans",
+			journey:   `"Monitored":"","VehicleJourneyName":"401"`,
+			call:      `"StopPointRef":"70021","VehicleAtStop":""`,
+			wantTrain: "401",
+			wantStop:  "70021",
+		},
+		{
+			name:      "whitespace only boolean",
+			journey:   `"Monitored":"  ","VehicleJourneyName":"401"`,
+			call:      `"StopPointRef":"70021","VehicleAtStop":" "`,
+			wantTrain: "401",
+			wantStop:  "70021",
+		},
+		{
+			name:      "unrecognised boolean word",
+			journey:   `"Monitored":"maybe","VehicleJourneyName":"401"`,
+			call:      `"StopPointRef":"70021","VehicleAtStop":"Y"`,
+			wantTrain: "401",
+			wantStop:  "70021",
+		},
+		{
+			name:        "numeric boolean strings",
+			journey:     `"Monitored":"1","VehicleJourneyName":"401"`,
+			call:        `"StopPointRef":"70021","VehicleAtStop":"0"`,
+			wantTrain:   "401",
+			wantMonitor: true,
+			wantStop:    "70021",
+		},
+		{
+			name:      "numeric stop and train identifiers",
+			journey:   `"VehicleJourneyName":401`,
+			call:      `"StopPointRef":70021`,
+			wantTrain: "401",
+			wantStop:  "70021",
+		},
+		{
+			name:      "object where a string is expected",
+			journey:   `"VehicleJourneyName":"401","LineRef":{"ref":"Local"}`,
+			call:      `"StopPointRef":"70021"`,
+			wantTrain: "401",
+			wantStop:  "70021",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			payload := `{"ServiceDelivery":{"StopMonitoringDelivery":{"MonitoredStopVisit":[
+				{"MonitoringRef":"70021","MonitoredVehicleJourney":{` + tt.journey +
+				`,"MonitoredCall":{` + tt.call + `}}}]}}}`
+
+			response, err := parseStopMonitoringJSON([]byte(payload))
+			if err != nil {
+				t.Fatalf("parsing must not fail, got: %v", err)
+			}
+			visits := response.Visits()
+			if len(visits) != 1 {
+				t.Fatalf("expected 1 visit, got %d", len(visits))
+			}
+			journey := visits[0].MonitoredVehicleJourney
+			if got := journey.TrainNumber(); got != tt.wantTrain {
+				t.Errorf("expected train %q, got %q", tt.wantTrain, got)
+			}
+			if got := string(journey.MonitoredCall.StopPointRef); got != tt.wantStop {
+				t.Errorf("expected stop %q, got %q", tt.wantStop, got)
+			}
+			if bool(journey.Monitored) != tt.wantMonitor {
+				t.Errorf("expected Monitored %v, got %v", tt.wantMonitor, bool(journey.Monitored))
+			}
+			if bool(journey.MonitoredCall.VehicleAtStop) != tt.wantAtStop {
+				t.Errorf("expected VehicleAtStop %v", tt.wantAtStop)
+			}
+		})
+	}
+}

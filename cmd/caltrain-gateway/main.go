@@ -46,7 +46,12 @@ func main() {
 	// persists data, so the initial service alerts fetch can write to DB.
 	dbURL := caltraingateway.LoadDatabaseURLFromEnv()
 	if err := caltraingateway.InitDB(dbURL); err != nil {
+		// DATABASE_URL was supplied but unusable. Say so explicitly, otherwise
+		// the only clue is a later "no database" message that reads as though
+		// none had been configured at all.
 		log.Printf("Warning: Failed to initialize database: %v", err)
+		log.Println("Warning: DATABASE_URL is set but the connection failed. Continuing WITHOUT a database: " +
+			"nothing will be persisted and departure tracking stays disabled.")
 	}
 	defer caltraingateway.CloseDB()
 

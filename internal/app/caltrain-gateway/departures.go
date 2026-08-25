@@ -199,10 +199,11 @@ func NewDepartureTracker(pool *KeyPool, interval time.Duration) *DepartureTracke
 // Start runs the poll and finalize loops. It returns immediately; both loops run
 // in their own goroutines, with an initial poll so data is recorded at startup
 // rather than after the first interval elapses. Polling is skipped entirely when
-// no database is configured, since there is nowhere to persist to.
+// there is no usable database connection — whether none was configured or the
+// connection failed — since there is nowhere to persist to.
 func (t *DepartureTracker) Start() {
 	if DB == nil {
-		log.Println("Departure tracking disabled: no database configured")
+		log.Println("Departure tracking disabled: no usable database connection")
 		return
 	}
 	if !t.pool.HasKeys() {

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Fix departure polling aborting on the live 511 feed, which sends `""` for boolean fields.
+  Because the feed is fetched as one agency-wide document, this discarded every train in the
+  response, so no departures were recorded at all. Scalar decoding is now total.
+- Report a failed database connection clearly at startup. A bad `DATABASE_URL` previously
+  produced only a warning followed by "no database configured", which read as though none
+  had been supplied at all.
 - Unify the admin panel under a shared tabbed layout; `/admin/` now redirects to the first tab
 - Add `PORT` to configure the listen port, defaulting to `8080`. It was previously
   documented but not implemented, so setting it had no effect.

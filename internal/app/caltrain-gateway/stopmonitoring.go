@@ -9,14 +9,20 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // errRateLimited reports that the upstream API rejected a request because the
 // key's quota is exhausted, so the caller should back off rather than retry.
 var errRateLimited = errors.New("511 API rate limit exceeded")
 
-// flexString unmarshals a JSON value that SIRI producers may emit either as a
-// plain string or as a single-element array of strings. A JSON null decodes to "".
+// flexString unmarshals a JSON value that SIRI producers encode inconsistently:
+// as a plain string, a single-element array, or a bare number. Nulls, objects
+// and empty input decode to "".
+//
+// This never fails. The feed is fetched as one agency-wide document, so
+// returning an error would discard every train in the response over a single
+// odd field.
 type flexString string
 
 func (s *flexString) UnmarshalJSON(data []byte) error {
@@ -25,26 +31,42 @@ func (s *flexString) UnmarshalJSON(data []byte) error {
 		*s = ""
 		return nil
 	}
-	if trimmed[0] == '[' {
-		var list []string
+	switch trimmed[0] {
+	case '"':
+		var single string
+		if err := json.Unmarshal(trimmed, &single); err != nil {
+			*s = ""
+			return nil
+		}
+		*s = flexString(single)
+	case '[':
+		var list []flexString
 		if err := json.Unmarshal(trimmed, &list); err != nil {
-			return err
+			*s = ""
+			return nil
 		}
 		if len(list) > 0 {
-			*s = flexString(list[0])
+			*s = list[0]
 		}
-		return nil
+	case '{':
+		*s = ""
+	default:
+		// A bare number or literal: keep its exact source text so an ID such as
+		// 70011 does not gain a float representation.
+		*s = flexString(trimmed)
 	}
-	var single string
-	if err := json.Unmarshal(trimmed, &single); err != nil {
-		return err
-	}
-	*s = flexString(single)
 	return nil
 }
 
-// flexBool unmarshals a JSON boolean that some SIRI producers emit as a quoted
-// string ("true"/"false"). A JSON null decodes to false.
+// flexBool unmarshals a JSON boolean that SIRI producers may emit as a quoted
+// string ("true"/"false"), as an empty string meaning "no value", or omit
+// entirely.
+//
+// Anything unrecognised decodes to false, and never as an error. False is the
+// conservative reading for both fields that use this type: Monitored=false
+// marks a prediction as untrustworthy and VehicleAtStop=false means arrival was
+// never confirmed, so an unknown value degrades data quality rather than
+// overstating it. Failing instead would reject the entire agency-wide response.
 type flexBool bool
 
 func (b *flexBool) UnmarshalJSON(data []byte) error {
@@ -56,18 +78,17 @@ func (b *flexBool) UnmarshalJSON(data []byte) error {
 	if trimmed[0] == '"' {
 		var raw string
 		if err := json.Unmarshal(trimmed, &raw); err != nil {
-			return err
+			*b = false
+			return nil
 		}
-		parsed, err := strconv.ParseBool(raw)
-		if err != nil {
-			return fmt.Errorf("invalid boolean string %q: %w", raw, err)
-		}
-		*b = flexBool(parsed)
+		parsed, err := strconv.ParseBool(strings.TrimSpace(raw))
+		*b = flexBool(err == nil && parsed)
 		return nil
 	}
 	var parsed bool
 	if err := json.Unmarshal(trimmed, &parsed); err != nil {
-		return err
+		*b = false
+		return nil
 	}
 	*b = flexBool(parsed)
 	return nil
