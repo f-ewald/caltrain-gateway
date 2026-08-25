@@ -120,3 +120,36 @@ func TestLoadSecretFromEnv(t *testing.T) {
 		})
 	}
 }
+
+func TestLoadPortFromEnv(t *testing.T) {
+	tests := []struct {
+		name     string
+		value    string
+		setEnv   bool
+		expected string
+	}{
+		{"unset", "", false, "8080"},
+		{"empty", "", true, "8080"},
+		{"valid port", "9090", true, "9090"},
+		{"whitespace trimmed", "  3000  ", true, "3000"},
+		{"lowest valid", "1", true, "1"},
+		{"highest valid", "65535", true, "65535"},
+		{"not a number", "http", true, "8080"},
+		{"zero rejected", "0", true, "8080"},
+		{"above range", "65536", true, "8080"},
+		{"negative", "-1", true, "8080"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			os.Unsetenv("PORT")
+			if tt.setEnv {
+				os.Setenv("PORT", tt.value)
+				defer os.Unsetenv("PORT")
+			}
+			if got := LoadPortFromEnv(); got != tt.expected {
+				t.Errorf("expected %q, got %q", tt.expected, got)
+			}
+		})
+	}
+}

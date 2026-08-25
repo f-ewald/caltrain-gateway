@@ -96,7 +96,7 @@ func main() {
 
 	startDepartureTracking(apiKeyPool)
 
-	listener, err := net.Listen("tcp", ":8080")
+	listener, err := net.Listen("tcp", ":"+caltraingateway.LoadPortFromEnv())
 	if err != nil {
 		log.Fatal(err)
 	}

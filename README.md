@@ -40,12 +40,15 @@ go build -o caltrain-gateway ./cmd/caltrain-gateway
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `PORT` | Server port | `8080` |
+| `PORT` | TCP port the server listens on | `8080` |
 | `FIVEONEONE_API_KEY_1` | 511.org API key (add `_2`, `_3`, … for more) | — |
 | `CALTRAIN_GATEWAY_SECRET` | Secret for `X-API-Key` authentication | — |
 | `DATABASE_URL` | PostgreSQL connection string; omit to run without a database | — |
 | `DEPARTURE_TRACKING_ENABLED` | Record observed departure times | `true` |
 | `DEPARTURE_POLL_INTERVAL` | How often to poll the real-time feed (minimum `1m`) | `2m` |
+
+`CALTRAIN_TEST_DATABASE_URL` is read only by the test suite; see the database
+integration tests, which skip unless it is set.
 
 ## API Endpoints
 

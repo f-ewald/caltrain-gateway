@@ -37,7 +37,7 @@ Copy `.env.example` to `.env`. Required variables:
 
 ## Architecture
 
-Go HTTP service that proxies and caches requests to the 511.org transit API for Caltrain data. Listens on port 8080.
+Go HTTP service that proxies and caches requests to the 511.org transit API for Caltrain data. Listens on the port given by `PORT`, defaulting to 8080.
 
 ### Package Structure
 

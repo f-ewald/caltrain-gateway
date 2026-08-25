@@ -5,10 +5,14 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
 const (
+	// defaultPort is the TCP port the server listens on when PORT is unset.
+	defaultPort = "8080"
+
 	// defaultDeparturePollInterval keeps the poller at 30 requests/hour, leaving
 	// headroom within 511's 60 requests/hour per-key quota for proxy traffic.
 	defaultDeparturePollInterval = 2 * time.Minute
@@ -17,6 +21,22 @@ const (
 	// exhaust the hourly quota on its own.
 	minDeparturePollInterval = time.Minute
 )
+
+// LoadPortFromEnv loads the TCP listen port from the PORT environment variable.
+// Returns defaultPort when PORT is unset, or when it is not a valid port number,
+// so a typo degrades to a working server rather than a startup failure.
+func LoadPortFromEnv() string {
+	raw := strings.TrimSpace(os.Getenv("PORT"))
+	if raw == "" {
+		return defaultPort
+	}
+	port, err := strconv.Atoi(raw)
+	if err != nil || port < 1 || port > 65535 {
+		log.Printf("Invalid PORT value %q, using %s", raw, defaultPort)
+		return defaultPort
+	}
+	return raw
+}
 
 // LoadAPIKeysFromEnv loads API keys from environment variables named FIVEONEONE_API_KEY_1, FIVEONEONE_API_KEY_2, etc.
 func LoadAPIKeysFromEnv() []string {
