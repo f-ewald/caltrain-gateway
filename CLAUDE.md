@@ -17,6 +17,11 @@ go test ./...
 # Run a single test
 go test ./internal/app/caltrain-gateway/ -run TestFunctionName
 
+# Run the database integration tests (skipped by default).
+# Point at a scratch database; the departure tests truncate train_departures.
+CALTRAIN_TEST_DATABASE_URL="postgres://localhost:5432/caltrain_test?sslmode=disable" \
+  go test ./internal/app/caltrain-gateway/
+
 # Docker build
 docker build -t caltrain-gateway .
 ```
@@ -27,6 +32,8 @@ Copy `.env.example` to `.env`. Required variables:
 - `FIVEONEONE_API_KEY_1` (and optionally `_2`, `_3`, etc.) — 511.org API keys
 - `CALTRAIN_GATEWAY_SECRET` — Secret for `X-API-Key` header authentication (optional, skipped if empty)
 - `DATABASE_URL` — PostgreSQL connection string (optional, e.g. `postgres://user:pass@localhost:5432/caltrain?sslmode=disable`). If empty, the app runs without a database.
+- `DEPARTURE_TRACKING_ENABLED` — Record observed departure times (optional, default `true`). Automatically skipped when no database is configured.
+- `DEPARTURE_POLL_INTERVAL` — Real-time poll interval as a Go duration (optional, default `2m`, clamped to a `1m` floor).
 
 ## Architecture
 
@@ -38,6 +45,10 @@ Go HTTP service that proxies and caches requests to the 511.org transit API for 
 - `internal/app/caltrain-gateway/` — All application logic in a single package (`caltraingateway`):
   - **http.go** — HTTP handlers, middleware stack (logging, auth, gzip), API proxy with response caching and request collapsing via `singleflight`
   - **timetable.go** — Timetable data model (deep struct hierarchy mirroring 511 API JSON), parsing, and departure queries by stop/weekday. `TimetableCollection` aggregates multiple line timetables.
+  - **stopmonitoring.go** — SIRI StopMonitoring model and parsing for the real-time feed. Includes tolerant `flexString`/`flexBool` decoders because SIRI producers vary in how they encode scalars.
+  - **departures.go** — `DepartureTracker`: polls StopMonitoring, derives operating day / day of week / delays, and finalizes rows whose stop visit has left the feed
+  - **departures_store.go** — `train_departures` row model and queries (converging upsert, paginated list, export stream, finalize sweep)
+  - **departures_http.go** — Admin handlers, view model and formatting for `/admin/departures`
   - **lines.go** — Transit line model and loading (from file or URL)
   - **ratelimiter.go** — `KeyPool` for round-robin API key rotation with per-key rate limiting (`golang.org/x/time/rate`)
   - **stops.go** — Static mapping of GTFS stop IDs to parent station names (e.g., `"70011"` → `"san_francisco"`)
@@ -55,6 +66,26 @@ Go HTTP service that proxies and caches requests to the 511.org transit API for 
 1. Requests go through middleware chain: auth/logging (`X-API-Key`) → gzip
 2. The proxy handler checks cache → uses `singleflight` for request collapsing → picks an API key from the pool → forwards to 511.org → caches 200 responses
 3. `/caltrain/timetable` serves pre-loaded timetable data (loaded at startup), filtered by optional `weekday` and `station` query params
+
+### Departure Tracking
+
+`DepartureTracker` polls the agency-wide SIRI StopMonitoring feed (default every 2 minutes) and
+converges one `train_departures` row per `(service_date, train_number, stop_id)`.
+
+Key constraints to keep in mind when changing this code:
+
+- **Departures are inferred.** 511 leaves `ActualDepartureTime` null, so the stored departure is
+  the last `ExpectedDepartureTime` seen before the stop visit left the feed. Do not rename columns
+  or docs in a way that implies the value is directly reported.
+- **Finalization must be outage-guarded.** `Finalize` skips the sweep when the last successful poll
+  is older than the grace window; otherwise an API outage would finalize every live row at a stale
+  prediction.
+- **Dates use the operating day** (3am Pacific boundary) so post-midnight trains stay on the day
+  their run began, and `day_of_week` derives from that date, never from the UTC timestamp.
+- **`main.go` must keep the `_ "time/tzdata"` import.** The runtime image is a bare Alpine with no
+  tzdata, so without it every timezone lookup silently falls back to UTC in production.
+- **API quota is 60 requests/hour per key across all endpoints.** Keep the poll interval at or
+  above the 1-minute floor.
 
 ### CI/CD
 

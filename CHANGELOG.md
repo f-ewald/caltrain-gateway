@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Track observed train departure times in the `train_departures` table by polling the 511 SIRI
+  StopMonitoring feed, recording scheduled vs. observed times, delays, station, direction, line,
+  operating day and day of week for delay analysis
+- Add paginated admin pages and a JSONL export for recorded departures under `/admin/departures`
+- Add `DEPARTURE_TRACKING_ENABLED` and `DEPARTURE_POLL_INTERVAL` configuration
+- Embed the timezone database in the binary so operating-day calculations are correct on the
+  tzdata-less Alpine runtime image
+
 ## v1.2.0 (2026-04-05)
 
 - Add POST `/support` endpoint for support/feedback submissions

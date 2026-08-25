@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Departure {{.TrainNumber}} @ {{.StopID}}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #333;
+            max-width: 760px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        h1 { font-size: 1.3rem; margin-bottom: 20px; }
+        a { color: #2563eb; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .nav { margin-bottom: 20px; font-size: 0.9rem; }
+        table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+        th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+        th { color: #666; font-weight: 600; width: 240px; }
+        .late { color: #b91c1c; font-weight: 600; }
+        .early { color: #047857; }
+        .note {
+            margin: 20px 0; padding: 12px 14px; border: 1px solid #e5e7eb;
+            border-radius: 6px; background: #f9fafb; color: #555; font-size: 0.85rem;
+        }
+        button {
+            margin-top: 24px; padding: 8px 16px; border: 1px solid #fecaca;
+            background: #fef2f2; color: #b91c1c; border-radius: 5px; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav"><a href="/admin/departures">&larr; Departures</a></div>
+    <h1>Train {{.TrainNumber}} at {{if .Station}}{{.Station}}{{else}}{{.StopID}}{{end}}</h1>
+
+    <table>
+        <tr><th>Service date</th><td>{{.ServiceDateText}} ({{.WeekdayName}})</td></tr>
+        <tr><th>Schedule type</th><td>{{if .ScheduleType}}{{.ScheduleType}}{{else}}unknown{{end}}</td></tr>
+        <tr><th>Stop ID</th><td>{{.StopID}}</td></tr>
+        <tr><th>Direction</th><td>{{.Direction}}</td></tr>
+        <tr><th>Line</th><td>{{.Line}}</td></tr>
+        <tr><th>Scheduled arrival</th><td>{{.ScheduledArrivalText}}</td></tr>
+        <tr><th>Observed arrival</th><td>{{.ExpectedArrivalText}}</td></tr>
+        <tr><th>Arrival delay</th><td class="{{.ArrivalDelayClass}}">{{.ArrivalDelayText}}</td></tr>
+        <tr><th>Scheduled departure</th><td>{{.ScheduledDepartureText}}</td></tr>
+        <tr><th>Observed departure</th><td>{{.ExpectedDepartureText}}</td></tr>
+        <tr><th>Departure delay</th><td class="{{.DelayClass}}">{{.DelayText}}</td></tr>
+        <tr><th>Dwell</th><td>{{.DwellText}}</td></tr>
+        <tr><th>Departure source</th><td>{{if .DepartureSource}}{{.DepartureSource}}{{else}}unknown{{end}}</td></tr>
+        <tr><th>Vehicle at stop observed</th><td>{{.VehicleAtStop}}</td></tr>
+        <tr><th>Monitored (AVL signal)</th><td>{{.Monitored}}</td></tr>
+        <tr><th>Vehicle ref</th><td>{{.VehicleRef}}</td></tr>
+        <tr><th>Observations</th><td>{{.ObservationCount}}</td></tr>
+        <tr><th>First seen</th><td>{{.FirstSeenText}}</td></tr>
+        <tr><th>Last seen</th><td>{{.LastSeenText}}</td></tr>
+        <tr><th>Finalized</th><td>{{if .IsFinal}}{{.FinalizedText}}{{else}}not yet — still live{{end}}</td></tr>
+    </table>
+
+    <p class="note">
+        {{if eq .DepartureSource "actual"}}
+        The feed reported an authoritative actual departure time for this call.
+        {{else}}
+        511 does not publish actual departure times, so the observed departure above is the last
+        prediction seen before the stop visit left the feed. Its accuracy is bounded by the poll
+        interval and by how many observations were collected ({{.ObservationCount}}).
+        {{end}}
+        {{if not .Monitored}}
+        This train had no AVL signal at the last observation, so the prediction is likely just the
+        scheduled time repeated back and should be excluded from delay analysis.
+        {{end}}
+    </p>
+
+    <form method="post" action="/admin/departures/delete?id={{.ID}}"
+          onsubmit="return confirm('Delete this departure record?');">
+        <button type="submit">Delete</button>
+    </form>
+</body>
+</html>

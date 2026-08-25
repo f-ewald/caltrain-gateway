@@ -90,6 +90,58 @@ func migrateSchema(db *sql.DB) error {
 	if _, err := db.Exec(`CREATE INDEX IF NOT EXISTS idx_service_alerts_agency_id ON service_alerts(agency_id)`); err != nil {
 		return err
 	}
+
+	return migrateDepartureSchema(db)
+}
+
+// migrateDepartureSchema creates the train_departures table and its indexes.
+// One row represents one train calling at one stop on one operating day; the
+// row converges as the poller observes it repeatedly.
+func migrateDepartureSchema(db *sql.DB) error {
+	if _, err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS train_departures (
+			id                      BIGSERIAL   PRIMARY KEY,
+			service_date            DATE        NOT NULL,
+			train_number            TEXT        NOT NULL,
+			stop_id                 TEXT        NOT NULL,
+			station                 TEXT,
+			direction               TEXT,
+			line                    TEXT,
+			day_of_week             SMALLINT    NOT NULL,
+			schedule_type           TEXT,
+			scheduled_arrival       TIMESTAMPTZ,
+			expected_arrival        TIMESTAMPTZ,
+			scheduled_departure     TIMESTAMPTZ,
+			expected_departure      TIMESTAMPTZ,
+			arrival_delay_seconds   INT,
+			departure_delay_seconds INT,
+			dwell_seconds           INT,
+			departure_source        TEXT,
+			vehicle_at_stop         BOOLEAN     NOT NULL DEFAULT FALSE,
+			monitored               BOOLEAN     NOT NULL DEFAULT FALSE,
+			vehicle_ref             TEXT,
+			observation_count       INT         NOT NULL DEFAULT 1,
+			first_seen_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+			last_seen_at            TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+			finalized_at            TIMESTAMPTZ,
+			UNIQUE (service_date, train_number, stop_id)
+		)
+	`); err != nil {
+		return err
+	}
+
+	indexes := []string{
+		`CREATE INDEX IF NOT EXISTS idx_train_departures_last_seen_at ON train_departures(last_seen_at DESC)`,
+		`CREATE INDEX IF NOT EXISTS idx_train_departures_service_date ON train_departures(service_date DESC)`,
+		`CREATE INDEX IF NOT EXISTS idx_train_departures_station_dow ON train_departures(station, day_of_week)`,
+		`CREATE INDEX IF NOT EXISTS idx_train_departures_train_number ON train_departures(train_number)`,
+		`CREATE INDEX IF NOT EXISTS idx_train_departures_pending ON train_departures(last_seen_at) WHERE finalized_at IS NULL`,
+	}
+	for _, stmt := range indexes {
+		if _, err := db.Exec(stmt); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 

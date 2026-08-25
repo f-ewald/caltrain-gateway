@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train departures</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #333;
+            max-width: 1180px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        h1 { font-size: 1.4rem; margin-bottom: 8px; }
+        .sub { color: #666; font-size: 0.9rem; margin-bottom: 20px; }
+        a { color: #2563eb; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        form.filters { margin: 0 0 20px 0; display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+        form.filters label { display: block; font-size: 0.78rem; color: #666; margin-bottom: 4px; }
+        form.filters input {
+            padding: 7px 9px; border: 1px solid #d1d5db; border-radius: 5px; font-size: 0.9rem;
+        }
+        form.filters button, .btn {
+            padding: 7px 14px; border: 1px solid #d1d5db; border-radius: 5px;
+            background: #f9fafb; font-size: 0.9rem; cursor: pointer; color: #2563eb;
+        }
+        table { border-collapse: collapse; width: 100%; font-size: 0.85rem; }
+        th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid #e5e7eb; white-space: nowrap; }
+        th { color: #666; font-weight: 600; font-size: 0.78rem; text-transform: uppercase; }
+        tr:hover td { background: #f9fafb; }
+        .late { color: #b91c1c; font-weight: 600; }
+        .early { color: #047857; }
+        .tag {
+            display: inline-block; padding: 1px 7px; border-radius: 10px;
+            font-size: 0.72rem; border: 1px solid #e5e7eb; color: #666;
+        }
+        .tag.final { border-color: #a7f3d0; background: #ecfdf5; color: #047857; }
+        .tag.unmonitored { border-color: #fde68a; background: #fffbeb; color: #92400e; }
+        .pager { margin-top: 20px; display: flex; gap: 12px; align-items: center; font-size: 0.9rem; }
+        .empty { color: #666; padding: 24px 0; }
+        .nav { margin-bottom: 20px; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="nav"><a href="/admin/">&larr; Admin</a></div>
+    <h1>Train departures</h1>
+    <p class="sub">
+        Departure times are <strong>inferred</strong>: 511 does not report actual departures, so each row
+        converges on the last prediction observed before the train left the feed.
+        Rows that are not yet <span class="tag final">final</span> may still change, and
+        <span class="tag unmonitored">unmonitored</span> rows had no AVL signal, meaning the
+        prediction is just an echo of the schedule and should be excluded from analysis.
+    </p>
+
+    <form class="filters" method="get" action="/admin/departures">
+        <div>
+            <label for="service_date">Service date</label>
+            <input type="date" id="service_date" name="service_date" value="{{.Filter.ServiceDate}}">
+        </div>
+        <div>
+            <label for="station">Station</label>
+            <input type="text" id="station" name="station" placeholder="san_francisco" value="{{.Filter.Station}}">
+        </div>
+        <div>
+            <label for="train_number">Train</label>
+            <input type="text" id="train_number" name="train_number" placeholder="401" value="{{.Filter.TrainNumber}}">
+        </div>
+        <button type="submit">Filter</button>
+        <a class="btn" href="/admin/departures">Reset</a>
+        <a class="btn" href="/admin/departures/export{{.ExportQuery}}">Export JSONL</a>
+    </form>
+
+    {{if .Departures}}
+    <table>
+        <thead>
+            <tr>
+                <th>Service date</th>
+                <th>Day</th>
+                <th>Train</th>
+                <th>Station</th>
+                <th>Dir</th>
+                <th>Line</th>
+                <th>Scheduled</th>
+                <th>Observed</th>
+                <th>Delay</th>
+                <th>Obs</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {{range .Departures}}
+            <tr>
+                <td>{{.ServiceDateText}}</td>
+                <td>{{.WeekdayName}}</td>
+                <td>{{.TrainNumber}}</td>
+                <td>{{if .Station}}{{.Station}}{{else}}{{.StopID}}{{end}}</td>
+                <td>{{.Direction}}</td>
+                <td>{{.Line}}</td>
+                <td>{{.ScheduledDepartureText}}</td>
+                <td>{{.ExpectedDepartureText}}</td>
+                <td class="{{.DelayClass}}">{{.DelayText}}</td>
+                <td>{{.ObservationCount}}</td>
+                <td>
+                    {{if .IsFinal}}<span class="tag final">final</span>{{else}}<span class="tag">live</span>{{end}}
+                    {{if not .Monitored}}<span class="tag unmonitored">unmonitored</span>{{end}}
+                </td>
+                <td><a href="/admin/departures/detail?id={{.ID}}">View</a></td>
+            </tr>
+        {{end}}
+        </tbody>
+    </table>
+
+    <div class="pager">
+        {{if .HasPrev}}<a class="btn" href="{{.PrevQuery}}">&larr; Previous</a>{{end}}
+        <span>Page {{.Page}} of {{.TotalPages}} &middot; {{.Total}} rows</span>
+        {{if .HasNext}}<a class="btn" href="{{.NextQuery}}">Next &rarr;</a>{{end}}
+    </div>
+    {{else}}
+    <p class="empty">No departures recorded yet for this filter.</p>
+    {{end}}
+</body>
+</html>

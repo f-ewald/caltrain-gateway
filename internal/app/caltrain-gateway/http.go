@@ -596,5 +596,9 @@ func SetupRoutes(apiKeyPool *KeyPool, secret, dbUsername, dbPassword string) {
 		http.HandleFunc("/admin/servicealerts/detail", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsDetailHandler))
 		http.HandleFunc("/admin/servicealerts/delete", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsDeleteHandler))
 		http.HandleFunc("/admin/servicealerts/export", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsExportHandler))
+		http.HandleFunc("/admin/departures", basicAuthMiddleware(dbUsername, dbPassword, departuresListHandler))
+		http.HandleFunc("/admin/departures/detail", basicAuthMiddleware(dbUsername, dbPassword, departuresDetailHandler))
+		http.HandleFunc("/admin/departures/delete", basicAuthMiddleware(dbUsername, dbPassword, departuresDeleteHandler))
+		http.HandleFunc("/admin/departures/export", basicAuthMiddleware(dbUsername, dbPassword, departuresExportHandler))
 	}
 }

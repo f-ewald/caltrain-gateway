@@ -5,6 +5,17 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"time"
+)
+
+const (
+	// defaultDeparturePollInterval keeps the poller at 30 requests/hour, leaving
+	// headroom within 511's 60 requests/hour per-key quota for proxy traffic.
+	defaultDeparturePollInterval = 2 * time.Minute
+
+	// minDeparturePollInterval guards against a configured value that would
+	// exhaust the hourly quota on its own.
+	minDeparturePollInterval = time.Minute
 )
 
 // LoadAPIKeysFromEnv loads API keys from environment variables named FIVEONEONE_API_KEY_1, FIVEONEONE_API_KEY_2, etc.
@@ -54,4 +65,41 @@ func LoadSecretFromEnv() string {
 		log.Println("CALTRAIN_GATEWAY_SECRET environment variable is not set. This is not recommended for production environments.")
 	}
 	return secret
+}
+
+// LoadDepartureTrackingEnabledFromEnv reports whether the departure tracker
+// should run, from DEPARTURE_TRACKING_ENABLED. Defaults to true; tracking is
+// additionally skipped at startup when no database is configured.
+func LoadDepartureTrackingEnabledFromEnv() bool {
+	raw := os.Getenv("DEPARTURE_TRACKING_ENABLED")
+	if raw == "" {
+		return true
+	}
+	enabled, err := strconv.ParseBool(raw)
+	if err != nil {
+		log.Printf("Invalid DEPARTURE_TRACKING_ENABLED value %q, defaulting to enabled", raw)
+		return true
+	}
+	return enabled
+}
+
+// LoadDeparturePollIntervalFromEnv loads the departure poll interval from
+// DEPARTURE_POLL_INTERVAL as a Go duration (for example "2m"). Values below
+// minDeparturePollInterval are raised to that floor so a single misconfiguration
+// cannot burn the whole hourly API quota.
+func LoadDeparturePollIntervalFromEnv() time.Duration {
+	raw := os.Getenv("DEPARTURE_POLL_INTERVAL")
+	if raw == "" {
+		return defaultDeparturePollInterval
+	}
+	interval, err := time.ParseDuration(raw)
+	if err != nil {
+		log.Printf("Invalid DEPARTURE_POLL_INTERVAL value %q, using %s", raw, defaultDeparturePollInterval)
+		return defaultDeparturePollInterval
+	}
+	if interval < minDeparturePollInterval {
+		log.Printf("DEPARTURE_POLL_INTERVAL %s is below the %s floor, using the floor", interval, minDeparturePollInterval)
+		return minDeparturePollInterval
+	}
+	return interval
 }

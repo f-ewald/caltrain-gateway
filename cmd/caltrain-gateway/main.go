@@ -8,6 +8,12 @@ import (
 	"net/url"
 	"time"
 
+	// Embeds the IANA timezone database in the binary. The runtime image is a
+	// bare alpine, which ships no tzdata, so without this every
+	// America/Los_Angeles lookup would silently fall back to UTC in production
+	// and corrupt service dates and day-of-week values.
+	_ "time/tzdata"
+
 	caltraingateway "caltrain-gateway/internal/app/caltrain-gateway"
 )
 
@@ -88,12 +94,25 @@ func main() {
 	dbUsername, dbPassword := caltraingateway.ParseDatabaseCredentials(dbURL)
 	caltraingateway.SetupRoutes(apiKeyPool, secret, dbUsername, dbPassword)
 
+	startDepartureTracking(apiKeyPool)
+
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("Caltrain Proxy running on %s", listener.Addr().String())
 	log.Fatal(http.Serve(listener, nil))
+}
+
+// startDepartureTracking starts the SIRI StopMonitoring poller that records
+// actual departure times, unless disabled by configuration.
+func startDepartureTracking(apiKeyPool *caltraingateway.KeyPool) {
+	if !caltraingateway.LoadDepartureTrackingEnabledFromEnv() {
+		log.Println("Departure tracking disabled by DEPARTURE_TRACKING_ENABLED")
+		return
+	}
+	interval := caltraingateway.LoadDeparturePollIntervalFromEnv()
+	caltraingateway.NewDepartureTracker(apiKeyPool, interval).Start()
 }
 
 // loadAllTimetables loads all lines from the API and then loads timetables for each line
