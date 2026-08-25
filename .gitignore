@@ -1,3 +1,6 @@
 # Ignore Executable
+# Leading slash anchors to the repository root so this does not also match the
+# cmd/caltrain-gateway and internal/app/caltrain-gateway source directories.
+/caltrain-gateway
 cmd/caltrain-gateway/caltrain-gateway
 .env
