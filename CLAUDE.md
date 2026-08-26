@@ -119,4 +119,4 @@ Invariants to preserve when changing this code:
 
 ### CI/CD
 
-GitHub Actions workflow builds and pushes Docker image to Azure Container Registry on pushes to `main`.
+GitHub Actions workflow builds and pushes a Docker image to Azure Container Registry on pushes to `master`, on `v*` tags, and for pull requests targeting `master` (build only, no push). Note that `latest` tracks the default branch, so it follows `master` rather than the most recent release tag.
