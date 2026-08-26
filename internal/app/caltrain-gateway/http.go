@@ -622,34 +622,61 @@ func serviceAlertsExportHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// SetupRoutes configures all HTTP routes.
-func SetupRoutes(apiKeyPool *KeyPool, secret, dbUsername, dbPassword string) {
-	http.HandleFunc("/", statsMiddleware(authMiddleware(secret, gzipMiddleware(proxyHandler(apiKeyPool)))))
-	http.HandleFunc("/proxy/", statsMiddleware(authMiddleware(secret, gzipMiddleware(http.StripPrefix("/proxy", proxyHandler(apiKeyPool)).ServeHTTP))))
-	http.HandleFunc("/up", healthHandler)
-	http.HandleFunc("/caltrain/timetable", statsMiddleware(authMiddleware(secret, gzipMiddleware(timetableHandler))))
-	http.HandleFunc("/caltrain/timetable/version", statsMiddleware(authMiddleware(secret, gzipMiddleware(scheduleVersionHandler))))
-	http.HandleFunc("/caltrain/stops", statsMiddleware(authMiddleware(secret, gzipMiddleware(stopsHandler))))
-	http.HandleFunc("/caltrain/servicealerts", statsMiddleware(authMiddleware(secret, gzipMiddleware(serviceAlertsHandler))))
-	http.HandleFunc("/caltrain/scheduletype", statsMiddleware(authMiddleware(secret, gzipMiddleware(scheduleTypeHandler(apiKeyPool)))))
-	http.HandleFunc("/ui", uiHandler)
-	http.HandleFunc("/ui/stats", uiStatsHandler)
-	http.HandleFunc("/ui/health", uiHealthHandler)
-	http.HandleFunc("/support", statsMiddleware(logRequestMiddleware(supportHandler)))
+// SetupRoutes builds the routing table and returns it.
+//
+// Routes are registered on a dedicated mux rather than http.DefaultServeMux so
+// the table can be constructed in tests without duplicate-registration panics or
+// state leaking between them.
+//
+// There is deliberately no "/" pattern: in net/http that is the catch-all, and
+// registering the proxy there made the service forward every unrecognised path
+// upstream. Root-level 511 traffic is served by an explicit "/transit/" route
+// instead, and anything else now returns 404.
+func SetupRoutes(apiKeyPool *KeyPool, secret, dbUsername, dbPassword string) *http.ServeMux {
+	mux := http.NewServeMux()
+
+	proxy := statsMiddleware(authMiddleware(secret, gzipMiddleware(proxyHandler(apiKeyPool))))
+	// The prefix is intentionally left in place, so this reaches the proxy with
+	// the same path it has today and keeps the cache key identical to the
+	// equivalent /proxy/transit/... request.
+	mux.HandleFunc("/transit/", proxy)
+	mux.HandleFunc("/proxy/", statsMiddleware(authMiddleware(secret, gzipMiddleware(http.StripPrefix("/proxy", proxyHandler(apiKeyPool)).ServeHTTP))))
+
+	mux.HandleFunc("/up", healthHandler)
+	mux.HandleFunc("/caltrain/timetable", statsMiddleware(authMiddleware(secret, gzipMiddleware(timetableHandler))))
+	mux.HandleFunc("/caltrain/timetable/version", statsMiddleware(authMiddleware(secret, gzipMiddleware(scheduleVersionHandler))))
+	mux.HandleFunc("/caltrain/stops", statsMiddleware(authMiddleware(secret, gzipMiddleware(stopsHandler))))
+	mux.HandleFunc("/caltrain/servicealerts", statsMiddleware(authMiddleware(secret, gzipMiddleware(serviceAlertsHandler))))
+	mux.HandleFunc("/caltrain/scheduletype", statsMiddleware(authMiddleware(secret, gzipMiddleware(scheduleTypeHandler(apiKeyPool)))))
+	mux.HandleFunc("/ui", uiHandler)
+	mux.HandleFunc("/ui/stats", uiStatsHandler)
+	mux.HandleFunc("/ui/health", uiHealthHandler)
+	mux.HandleFunc("/support", statsMiddleware(logRequestMiddleware(supportHandler)))
+
+	registerAdminRoutes(mux, dbUsername, dbPassword)
+	return mux
+}
+
+// registerAdminRoutes wires the admin section, or a notice explaining why it is
+// unavailable. The pages authenticate with the database credentials, so without
+// a username there is nothing to authenticate against.
+func registerAdminRoutes(mux *http.ServeMux, dbUsername, dbPassword string) {
+	if dbUsername == "" {
+		mux.HandleFunc("/admin/", adminUnavailableHandler)
+		return
+	}
 
 	// Admin pages — protected by basic auth using database credentials
-	if dbUsername != "" {
-		http.HandleFunc("/admin/", basicAuthMiddleware(dbUsername, dbPassword, adminIndexHandler))
-		http.HandleFunc("/admin/support", basicAuthMiddleware(dbUsername, dbPassword, supportListHandler))
-		http.HandleFunc("/admin/support/detail", basicAuthMiddleware(dbUsername, dbPassword, supportDetailHandler))
-		http.HandleFunc("/admin/support/delete", basicAuthMiddleware(dbUsername, dbPassword, supportDeleteHandler))
-		http.HandleFunc("/admin/servicealerts", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsListHandler))
-		http.HandleFunc("/admin/servicealerts/detail", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsDetailHandler))
-		http.HandleFunc("/admin/servicealerts/delete", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsDeleteHandler))
-		http.HandleFunc("/admin/servicealerts/export", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsExportHandler))
-		http.HandleFunc("/admin/departures", basicAuthMiddleware(dbUsername, dbPassword, departuresListHandler))
-		http.HandleFunc("/admin/departures/detail", basicAuthMiddleware(dbUsername, dbPassword, departuresDetailHandler))
-		http.HandleFunc("/admin/departures/delete", basicAuthMiddleware(dbUsername, dbPassword, departuresDeleteHandler))
-		http.HandleFunc("/admin/departures/export", basicAuthMiddleware(dbUsername, dbPassword, departuresExportHandler))
-	}
+	mux.HandleFunc("/admin/", basicAuthMiddleware(dbUsername, dbPassword, adminIndexHandler))
+	mux.HandleFunc("/admin/support", basicAuthMiddleware(dbUsername, dbPassword, supportListHandler))
+	mux.HandleFunc("/admin/support/detail", basicAuthMiddleware(dbUsername, dbPassword, supportDetailHandler))
+	mux.HandleFunc("/admin/support/delete", basicAuthMiddleware(dbUsername, dbPassword, supportDeleteHandler))
+	mux.HandleFunc("/admin/servicealerts", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsListHandler))
+	mux.HandleFunc("/admin/servicealerts/detail", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsDetailHandler))
+	mux.HandleFunc("/admin/servicealerts/delete", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsDeleteHandler))
+	mux.HandleFunc("/admin/servicealerts/export", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsExportHandler))
+	mux.HandleFunc("/admin/departures", basicAuthMiddleware(dbUsername, dbPassword, departuresListHandler))
+	mux.HandleFunc("/admin/departures/detail", basicAuthMiddleware(dbUsername, dbPassword, departuresDetailHandler))
+	mux.HandleFunc("/admin/departures/delete", basicAuthMiddleware(dbUsername, dbPassword, departuresDeleteHandler))
+	mux.HandleFunc("/admin/departures/export", basicAuthMiddleware(dbUsername, dbPassword, departuresExportHandler))
 }

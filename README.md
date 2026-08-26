@@ -66,12 +66,19 @@ integration tests, which skip unless it is set.
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/up` | Health check |
+| GET | `/proxy/*` | Passthrough proxy to the 511 API, with caching and key rotation |
+| GET | `/transit/*` | The same proxy at the root, kept for backwards compatibility |
 | GET | `/caltrain/timetable` | Get all train departures by stop ID |
 | GET | `/caltrain/timetable?weekday=Monday` | Get departures filtered by weekday |
 | GET | `/caltrain/timetable/version` | Schedule version, validity window and freshness |
 
-Admin pages (`/admin/…`) are registered only when `DATABASE_URL` is set and are protected by
-HTTP basic auth using the database credentials.
+The proxy is served under `/proxy/`. Root-level `/transit/` paths remain supported for existing
+callers and forward to the same upstream URL, so both forms share cached responses. No catch-all
+is registered: any other unrecognised path returns `404` rather than being forwarded to 511.
+
+Admin pages (`/admin/…`) require `DATABASE_URL` to include credentials, since they authenticate
+with the database username and password over HTTP basic auth. When that is missing, `/admin/`
+returns `503` explaining which of the two causes applies and how to fix it.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|

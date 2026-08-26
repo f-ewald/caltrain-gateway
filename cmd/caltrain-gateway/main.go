@@ -97,7 +97,7 @@ func main() {
 	}()
 
 	dbUsername, dbPassword := caltraingateway.ParseDatabaseCredentials(dbURL)
-	caltraingateway.SetupRoutes(apiKeyPool, secret, dbUsername, dbPassword)
+	mux := caltraingateway.SetupRoutes(apiKeyPool, secret, dbUsername, dbPassword)
 
 	startDepartureTracking(apiKeyPool)
 	startTimetableRefresh(apiKeyPool)
@@ -107,7 +107,7 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Printf("Caltrain Proxy running on %s", listener.Addr().String())
-	log.Fatal(http.Serve(listener, nil))
+	log.Fatal(http.Serve(listener, mux))
 }
 
 // startDepartureTracking starts the SIRI StopMonitoring poller that records

@@ -74,6 +74,20 @@ Go HTTP service that proxies and caches requests to the 511.org transit API for 
 2. The proxy handler checks cache → uses `singleflight` for request collapsing → picks an API key from the pool → forwards to 511.org → caches 200 responses
 3. `/caltrain/timetable` serves pre-loaded timetable data (loaded at startup), filtered by optional `weekday` and `station` query params
 
+### Routing
+
+`SetupRoutes` builds and returns its own `*http.ServeMux`, which `main` serves. It deliberately
+does not register `"/"`: in `net/http` that is the catch-all, and the proxy used to live there, so
+the service forwarded every unrecognised path upstream. Unmatched paths now return 404 and no
+longer consume the 511 quota.
+
+- The proxy is served at `/proxy/` (prefix stripped) and at `/transit/` (prefix **not** stripped).
+  Leaving `/transit/` intact is what makes both forms produce the same upstream URL and therefore
+  the same cache key, so do not add a `StripPrefix` there.
+- When `DATABASE_URL` has no credentials the admin routes cannot authenticate, so `/admin/` serves
+  an explanatory 503 instead. Previously that path fell through to the catch-all and was proxied,
+  returning an upstream 401 that looked like a rejected login.
+
 ### Departure Tracking
 
 `DepartureTracker` polls the agency-wide SIRI StopMonitoring feed (default every 2 minutes) and

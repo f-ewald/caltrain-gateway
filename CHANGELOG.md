@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- **Breaking:** remove the root catch-all proxy. The service no longer forwards arbitrary
+  unrecognised paths to 511; they return `404` instead. Root-level `/transit/` paths are still
+  proxied, so existing API callers are unaffected, and `/proxy/` is unchanged.
+- `/admin/` now returns an explanatory `503` when the database is unusable or `DATABASE_URL`
+  carries no credentials, instead of falling through to the proxy and returning an upstream `401`
+  that looked like a rejected login
+- Routes are registered on a dedicated `http.ServeMux` rather than the global default, which makes
+  the routing table testable
+
 ## v1.5.1 (2026-08-25)
 
 - Show the software version, derived from the git tag, on the `/ui` dashboard and in the admin

@@ -1,0 +1,17 @@
+{{define "content"}}
+{{with .Data}}
+<h1>Admin is unavailable</h1>
+<p class="meta">{{.Reason}}</p>
+
+<div class="note">
+    <p>{{.Explanation}}</p>
+    <p>{{.Fix}}</p>
+    <pre class="mono">{{.Example}}</pre>
+</div>
+
+<p class="meta">
+    The rest of the gateway is unaffected: the API endpoints and the
+    <a href="/ui">status dashboard</a> continue to work without a database.
+</p>
+{{end}}
+{{end}}
