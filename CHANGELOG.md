@@ -1,11 +1,14 @@
 # Changelog
 
-## Unreleased
+## v1.5.1 (2026-08-25)
 
 - Show the software version, derived from the git tag, on the `/ui` dashboard and in the admin
   page header. The version is stamped at build time via ldflags; an unstamped build reports
   `dev` plus the embedded commit rather than claiming to be a release.
 - Build and CI now pass the version and revision into the Docker image
+- Trigger CI on pushes to `master` and on pull requests targeting it. The workflow referenced a
+  `main` branch that does not exist, so every build in the repository's history had been
+  triggered by a tag and pull requests were never validated.
 
 ## v1.5.0 (2026-08-25)
 
