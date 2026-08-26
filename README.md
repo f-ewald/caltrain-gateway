@@ -46,6 +46,7 @@ go build -o caltrain-gateway ./cmd/caltrain-gateway
 | `DATABASE_URL` | PostgreSQL connection string; omit to run without a database | — |
 | `DEPARTURE_TRACKING_ENABLED` | Record observed departure times | `true` |
 | `DEPARTURE_POLL_INTERVAL` | How often to poll the real-time feed (minimum `1m`) | `2m` |
+| `TIMETABLE_REFRESH_HOUR` | Local hour of the nightly timetable refresh (0–23) | `3` |
 
 `CALTRAIN_TEST_DATABASE_URL` is read only by the test suite; see the database
 integration tests, which skip unless it is set.
@@ -57,6 +58,7 @@ integration tests, which skip unless it is set.
 | GET | `/up` | Health check |
 | GET | `/caltrain/timetable` | Get all train departures by stop ID |
 | GET | `/caltrain/timetable?weekday=Monday` | Get departures filtered by weekday |
+| GET | `/caltrain/timetable/version` | Schedule version, validity window and freshness |
 
 Admin pages (`/admin/…`) are registered only when `DATABASE_URL` is set and are protected by
 HTTP basic auth using the database credentials.
@@ -73,6 +75,56 @@ HTTP basic auth using the database credentials.
 The timetable module parses Caltrain schedule data and provides departures grouped by stop ID. Each departure includes train ID, line, direction, arrival/departure times, and destination. Schedules are filtered by day type (weekday/weekend) based on the `weekday` query parameter.
 
 Supported weekday values: `Monday`, `Tuesday`, `Wednesday`, `Thursday`, `Friday`, `Saturday`, `Sunday`
+
+## Schedule freshness
+
+The gateway serves a copy of the Caltrain timetable, refreshed nightly at 03:00 Pacific
+(`TIMETABLE_REFRESH_HOUR`). Overnight keeps the ~6 upstream requests clear of daytime traffic,
+which already carries departure polling against a 60 requests/hour per-key budget.
+
+Refreshes are **atomic**: a run either loads every line or is abandoned, leaving the previous
+schedule in place. A partial refresh would drop whole lines and change the version, pushing every
+client to download a truncated timetable.
+
+Clients can validate a cached copy two ways.
+
+**`GET /caltrain/timetable/version`** — one small response regardless of how many timetable
+variants a client caches:
+
+```json
+{
+  "version": "3f9c1a4e2b7d8051",
+  "valid_from": "2026-01-31",
+  "valid_to": "2026-08-31",
+  "expires_in_days": 6,
+  "expired": false,
+  "frame_ids": ["Timetable:3206643", "Timetable:3206644"],
+  "line_count": 5,
+  "refreshed_at": "2026-08-25T10:00:00Z",
+  "stale": false
+}
+```
+
+- `version` is a digest of the schedule content, so it changes exactly when the departures a
+  client consumes change. It is derived from a canonically ordered projection, so an upstream
+  reordering of lines does not produce a spurious change.
+- `expires_in_days` and `expired` come from the timetable's own validity window, letting a client
+  prefetch ahead of a cutover rather than discovering it afterwards.
+- `stale` means no refresh has succeeded recently, distinguishing "verified current" from merely
+  "not rechecked". Note that the validity dates carry a fixed `-08:00` offset upstream regardless
+  of daylight saving, so only their calendar date is used.
+
+**`ETag` / `If-None-Match`** on `/caltrain/timetable` — a weak ETag is returned with every
+timetable response, and a matching `If-None-Match` yields `304 Not Modified` with no body. The
+tag covers the `weekday` and `station` parameters as well as the schedule version, since the
+response body varies by those.
+
+```bash
+curl -sI localhost:8080/caltrain/timetable | grep -i etag
+curl -s -o /dev/null -w '%{http_code}\n' \
+  -H 'If-None-Match: W/"3f9c1a4e2b7d8051-all-all"' \
+  localhost:8080/caltrain/timetable
+```
 
 ## Departure tracking
 

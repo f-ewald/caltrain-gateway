@@ -100,6 +100,7 @@ func main() {
 	caltraingateway.SetupRoutes(apiKeyPool, secret, dbUsername, dbPassword)
 
 	startDepartureTracking(apiKeyPool)
+	startTimetableRefresh(apiKeyPool)
 
 	listener, err := net.Listen("tcp", ":"+caltraingateway.LoadPortFromEnv())
 	if err != nil {
@@ -165,13 +166,27 @@ func loadAllTimetables(apiKey string) (*caltraingateway.TimetableCollection, err
 		log.Printf("Loading timetable for line: %s", line.ID)
 		tt, err := caltraingateway.LoadTimetableFromURL(timetableURL.String())
 		if err != nil {
-			log.Printf("Warning: Failed to load timetable for line %s: %v", line.ID, err)
-			continue
+			// Fail the whole load rather than returning a partial collection.
+			// A collection missing lines would drop real departures and change
+			// the schedule version, pushing every client to re-download a
+			// truncated timetable.
+			return nil, fmt.Errorf("failed to load timetable for line %s: %w", line.ID, err)
 		}
 		tc.AddTimetable(tt)
 	}
 
+	if len(lines) == 0 {
+		return nil, fmt.Errorf("no lines returned by the API")
+	}
+
 	return tc, nil
+}
+
+// startTimetableRefresh starts the nightly timetable refresh so the served
+// schedule, and the version clients validate against, stay current.
+func startTimetableRefresh(apiKeyPool *caltraingateway.KeyPool) {
+	hour := caltraingateway.LoadTimetableRefreshHourFromEnv()
+	caltraingateway.NewScheduleRefresher(apiKeyPool, loadAllTimetables, hour).Start()
 }
 
 // loadServiceAlerts fetches service alerts from the 511 API

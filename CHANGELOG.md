@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+
+- Add `GET /caltrain/timetable/version` reporting a content-derived schedule version, the
+  timetable's validity window, days until it expires, and whether the copy is stale
+- Add a weak `ETag` and `If-None-Match` handling to `/caltrain/timetable`, so clients can
+  revalidate a cached copy with `304 Not Modified` instead of re-downloading it
+- Refresh the timetable nightly at 03:00 Pacific (`TIMETABLE_REFRESH_HOUR`) instead of only at
+  startup, so the served schedule and its version track upstream changes
+- Make timetable loading atomic: a run that cannot load every line leaves the previous schedule
+  in place rather than publishing one with lines missing
+- Pause departure polling outside service hours, derived from the timetable itself, and close out
+  the day before pausing so the last trains' rows are finalized
+- Fix gzip framing being appended to bodyless responses such as `304 Not Modified`, which also
+  wrongly advertised `Content-Encoding: gzip`
+
 ## v1.4.0 (2026-08-25)
 
 - Fix departure polling aborting on the live 511 feed, which sends `""` for boolean fields.

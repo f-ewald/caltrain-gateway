@@ -47,13 +47,47 @@ var (
 	apiConnectedMu sync.RWMutex
 )
 
-// gzipResponseWriter wraps http.ResponseWriter to provide gzip compression
+// gzipResponseWriter wraps http.ResponseWriter to provide gzip compression.
+// It tracks the status code so responses that must not carry a body, such as
+// 304 Not Modified, are neither compressed nor advertised as gzip.
 type gzipResponseWriter struct {
 	io.Writer
 	http.ResponseWriter
+	wroteHeader bool
+	bodyAllowed bool
 }
 
-func (w gzipResponseWriter) Write(b []byte) (int, error) {
+// bodyAllowedForStatus reports whether a response with this status may carry a
+// body, mirroring the rules net/http enforces.
+func bodyAllowedForStatus(status int) bool {
+	switch {
+	case status >= 100 && status <= 199:
+		return false
+	case status == http.StatusNoContent, status == http.StatusNotModified:
+		return false
+	}
+	return true
+}
+
+func (w *gzipResponseWriter) WriteHeader(status int) {
+	if !w.wroteHeader {
+		w.wroteHeader = true
+		w.bodyAllowed = bodyAllowedForStatus(status)
+		if !w.bodyAllowed {
+			// No body will follow, so the gzip advertisement would be a lie.
+			w.ResponseWriter.Header().Del("Content-Encoding")
+		}
+	}
+	w.ResponseWriter.WriteHeader(status)
+}
+
+func (w *gzipResponseWriter) Write(b []byte) (int, error) {
+	if !w.wroteHeader {
+		w.WriteHeader(http.StatusOK)
+	}
+	if !w.bodyAllowed {
+		return len(b), nil
+	}
 	return w.Writer.Write(b)
 }
 
@@ -71,11 +105,16 @@ func gzipMiddleware(next http.HandlerFunc) http.HandlerFunc {
 
 		// Create gzip writer
 		gz := gzip.NewWriter(w)
-		defer gz.Close()
 
 		// Wrap the response writer
-		gzipWriter := gzipResponseWriter{Writer: gz, ResponseWriter: w}
+		gzipWriter := &gzipResponseWriter{Writer: gz, ResponseWriter: w}
 		next(gzipWriter, r)
+
+		// Finish the gzip stream only when a body was actually permitted;
+		// closing otherwise would append gzip framing to a bodyless response.
+		if !gzipWriter.wroteHeader || gzipWriter.bodyAllowed {
+			gz.Close()
+		}
 	}
 }
 
@@ -208,41 +247,49 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("OK"))
 }
 
-// timetableCollection holds the loaded timetable data for all lines
-var timetableCollection *TimetableCollection
-
-// SetTimetableCollection sets the timetable collection to be used by the timetable handler
-func SetTimetableCollection(tc *TimetableCollection) {
-	timetableCollection = tc
-}
+// timetableCollection is served through schedule; see schedule_state.go.
 
 // timetableHandler returns all departures by stop ID as JSON
 // Accepts optional query parameters:
 //   - weekday (Monday, Tuesday, etc.)
 //   - station (GTFS station ID to filter results)
+//
+// The response carries a weak ETag so clients can revalidate a cached copy with
+// If-None-Match instead of re-downloading the payload.
 func timetableHandler(w http.ResponseWriter, r *http.Request) {
-	if timetableCollection == nil {
+	collection, version, _, _, _ := schedule.Snapshot()
+	if collection == nil {
 		http.Error(w, "Timetable not loaded", http.StatusServiceUnavailable)
 		return
 	}
 
 	// Parse weekday from query parameter
 	weekdayParam := r.URL.Query().Get("weekday")
-	var departures map[string][]TrainDeparture
+	stationID := r.URL.Query().Get("station")
 
-	if weekdayParam != "" {
-		weekday := ParseWeekday(weekdayParam)
-		if weekday == "" {
-			http.Error(w, "Invalid weekday. Valid values: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday", http.StatusBadRequest)
+	if weekdayParam != "" && ParseWeekday(weekdayParam) == "" {
+		http.Error(w, "Invalid weekday. Valid values: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday", http.StatusBadRequest)
+		return
+	}
+
+	// Validate before short-circuiting on the ETag, so a malformed request is
+	// still reported rather than answered with 304.
+	if etag := scheduleETag(version, weekdayParam, stationID); etag != "" {
+		w.Header().Set("ETag", etag)
+		if requestMatchesETag(r, etag) {
+			w.WriteHeader(http.StatusNotModified)
 			return
 		}
-		departures = timetableCollection.GetDeparturesByStopAndWeekday(weekday)
+	}
+
+	var departures map[string][]TrainDeparture
+	if weekdayParam != "" {
+		departures = collection.GetDeparturesByStopAndWeekday(ParseWeekday(weekdayParam))
 	} else {
-		departures = timetableCollection.GetDeparturesByStop()
+		departures = collection.GetDeparturesByStop()
 	}
 
 	// Filter by station ID if provided
-	stationID := r.URL.Query().Get("station")
 	if stationID != "" {
 		if stationDepartures, exists := departures[stationID]; exists {
 			departures = map[string][]TrainDeparture{stationID: stationDepartures}
@@ -256,6 +303,30 @@ func timetableHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
 	}
+}
+
+// requestMatchesETag reports whether the request's If-None-Match header covers
+// the given tag. A "*" matches any existing representation, and comparison
+// ignores the weak prefix as RFC 9110 requires for this header.
+func requestMatchesETag(r *http.Request, etag string) bool {
+	header := r.Header.Get("If-None-Match")
+	if header == "" {
+		return false
+	}
+	if strings.TrimSpace(header) == "*" {
+		return true
+	}
+	for _, candidate := range strings.Split(header, ",") {
+		if etagsEquivalent(strings.TrimSpace(candidate), etag) {
+			return true
+		}
+	}
+	return false
+}
+
+// etagsEquivalent compares two entity tags disregarding the weakness prefix.
+func etagsEquivalent(a, b string) bool {
+	return strings.TrimPrefix(a, "W/") == strings.TrimPrefix(b, "W/")
 }
 
 // serviceAlerts holds the loaded service alerts data
@@ -556,6 +627,7 @@ func SetupRoutes(apiKeyPool *KeyPool, secret, dbUsername, dbPassword string) {
 	http.HandleFunc("/proxy/", statsMiddleware(authMiddleware(secret, gzipMiddleware(http.StripPrefix("/proxy", proxyHandler(apiKeyPool)).ServeHTTP))))
 	http.HandleFunc("/up", healthHandler)
 	http.HandleFunc("/caltrain/timetable", statsMiddleware(authMiddleware(secret, gzipMiddleware(timetableHandler))))
+	http.HandleFunc("/caltrain/timetable/version", statsMiddleware(authMiddleware(secret, gzipMiddleware(scheduleVersionHandler))))
 	http.HandleFunc("/caltrain/stops", statsMiddleware(authMiddleware(secret, gzipMiddleware(stopsHandler))))
 	http.HandleFunc("/caltrain/servicealerts", statsMiddleware(authMiddleware(secret, gzipMiddleware(serviceAlertsHandler))))
 	http.HandleFunc("/caltrain/scheduletype", statsMiddleware(authMiddleware(secret, gzipMiddleware(scheduleTypeHandler(apiKeyPool)))))

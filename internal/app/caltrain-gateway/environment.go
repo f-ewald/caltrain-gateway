@@ -20,6 +20,10 @@ const (
 	// minDeparturePollInterval guards against a configured value that would
 	// exhaust the hourly quota on its own.
 	minDeparturePollInterval = time.Minute
+
+	// defaultTimetableRefreshHour is the local hour of the nightly timetable
+	// refresh, chosen to fall outside service hours.
+	defaultTimetableRefreshHour = 3
 )
 
 // LoadPortFromEnv loads the TCP listen port from the PORT environment variable.
@@ -76,6 +80,23 @@ func ParseDatabaseCredentials(dbURL string) (username, password string) {
 	}
 	password, _ = u.User.Password()
 	return u.User.Username(), password
+}
+
+// LoadTimetableRefreshHourFromEnv loads the local hour at which the nightly
+// timetable refresh runs, from TIMETABLE_REFRESH_HOUR. Defaults to 3am Pacific,
+// which sits outside service hours and is safe across daylight saving changes —
+// unlike 2am, which does not exist on the spring-forward day.
+func LoadTimetableRefreshHourFromEnv() int {
+	raw := strings.TrimSpace(os.Getenv("TIMETABLE_REFRESH_HOUR"))
+	if raw == "" {
+		return defaultTimetableRefreshHour
+	}
+	hour, err := strconv.Atoi(raw)
+	if err != nil || hour < 0 || hour > 23 {
+		log.Printf("Invalid TIMETABLE_REFRESH_HOUR value %q, using %d", raw, defaultTimetableRefreshHour)
+		return defaultTimetableRefreshHour
+	}
+	return hour
 }
 
 // LoadSecretFromEnv loads the Caltrain Gateway secret from the CALTRAIN_GATEWAY_SECRET environment variable.

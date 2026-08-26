@@ -50,6 +50,11 @@ Go HTTP service that proxies and caches requests to the 511.org transit API for 
   - **departures_store.go** — `train_departures` row model and queries (converging upsert, paginated list, export stream, finalize sweep)
   - **departures_http.go** — Admin handlers, view model and formatting for `/admin/departures`
   - **admin.go** — Shared admin chrome: the tab definitions, the `adminPage` wrapper and `renderAdminPage`, which renders a page's `content` block inside `web/admin_layout.html`. Every admin page goes through it, so layout and styling live in one place.
+  - **schedule_version.go** — Content-derived schedule version and validity metadata, plus ETag construction
+  - **schedule_state.go** — Mutex-guarded holder for the timetable, its version and metadata, swapped atomically
+  - **schedule_refresh.go** — Nightly timetable refresh scheduled against the wall clock
+  - **schedule_http.go** — `/caltrain/timetable/version` handler
+  - **service_window.go** — Derives service hours from the timetable to gate departure polling
   - **lines.go** — Transit line model and loading (from file or URL)
   - **ratelimiter.go** — `KeyPool` for round-robin API key rotation with per-key rate limiting (`golang.org/x/time/rate`)
   - **stops.go** — Static mapping of GTFS stop IDs to parent station names (e.g., `"70011"` → `"san_francisco"`)
@@ -87,6 +92,30 @@ Key constraints to keep in mind when changing this code:
   tzdata, so without it every timezone lookup silently falls back to UTC in production.
 - **API quota is 60 requests/hour per key across all endpoints.** Keep the poll interval at or
   above the 1-minute floor.
+
+### Schedule Versioning and Refresh
+
+The timetable is refreshed nightly at 03:00 Pacific and exposed to clients through a version
+endpoint and an ETag.
+
+Invariants to preserve when changing this code:
+
+- **The version hash requires canonical ordering.** `GetDeparturesByStop` appends in whatever
+  order the upstream lines endpoint returned. `ScheduleVersion` sorts before hashing; removing
+  that sort would make the version flip on an upstream reshuffle and stampede every client into
+  re-downloading.
+- **Refresh is all-or-nothing.** `loadAllTimetables` fails rather than returning a partial
+  collection, and `scheduleState.Publish` ignores nil. A partial refresh would drop whole lines
+  and change the version.
+- **Scheduling is wall-clock, not interval.** `nextRunAt` computes the next 03:00 local. A 24h
+  ticker would drift across DST into service hours. 03:00 is also DST-safe; 02:00 does not exist
+  on the spring-forward day.
+- **Validity dates use only their calendar date.** 511 emits a fixed `-08:00` offset year round,
+  so honouring it would push a summer end-of-day bound onto the next day.
+- **Departure polling pauses outside service hours**, derived from the timetable, and fails open
+  when no timetable is loaded. It is not a bug that the poller is idle overnight.
+- **Bodyless responses must not be gzipped.** `gzipResponseWriter` tracks the status so a 304
+  neither carries gzip framing nor advertises `Content-Encoding`.
 
 ### CI/CD
 

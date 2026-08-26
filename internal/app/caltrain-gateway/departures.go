@@ -189,11 +189,14 @@ type DepartureTracker struct {
 
 	mu                 sync.RWMutex
 	lastSuccessfulPoll time.Time
+	// polling records whether the last tick was inside service hours, so the
+	// transition out of service can be detected and the day closed out.
+	polling bool
 }
 
 // NewDepartureTracker creates a tracker polling at the given interval.
 func NewDepartureTracker(pool *KeyPool, interval time.Duration) *DepartureTracker {
-	return &DepartureTracker{pool: pool, interval: interval}
+	return &DepartureTracker{pool: pool, interval: interval, polling: true}
 }
 
 // Start runs the poll and finalize loops. It returns immediately; both loops run
@@ -211,12 +214,41 @@ func (t *DepartureTracker) Start() {
 		return
 	}
 
-	log.Printf("Departure tracking enabled, polling every %s", t.interval)
+	log.Printf("Departure tracking enabled, polling every %s during service hours", t.interval)
 	go func() {
-		t.Poll()
-		t.runLoop(t.interval, t.Poll)
+		t.Tick()
+		t.runLoop(t.interval, t.Tick)
 	}()
 	go t.runLoop(t.finalizeInterval(), t.Finalize)
+}
+
+// Tick polls when trains are running, and otherwise stands down until service
+// resumes. Outside service hours the feed holds no trains, so polling would
+// spend the API budget on empty responses.
+func (t *DepartureTracker) Tick() {
+	if shouldPollDepartures(time.Now()) {
+		t.setPolling(true)
+		t.Poll()
+		return
+	}
+
+	// On the transition out of service, take one last look and close out the
+	// day. The finalizer's outage guard would otherwise suppress finalization
+	// for the whole pause, leaving the last trains unfinalized until morning.
+	if t.setPolling(false) {
+		log.Println("Departure polling paused: outside service hours")
+		t.Poll()
+		t.Finalize()
+	}
+}
+
+// setPolling records the polling state and reports whether it changed.
+func (t *DepartureTracker) setPolling(polling bool) bool {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	changed := t.polling != polling
+	t.polling = polling
+	return changed
 }
 
 // runLoop invokes fn on a fixed ticker.
