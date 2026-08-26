@@ -28,6 +28,10 @@
             font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em;
             color: var(--muted); margin: 0 0 12px 0; font-weight: 600;
         }
+        .brand .version {
+            text-transform: none; letter-spacing: 0; font-weight: 400;
+            color: #9ca3af; margin-left: 6px;
+        }
         .tabs {
             display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 28px;
             flex-wrap: wrap;
@@ -117,7 +121,7 @@
     </style>
 </head>
 <body>
-    <p class="brand">Caltrain Gateway Admin</p>
+    <p class="brand">Caltrain Gateway Admin <span class="version">{{.Version}}</span></p>
     <nav class="tabs">
         {{- $active := .ActiveTab}}
         {{- range .Tabs}}

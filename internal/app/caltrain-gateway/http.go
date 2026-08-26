@@ -415,6 +415,7 @@ func uiStatsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]any{
 		"uptime_seconds": uptimeSeconds,
 		"endpoints":      counts,
+		"version":        BuildVersion(),
 	})
 }
 

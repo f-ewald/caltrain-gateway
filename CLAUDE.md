@@ -50,6 +50,7 @@ Go HTTP service that proxies and caches requests to the 511.org transit API for 
   - **departures_store.go** — `train_departures` row model and queries (converging upsert, paginated list, export stream, finalize sweep)
   - **departures_http.go** — Admin handlers, view model and formatting for `/admin/departures`
   - **admin.go** — Shared admin chrome: the tab definitions, the `adminPage` wrapper and `renderAdminPage`, which renders a page's `content` block inside `web/admin_layout.html`. Every admin page goes through it, so layout and styling live in one place.
+  - **version.go** — Software version reported by the UI and admin pages, stamped via ldflags with a VCS fallback. Distinct from the *schedule* version in `schedule_version.go`, which identifies timetable content.
   - **schedule_version.go** — Content-derived schedule version and validity metadata, plus ETag construction
   - **schedule_state.go** — Mutex-guarded holder for the timetable, its version and metadata, swapped atomically
   - **schedule_refresh.go** — Nightly timetable refresh scheduled against the wall clock

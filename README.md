@@ -25,10 +25,20 @@ You will need to obtain a 511 API key to use this service. Sign up at [511.org](
     ```
 
 ## Build
-
 ```bash
 go build -o caltrain-gateway ./cmd/caltrain-gateway
 ```
+
+To stamp the version reported by `/ui` and the admin pages, pass it at link time:
+
+```bash
+PKG=caltrain-gateway/internal/app/caltrain-gateway
+go build -ldflags "-X $PKG.buildVersion=$(git describe --tags)" -o caltrain-gateway ./cmd/caltrain-gateway
+```
+
+Without it the binary reports `dev` plus the commit the Go toolchain embeds, so a
+development build never claims to be a release. Docker and CI builds stamp this
+automatically from the git tag.
 
 ## Usage
 

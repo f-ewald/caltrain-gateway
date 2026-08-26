@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Show the software version, derived from the git tag, on the `/ui` dashboard and in the admin
+  page header. The version is stamped at build time via ldflags; an unstamped build reports
+  `dev` plus the embedded commit rather than claiming to be a release.
+- Build and CI now pass the version and revision into the Docker image
+
 ## v1.5.0 (2026-08-25)
 
 - Add `GET /caltrain/timetable/version` reporting a content-derived schedule version, the

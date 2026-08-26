@@ -70,6 +70,8 @@
                     const health = await healthResp.json();
 
                     const root = this.shadowRoot;
+                    root.getElementById("version").textContent = data.version || "unknown";
+
                     const uptimeStr = this._formatUptime(data.uptime_seconds);
                     const uptimeEl = root.getElementById("uptime");
                     uptimeEl.textContent = uptimeStr;
@@ -144,6 +146,7 @@
                         }
                     </style>
                     <h1>Caltrain Gateway</h1>
+                    <p class="meta">Version: <span id="version">-</span></p>
                     <p class="meta">Uptime: <span id="uptime">-</span></p>
                     <p class="meta">Last updated: <span id="last-updated">-</span></p>
                     <table>

@@ -37,12 +37,19 @@ type adminPage struct {
 	Title     string
 	ActiveTab string
 	Tabs      []adminTab
+	Version   string
 	Data      any
 }
 
 // newAdminPage builds a page model for the given tab and title.
 func newAdminPage(activeTab, title string, data any) adminPage {
-	return adminPage{Title: title, ActiveTab: activeTab, Tabs: adminTabs, Data: data}
+	return adminPage{
+		Title:     title,
+		ActiveTab: activeTab,
+		Tabs:      adminTabs,
+		Version:   BuildVersion(),
+		Data:      data,
+	}
 }
 
 // renderAdminPage renders a content template inside the shared admin layout.
