@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.6.0 (2026-08-26)
 
 - **Breaking:** remove the root catch-all proxy. The service no longer forwards arbitrary
   unrecognised paths to 511; they return `404` instead. Root-level `/transit/` paths are still
