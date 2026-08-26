@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.5.0 (2026-08-25)
 
 - Add `GET /caltrain/timetable/version` reporting a content-derived schedule version, the
   timetable's validity window, days until it expires, and whether the copy is stale
