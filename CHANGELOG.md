@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.7.0 (2026-09-03)
 
 - Add calendar overrides: an admin can force a specific schedule type (weekday, saturday,
   sunday, holiday) for a given date, taking precedence over the 511 holiday-calendar-derived
