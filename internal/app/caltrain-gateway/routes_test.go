@@ -190,6 +190,7 @@ func TestRoutingAdminUnavailable(t *testing.T) {
 		{"admin root", "/admin/"},
 		{"admin root without trailing slash", "/admin"},
 		{"admin subpage", "/admin/departures"},
+		{"admin calendar overrides subpage", "/admin/calendar"},
 	}
 
 	for _, tt := range tests {
@@ -238,6 +239,26 @@ func TestRoutingAdminRegisteredWithCredentials(t *testing.T) {
 	mux.ServeHTTP(recorder, request)
 	if recorder.Code != http.StatusFound {
 		t.Errorf("expected the admin root to redirect to the first tab, got %d", recorder.Code)
+	}
+}
+
+// TestRoutingAdminCalendarOverridesRegistered confirms the new calendar
+// overrides tab is wired behind the same auth as the rest of the admin section.
+func TestRoutingAdminCalendarOverridesRegistered(t *testing.T) {
+	mux, _, _ := newRoutingHarness(t, "dbuser", "dbpass")
+
+	recorder := httptest.NewRecorder()
+	mux.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/admin/calendar", nil))
+	if recorder.Code != http.StatusUnauthorized {
+		t.Fatalf("expected /admin/calendar to require auth, got %d", recorder.Code)
+	}
+
+	request := httptest.NewRequest(http.MethodGet, "/admin/calendar", nil)
+	request.SetBasicAuth("dbuser", "dbpass")
+	recorder = httptest.NewRecorder()
+	mux.ServeHTTP(recorder, request)
+	if recorder.Code != http.StatusOK {
+		t.Errorf("expected /admin/calendar to render, got %d", recorder.Code)
 	}
 }
 

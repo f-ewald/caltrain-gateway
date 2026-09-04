@@ -53,6 +53,7 @@ type ScheduleTypeResponse struct {
 	Date         string       `json:"date"`
 	OperatorID   string       `json:"operator_id"`
 	ScheduleType ScheduleType `json:"schedule_type"`
+	Overridden   bool         `json:"overridden"`
 }
 
 // holidaysFlight collapses concurrent requests for the same operator's holidays.
@@ -134,6 +135,28 @@ func DetermineScheduleType(holidays *HolidaysResponse, date time.Time) ScheduleT
 	}
 }
 
+// ResolveScheduleType returns the schedule type in effect for an operator's
+// date, preferring a manual calendar override over the 511 holiday calendar.
+// Overrides let an admin force a schedule for a date 511 doesn't already flag
+// (e.g. a Monday holiday that should run the weekend schedule). overridden
+// reports whether an override was applied, so callers can surface that for
+// transparency.
+func ResolveScheduleType(apiKeyPool *KeyPool, operatorID string, date time.Time) (ScheduleType, bool, error) {
+	override, err := GetCalendarOverride(operatorID, date)
+	if err != nil {
+		return "", false, err
+	}
+	if override != nil {
+		return ScheduleType(override.ScheduleType), true, nil
+	}
+
+	holidays, err := getHolidays(apiKeyPool, operatorID)
+	if err != nil {
+		return "", false, err
+	}
+	return DetermineScheduleType(holidays, date), false, nil
+}
+
 // getHolidays fetches holidays for an operator, using cache and request collapsing.
 func getHolidays(apiKeyPool *KeyPool, operatorID string) (*HolidaysResponse, error) {
 	cacheKey := "holidays:" + operatorID
@@ -192,7 +215,7 @@ func scheduleTypeHandler(apiKeyPool *KeyPool) http.HandlerFunc {
 			return
 		}
 
-		holidays, err := getHolidays(apiKeyPool, operatorID)
+		scheduleType, overridden, err := ResolveScheduleType(apiKeyPool, operatorID, date)
 		if err != nil {
 			switch err.Error() {
 			case "no available API keys":
@@ -203,13 +226,12 @@ func scheduleTypeHandler(apiKeyPool *KeyPool) http.HandlerFunc {
 			return
 		}
 
-		scheduleType := DetermineScheduleType(holidays, date)
-
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(ScheduleTypeResponse{
 			Date:         dateParam,
 			OperatorID:   operatorID,
 			ScheduleType: scheduleType,
+			Overridden:   overridden,
 		})
 	}
 }

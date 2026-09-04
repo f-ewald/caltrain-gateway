@@ -68,6 +68,7 @@ const (
 	tabSupport       = "support"
 	tabServiceAlerts = "servicealerts"
 	tabDepartures    = "departures"
+	tabCalendar      = "calendar"
 )
 
 // adminTabs is the shared navigation shown on every admin page, in display order.
@@ -75,6 +76,7 @@ var adminTabs = []adminTab{
 	{ID: tabSupport, Label: "Support requests", Href: "/admin/support"},
 	{ID: tabServiceAlerts, Label: "Service alerts", Href: "/admin/servicealerts"},
 	{ID: tabDepartures, Label: "Train departures", Href: "/admin/departures"},
+	{ID: tabCalendar, Label: "Calendar overrides", Href: "/admin/calendar"},
 }
 
 // adminPage wraps page-specific data with the chrome the shared layout needs.

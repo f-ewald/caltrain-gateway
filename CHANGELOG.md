@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Add calendar overrides: an admin can force a specific schedule type (weekday, saturday,
+  sunday, holiday) for a given date, taking precedence over the 511 holiday-calendar-derived
+  determination used by `GET /caltrain/scheduletype` (which now reports `overridden`) and by the
+  departure tracker's stored schedule metadata. Manage overrides at `/admin/calendar`. Applies
+  globally to Caltrain (`CT`) for now; multi-agency selection is deferred.
+
 ## v1.6.0 (2026-08-26)
 
 - **Breaking:** remove the root catch-all proxy. The service no longer forwards arbitrary

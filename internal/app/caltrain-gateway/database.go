@@ -91,7 +91,34 @@ func migrateSchema(db *sql.DB) error {
 		return err
 	}
 
+	if err := migrateCalendarOverridesSchema(db); err != nil {
+		return err
+	}
+
 	return migrateDepartureSchema(db)
+}
+
+// migrateCalendarOverridesSchema creates the calendar_overrides table. A row
+// forces a specific schedule type for one agency's date, taking precedence
+// over the 511 holiday-calendar-derived determination (see ResolveScheduleType).
+// agency_id is stored even though only "CT" is used today, so multi-agency
+// support does not require a schema change later.
+func migrateCalendarOverridesSchema(db *sql.DB) error {
+	if _, err := db.Exec(`
+		CREATE TABLE IF NOT EXISTS calendar_overrides (
+			id            SERIAL      PRIMARY KEY,
+			agency_id     TEXT        NOT NULL DEFAULT 'CT',
+			override_date DATE        NOT NULL,
+			schedule_type TEXT        NOT NULL,
+			note          TEXT,
+			created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+			updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+			UNIQUE (agency_id, override_date)
+		)
+	`); err != nil {
+		return err
+	}
+	return nil
 }
 
 // migrateDepartureSchema creates the train_departures table and its indexes.
@@ -412,4 +439,105 @@ func StreamAllServiceAlerts(fn func(ServiceAlertRow) error) error {
 		}
 	}
 	return rows.Err()
+}
+
+// CalendarOverrideRow represents a forced schedule type for one agency's date.
+type CalendarOverrideRow struct {
+	ID           int
+	AgencyID     string
+	OverrideDate time.Time
+	ScheduleType string
+	Note         string
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+}
+
+const calendarOverrideColumns = `id, agency_id, override_date, schedule_type, note, created_at, updated_at`
+
+// scanCalendarOverrideRow scans a row from a SELECT calendarOverrideColumns query.
+func scanCalendarOverrideRow(scanner interface {
+	Scan(dest ...any) error
+}) (CalendarOverrideRow, error) {
+	var (
+		r    CalendarOverrideRow
+		note sql.NullString
+	)
+	if err := scanner.Scan(
+		&r.ID, &r.AgencyID, &r.OverrideDate, &r.ScheduleType, &note, &r.CreatedAt, &r.UpdatedAt,
+	); err != nil {
+		return r, err
+	}
+	r.Note = nullStringValue(note)
+	return r, nil
+}
+
+// GetCalendarOverride returns the override for an agency's date, or nil, nil
+// when none exists or no database is configured.
+func GetCalendarOverride(agencyID string, date time.Time) (*CalendarOverrideRow, error) {
+	if DB == nil {
+		return nil, nil
+	}
+	row := DB.QueryRow(
+		`SELECT `+calendarOverrideColumns+` FROM calendar_overrides WHERE agency_id = $1 AND override_date = $2`,
+		agencyID, date.Format(dateLayout),
+	)
+	r, err := scanCalendarOverrideRow(row)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &r, nil
+}
+
+// ListCalendarOverrides returns every override ordered by date descending.
+// Returns nil, nil when the database is not configured.
+func ListCalendarOverrides() ([]CalendarOverrideRow, error) {
+	if DB == nil {
+		return nil, nil
+	}
+	rows, err := DB.Query(`SELECT ` + calendarOverrideColumns + ` FROM calendar_overrides ORDER BY override_date DESC`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []CalendarOverrideRow
+	for rows.Next() {
+		r, err := scanCalendarOverrideRow(rows)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, r)
+	}
+	return results, rows.Err()
+}
+
+// UpsertCalendarOverride creates an override for an agency's date, or replaces
+// its schedule type and note in place if one already exists for that date.
+// If no database is configured (DB is nil) the call is a no-op.
+func UpsertCalendarOverride(agencyID string, date time.Time, scheduleType, note string) error {
+	if DB == nil {
+		return nil
+	}
+	_, err := DB.Exec(`
+		INSERT INTO calendar_overrides (agency_id, override_date, schedule_type, note)
+		VALUES ($1, $2, $3, $4)
+		ON CONFLICT (agency_id, override_date) DO UPDATE SET
+			schedule_type = EXCLUDED.schedule_type,
+			note          = EXCLUDED.note,
+			updated_at    = NOW()
+	`, agencyID, date.Format(dateLayout), scheduleType, nullable(note))
+	return err
+}
+
+// DeleteCalendarOverride removes an override by primary key.
+// If no database is configured (DB is nil) the call is a no-op.
+func DeleteCalendarOverride(id int) error {
+	if DB == nil {
+		return nil
+	}
+	_, err := DB.Exec(`DELETE FROM calendar_overrides WHERE id = $1`, id)
+	return err
 }

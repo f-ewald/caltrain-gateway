@@ -679,4 +679,7 @@ func registerAdminRoutes(mux *http.ServeMux, dbUsername, dbPassword string) {
 	mux.HandleFunc("/admin/departures/detail", basicAuthMiddleware(dbUsername, dbPassword, departuresDetailHandler))
 	mux.HandleFunc("/admin/departures/delete", basicAuthMiddleware(dbUsername, dbPassword, departuresDeleteHandler))
 	mux.HandleFunc("/admin/departures/export", basicAuthMiddleware(dbUsername, dbPassword, departuresExportHandler))
+	mux.HandleFunc("/admin/calendar", basicAuthMiddleware(dbUsername, dbPassword, calendarOverridesListHandler))
+	mux.HandleFunc("/admin/calendar/create", basicAuthMiddleware(dbUsername, dbPassword, calendarOverridesCreateHandler))
+	mux.HandleFunc("/admin/calendar/delete", basicAuthMiddleware(dbUsername, dbPassword, calendarOverridesDeleteHandler))
 }

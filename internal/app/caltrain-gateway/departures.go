@@ -327,18 +327,18 @@ func (t *DepartureTracker) record(response *StopMonitoringResponse) {
 }
 
 // scheduleTypeFor resolves the schedule type for a service date, memoising
-// within a single poll. An empty result means the holiday calendar was
+// within a single poll. It honours any manual calendar override for the date
+// (see ResolveScheduleType) so tracked departures reflect the same schedule
+// an admin has forced. An empty result means the holiday calendar was
 // unavailable; day_of_week is still stored, so only the holiday flag is lost.
 func (t *DepartureTracker) scheduleTypeFor(date time.Time, memo map[time.Time]ScheduleType) ScheduleType {
 	if cached, found := memo[date]; found {
 		return cached
 	}
-	resolved := ScheduleType("")
-	holidays, err := getHolidays(t.pool, departureOperatorID)
+	resolved, _, err := ResolveScheduleType(t.pool, departureOperatorID, date)
 	if err != nil {
 		log.Printf("Warning: schedule type unavailable for %s: %v", date.Format("2006-01-02"), err)
-	} else {
-		resolved = DetermineScheduleType(holidays, date)
+		resolved = ""
 	}
 	memo[date] = resolved
 	return resolved

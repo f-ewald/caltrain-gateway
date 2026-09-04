@@ -315,6 +315,9 @@ func TestScheduleTypeHandler(t *testing.T) {
 		if result.Date != "2026-02-16" {
 			t.Errorf("Expected date '2026-02-16', got '%s'", result.Date)
 		}
+		if result.Overridden {
+			t.Error("Expected overridden=false for a holiday-calendar-derived result")
+		}
 	})
 
 	t.Run("weekday date", func(t *testing.T) {
