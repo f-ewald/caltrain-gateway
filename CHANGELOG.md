@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.9.0 (2026-09-04)
 
 - Widen the 511 holiday-calendar cache TTL from 24 to 48 hours (`holidaysCacheTTL` in
   `holidays.go`). Holiday calendars are fetched lazily — only on an actual `scheduletype` request
