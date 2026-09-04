@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/prometheus/client_golang/prometheus/testutil"
 )
 
 func TestProxyHandler_ExistingAPIKey(t *testing.T) {
@@ -152,6 +154,83 @@ func TestProxyHandler_NonOKStatusCode(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestProxyHandler_RecordsCacheAndUpstreamMetrics(t *testing.T) {
+	Cache.Flush()
+	cacheResultsTotal.Reset()
+	upstreamRequestsTotal.Reset()
+
+	mockAPI := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status": "ok"}`))
+	}))
+	defer mockAPI.Close()
+
+	keyPool := NewKeyPool([]string{"test-key"}, 10, 1)
+	handler := proxyHandlerWithBaseURL(keyPool, mockAPI.URL+"/")
+
+	// First request is a cache miss that succeeds upstream.
+	req1 := httptest.NewRequest("GET", "/transit/stops?format=json", nil)
+	handler(httptest.NewRecorder(), req1)
+
+	if got := testutil.ToFloat64(cacheResultsTotal.WithLabelValues("miss")); got != 1 {
+		t.Errorf("expected 1 cache miss, got %v", got)
+	}
+	if got := testutil.ToFloat64(upstreamRequestsTotal.WithLabelValues("success")); got != 1 {
+		t.Errorf("expected 1 successful upstream request, got %v", got)
+	}
+
+	// Second identical request should be served from cache: no new upstream call.
+	req2 := httptest.NewRequest("GET", "/transit/stops?format=json", nil)
+	handler(httptest.NewRecorder(), req2)
+
+	if got := testutil.ToFloat64(cacheResultsTotal.WithLabelValues("hit")); got != 1 {
+		t.Errorf("expected 1 cache hit, got %v", got)
+	}
+	if got := testutil.ToFloat64(upstreamRequestsTotal.WithLabelValues("success")); got != 1 {
+		t.Errorf("expected upstream success count to stay at 1 after a cache hit, got %v", got)
+	}
+}
+
+func TestProxyHandler_RecordsUpstreamErrorMetric(t *testing.T) {
+	Cache.Flush()
+	upstreamRequestsTotal.Reset()
+
+	mockAPI := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	}))
+	defer mockAPI.Close()
+
+	keyPool := NewKeyPool([]string{"test-key"}, 10, 1)
+	handler := proxyHandlerWithBaseURL(keyPool, mockAPI.URL+"/")
+
+	req := httptest.NewRequest("GET", "/transit/stops?format=json", nil)
+	handler(httptest.NewRecorder(), req)
+
+	if got := testutil.ToFloat64(upstreamRequestsTotal.WithLabelValues("error")); got != 1 {
+		t.Errorf("expected 1 upstream error, got %v", got)
+	}
+}
+
+func TestProxyHandler_RecordsRateLimitedMetric(t *testing.T) {
+	Cache.Flush()
+	upstreamRequestsTotal.Reset()
+
+	// A pool with no burst capacity has no available key on the first call.
+	keyPool := NewKeyPool([]string{"test-key"}, 0, 0)
+	handler := proxyHandlerWithBaseURL(keyPool, "http://unused.invalid/")
+
+	req := httptest.NewRequest("GET", "/transit/stops?format=json", nil)
+	rec := httptest.NewRecorder()
+	handler(rec, req)
+
+	if rec.Code != http.StatusTooManyRequests {
+		t.Fatalf("expected 429, got %d", rec.Code)
+	}
+	if got := testutil.ToFloat64(upstreamRequestsTotal.WithLabelValues("rate_limited")); got != 1 {
+		t.Errorf("expected 1 rate_limited outcome, got %v", got)
 	}
 }
 

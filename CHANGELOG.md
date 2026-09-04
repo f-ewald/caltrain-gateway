@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Add a Prometheus exporter at `GET /metrics` (unauthenticated, standard for scraping): per-route
+  HTTP request count and duration, 511 proxy cache hit/miss, and upstream 511 call outcome and
+  latency, under the `caltrain_gateway` metric namespace. Also exposes the Go runtime/process
+  metrics the client library registers by default.
+
 ## v1.7.0 (2026-09-03)
 
 - Add calendar overrides: an admin can force a specific schedule type (weekday, saturday,

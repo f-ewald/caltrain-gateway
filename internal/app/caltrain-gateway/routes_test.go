@@ -61,6 +61,36 @@ func newRoutingHarness(t *testing.T, dbUsername, dbPassword string) (*http.Serve
 }
 
 // TestRoutingProxyPaths pins which paths reach 511 and which no longer do.
+// TestMetricsEndpoint confirms /metrics is unauthenticated and exposes both the
+// custom caltrain_gateway_* metrics and the free Go/process metrics the client
+// library registers by default.
+func TestMetricsEndpoint(t *testing.T) {
+	// dbUsername is empty, matching an admin-disabled deployment, to prove
+	// /metrics does not depend on the database credentials admin routes use.
+	mux, _, upstreamCalls := newRoutingHarness(t, "", "")
+
+	recorder := httptest.NewRecorder()
+	mux.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/metrics", nil))
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected /metrics to respond 200 without auth, got %d", recorder.Code)
+	}
+	if calls := upstreamCalls.Load(); calls != 0 {
+		t.Error("/metrics must never reach the upstream")
+	}
+	contentType := recorder.Header().Get("Content-Type")
+	if !strings.Contains(contentType, "text/plain") {
+		t.Errorf("expected a text/plain Content-Type, got %q", contentType)
+	}
+	body := recorder.Body.String()
+	if !strings.Contains(body, "caltrain_gateway_http_requests_total") {
+		t.Error("expected a caltrain_gateway_http_requests_total metric in the response")
+	}
+	if !strings.Contains(body, "go_goroutines") {
+		t.Error("expected the client library's default Go runtime metrics to be present")
+	}
+}
+
 func TestRoutingProxyPaths(t *testing.T) {
 	tests := []struct {
 		name         string
@@ -160,6 +190,7 @@ func TestRoutingRegisteredEndpoints(t *testing.T) {
 		"/ui",
 		"/ui/stats",
 		"/ui/health",
+		"/metrics",
 	}
 
 	for _, path := range paths {

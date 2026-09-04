@@ -14,6 +14,8 @@ import (
 	"time"
 
 	"golang.org/x/sync/singleflight"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 //go:embed web/index.html
@@ -153,6 +155,7 @@ func proxyHandlerWithBaseURL(apiKeyPool *KeyPool, baseURL string) http.HandlerFu
 
 		// 1. Check Cache
 		if cachedData, found := Cache.Get(cacheKey); found {
+			cacheResultsTotal.WithLabelValues("hit").Inc()
 			cached := cachedData.(*apiResponse)
 			if cached.contentType != "" {
 				w.Header().Set("Content-Type", cached.contentType)
@@ -161,6 +164,7 @@ func proxyHandlerWithBaseURL(apiKeyPool *KeyPool, baseURL string) http.HandlerFu
 			w.Write(cached.body)
 			return
 		}
+		cacheResultsTotal.WithLabelValues("miss").Inc()
 
 		// 2. Request Collapsing
 		// Only one goroutine will execute this function for a given key.
@@ -169,6 +173,7 @@ func proxyHandlerWithBaseURL(apiKeyPool *KeyPool, baseURL string) http.HandlerFu
 			// Retrieve API key from the pool
 			apiKey, ok := apiKeyPool.GetAvailableKey()
 			if !ok {
+				upstreamRequestsTotal.WithLabelValues("rate_limited").Inc()
 				return nil, fmt.Errorf("no available API keys")
 			}
 
@@ -184,15 +189,25 @@ func proxyHandlerWithBaseURL(apiKeyPool *KeyPool, baseURL string) http.HandlerFu
 			r.URL.RawQuery = q.Encode()
 
 			realApiUrl := baseURL + r.URL.Path + "?" + r.URL.RawQuery
+			upstreamStart := time.Now()
 			resp, err := http.Get(realApiUrl)
+			upstreamRequestDuration.Observe(time.Since(upstreamStart).Seconds())
 			if err != nil {
+				upstreamRequestsTotal.WithLabelValues("error").Inc()
 				return nil, err
 			}
 			defer resp.Body.Close()
 
 			body, err := io.ReadAll(resp.Body)
 			if err != nil {
+				upstreamRequestsTotal.WithLabelValues("error").Inc()
 				return nil, err
+			}
+
+			if resp.StatusCode == http.StatusOK {
+				upstreamRequestsTotal.WithLabelValues("success").Inc()
+			} else {
+				upstreamRequestsTotal.WithLabelValues("error").Inc()
 			}
 
 			response := &apiResponse{
@@ -635,23 +650,24 @@ func serviceAlertsExportHandler(w http.ResponseWriter, r *http.Request) {
 func SetupRoutes(apiKeyPool *KeyPool, secret, dbUsername, dbPassword string) *http.ServeMux {
 	mux := http.NewServeMux()
 
-	proxy := statsMiddleware(authMiddleware(secret, gzipMiddleware(proxyHandler(apiKeyPool))))
+	proxy := metricsMiddleware("/transit/*", statsMiddleware(authMiddleware(secret, gzipMiddleware(proxyHandler(apiKeyPool)))))
 	// The prefix is intentionally left in place, so this reaches the proxy with
 	// the same path it has today and keeps the cache key identical to the
 	// equivalent /proxy/transit/... request.
 	mux.HandleFunc("/transit/", proxy)
-	mux.HandleFunc("/proxy/", statsMiddleware(authMiddleware(secret, gzipMiddleware(http.StripPrefix("/proxy", proxyHandler(apiKeyPool)).ServeHTTP))))
+	mux.HandleFunc("/proxy/", metricsMiddleware("/proxy/*", statsMiddleware(authMiddleware(secret, gzipMiddleware(http.StripPrefix("/proxy", proxyHandler(apiKeyPool)).ServeHTTP)))))
 
-	mux.HandleFunc("/up", healthHandler)
-	mux.HandleFunc("/caltrain/timetable", statsMiddleware(authMiddleware(secret, gzipMiddleware(timetableHandler))))
-	mux.HandleFunc("/caltrain/timetable/version", statsMiddleware(authMiddleware(secret, gzipMiddleware(scheduleVersionHandler))))
-	mux.HandleFunc("/caltrain/stops", statsMiddleware(authMiddleware(secret, gzipMiddleware(stopsHandler))))
-	mux.HandleFunc("/caltrain/servicealerts", statsMiddleware(authMiddleware(secret, gzipMiddleware(serviceAlertsHandler))))
-	mux.HandleFunc("/caltrain/scheduletype", statsMiddleware(authMiddleware(secret, gzipMiddleware(scheduleTypeHandler(apiKeyPool)))))
-	mux.HandleFunc("/ui", uiHandler)
-	mux.HandleFunc("/ui/stats", uiStatsHandler)
-	mux.HandleFunc("/ui/health", uiHealthHandler)
-	mux.HandleFunc("/support", statsMiddleware(logRequestMiddleware(supportHandler)))
+	mux.HandleFunc("/up", metricsMiddleware("/up", healthHandler))
+	mux.HandleFunc("/caltrain/timetable", metricsMiddleware("/caltrain/timetable", statsMiddleware(authMiddleware(secret, gzipMiddleware(timetableHandler)))))
+	mux.HandleFunc("/caltrain/timetable/version", metricsMiddleware("/caltrain/timetable/version", statsMiddleware(authMiddleware(secret, gzipMiddleware(scheduleVersionHandler)))))
+	mux.HandleFunc("/caltrain/stops", metricsMiddleware("/caltrain/stops", statsMiddleware(authMiddleware(secret, gzipMiddleware(stopsHandler)))))
+	mux.HandleFunc("/caltrain/servicealerts", metricsMiddleware("/caltrain/servicealerts", statsMiddleware(authMiddleware(secret, gzipMiddleware(serviceAlertsHandler)))))
+	mux.HandleFunc("/caltrain/scheduletype", metricsMiddleware("/caltrain/scheduletype", statsMiddleware(authMiddleware(secret, gzipMiddleware(scheduleTypeHandler(apiKeyPool))))))
+	mux.HandleFunc("/ui", metricsMiddleware("/ui", uiHandler))
+	mux.HandleFunc("/ui/stats", metricsMiddleware("/ui/stats", uiStatsHandler))
+	mux.HandleFunc("/ui/health", metricsMiddleware("/ui/health", uiHealthHandler))
+	mux.HandleFunc("/support", metricsMiddleware("/support", statsMiddleware(logRequestMiddleware(supportHandler))))
+	mux.Handle("/metrics", promhttp.Handler())
 
 	registerAdminRoutes(mux, dbUsername, dbPassword)
 	return mux
@@ -662,24 +678,24 @@ func SetupRoutes(apiKeyPool *KeyPool, secret, dbUsername, dbPassword string) *ht
 // a username there is nothing to authenticate against.
 func registerAdminRoutes(mux *http.ServeMux, dbUsername, dbPassword string) {
 	if dbUsername == "" {
-		mux.HandleFunc("/admin/", adminUnavailableHandler)
+		mux.HandleFunc("/admin/", metricsMiddleware("/admin/*", adminUnavailableHandler))
 		return
 	}
 
 	// Admin pages — protected by basic auth using database credentials
-	mux.HandleFunc("/admin/", basicAuthMiddleware(dbUsername, dbPassword, adminIndexHandler))
-	mux.HandleFunc("/admin/support", basicAuthMiddleware(dbUsername, dbPassword, supportListHandler))
-	mux.HandleFunc("/admin/support/detail", basicAuthMiddleware(dbUsername, dbPassword, supportDetailHandler))
-	mux.HandleFunc("/admin/support/delete", basicAuthMiddleware(dbUsername, dbPassword, supportDeleteHandler))
-	mux.HandleFunc("/admin/servicealerts", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsListHandler))
-	mux.HandleFunc("/admin/servicealerts/detail", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsDetailHandler))
-	mux.HandleFunc("/admin/servicealerts/delete", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsDeleteHandler))
-	mux.HandleFunc("/admin/servicealerts/export", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsExportHandler))
-	mux.HandleFunc("/admin/departures", basicAuthMiddleware(dbUsername, dbPassword, departuresListHandler))
-	mux.HandleFunc("/admin/departures/detail", basicAuthMiddleware(dbUsername, dbPassword, departuresDetailHandler))
-	mux.HandleFunc("/admin/departures/delete", basicAuthMiddleware(dbUsername, dbPassword, departuresDeleteHandler))
-	mux.HandleFunc("/admin/departures/export", basicAuthMiddleware(dbUsername, dbPassword, departuresExportHandler))
-	mux.HandleFunc("/admin/calendar", basicAuthMiddleware(dbUsername, dbPassword, calendarOverridesListHandler))
-	mux.HandleFunc("/admin/calendar/create", basicAuthMiddleware(dbUsername, dbPassword, calendarOverridesCreateHandler))
-	mux.HandleFunc("/admin/calendar/delete", basicAuthMiddleware(dbUsername, dbPassword, calendarOverridesDeleteHandler))
+	mux.HandleFunc("/admin/", metricsMiddleware("/admin/*", basicAuthMiddleware(dbUsername, dbPassword, adminIndexHandler)))
+	mux.HandleFunc("/admin/support", metricsMiddleware("/admin/support", basicAuthMiddleware(dbUsername, dbPassword, supportListHandler)))
+	mux.HandleFunc("/admin/support/detail", metricsMiddleware("/admin/support/detail", basicAuthMiddleware(dbUsername, dbPassword, supportDetailHandler)))
+	mux.HandleFunc("/admin/support/delete", metricsMiddleware("/admin/support/delete", basicAuthMiddleware(dbUsername, dbPassword, supportDeleteHandler)))
+	mux.HandleFunc("/admin/servicealerts", metricsMiddleware("/admin/servicealerts", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsListHandler)))
+	mux.HandleFunc("/admin/servicealerts/detail", metricsMiddleware("/admin/servicealerts/detail", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsDetailHandler)))
+	mux.HandleFunc("/admin/servicealerts/delete", metricsMiddleware("/admin/servicealerts/delete", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsDeleteHandler)))
+	mux.HandleFunc("/admin/servicealerts/export", metricsMiddleware("/admin/servicealerts/export", basicAuthMiddleware(dbUsername, dbPassword, serviceAlertsExportHandler)))
+	mux.HandleFunc("/admin/departures", metricsMiddleware("/admin/departures", basicAuthMiddleware(dbUsername, dbPassword, departuresListHandler)))
+	mux.HandleFunc("/admin/departures/detail", metricsMiddleware("/admin/departures/detail", basicAuthMiddleware(dbUsername, dbPassword, departuresDetailHandler)))
+	mux.HandleFunc("/admin/departures/delete", metricsMiddleware("/admin/departures/delete", basicAuthMiddleware(dbUsername, dbPassword, departuresDeleteHandler)))
+	mux.HandleFunc("/admin/departures/export", metricsMiddleware("/admin/departures/export", basicAuthMiddleware(dbUsername, dbPassword, departuresExportHandler)))
+	mux.HandleFunc("/admin/calendar", metricsMiddleware("/admin/calendar", basicAuthMiddleware(dbUsername, dbPassword, calendarOverridesListHandler)))
+	mux.HandleFunc("/admin/calendar/create", metricsMiddleware("/admin/calendar/create", basicAuthMiddleware(dbUsername, dbPassword, calendarOverridesCreateHandler)))
+	mux.HandleFunc("/admin/calendar/delete", metricsMiddleware("/admin/calendar/delete", basicAuthMiddleware(dbUsername, dbPassword, calendarOverridesDeleteHandler)))
 }

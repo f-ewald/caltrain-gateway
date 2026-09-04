@@ -61,10 +61,17 @@ Go HTTP service that proxies and caches requests to the 511.org transit API for 
   - **stops.go** — Static mapping of GTFS stop IDs to parent station names (e.g., `"70011"` → `"san_francisco"`)
   - **cache.go** — Global response cache (2-min TTL, `go-cache`)
   - **environment.go** — Environment variable loading
+  - **metrics.go** — Prometheus metrics (`github.com/prometheus/client_golang`): per-route HTTP
+    request count/duration, 511 proxy cache hit/miss, and upstream (511) call outcome/latency.
+    `metricsMiddleware` labels by the route string given at each `mux.HandleFunc` registration
+    site rather than the raw request path, so the `/proxy/` and `/transit/` prefix routes (which
+    forward arbitrary upstream paths) stay a bounded `"/proxy/*"` / `"/transit/*"` label instead of
+    an unbounded one.
 
 ### API Endpoints
 
 - `GET /up` — Health check
+- `GET /metrics` — Prometheus metrics, unauthenticated (standard for scraping)
 - `GET /caltrain/timetable` — All departures by stop ID
 - `GET /caltrain/timetable?weekday=Monday&station=san_francisco` — Filter by weekday and/or station name
 
