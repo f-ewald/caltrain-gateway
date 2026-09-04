@@ -59,6 +59,14 @@ type ScheduleTypeResponse struct {
 // holidaysFlight collapses concurrent requests for the same operator's holidays.
 var holidaysFlight singleflight.Group
 
+// holidaysCacheTTL bounds how long a fetched holiday calendar is reused before
+// a request for that agency triggers a fresh 511 call. Holiday calendars change
+// rarely, and this is fetched lazily (only when scheduletype is actually
+// requested for that agency, never proactively), so a generous TTL keeps
+// per-agency quota usage to at most one request every two days regardless of
+// how many agencies are queried.
+const holidaysCacheTTL = 48 * time.Hour
+
 // LoadHolidays reads and parses a holidays JSON file.
 func LoadHolidays(filename string) (*HolidaysResponse, error) {
 	data, err := os.ReadFile(filename)
@@ -181,8 +189,8 @@ func getHolidays(apiKeyPool *KeyPool, operatorID string) (*HolidaysResponse, err
 			return nil, err
 		}
 
-		// Cache for 24 hours
-		Cache.Set(cacheKey, holidays, 24*time.Hour)
+		// Cache for holidaysCacheTTL (fetched lazily, on request only).
+		Cache.Set(cacheKey, holidays, holidaysCacheTTL)
 		return holidays, nil
 	})
 	if err != nil {
