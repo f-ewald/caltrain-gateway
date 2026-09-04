@@ -90,6 +90,8 @@ func TestBuildVersionIsNeverEmpty(t *testing.T) {
 }
 
 func TestUIStatsHandlerReportsVersion(t *testing.T) {
+	SetAgencies(nil)
+
 	recorder := httptest.NewRecorder()
 	uiStatsHandler(recorder, httptest.NewRequest(http.MethodGet, "/ui/stats", nil))
 
@@ -98,9 +100,13 @@ func TestUIStatsHandlerReportsVersion(t *testing.T) {
 	}
 
 	var payload struct {
-		Version       string         `json:"version"`
-		UptimeSeconds int64          `json:"uptime_seconds"`
-		Endpoints     map[string]any `json:"endpoints"`
+		Version           string         `json:"version"`
+		UptimeSeconds     int64          `json:"uptime_seconds"`
+		Endpoints         map[string]any `json:"endpoints"`
+		SupportedAgencies []struct {
+			ID   string `json:"id"`
+			Name string `json:"name"`
+		} `json:"supported_agencies"`
 	}
 	if err := json.Unmarshal(recorder.Body.Bytes(), &payload); err != nil {
 		t.Fatalf("failed to decode stats: %v", err)
@@ -110,6 +116,16 @@ func TestUIStatsHandlerReportsVersion(t *testing.T) {
 	}
 	if payload.Version != BuildVersion() {
 		t.Errorf("expected version %q, got %q", BuildVersion(), payload.Version)
+	}
+	if len(payload.SupportedAgencies) != 2 {
+		t.Fatalf("expected 2 supported agencies, got %d: %+v", len(payload.SupportedAgencies), payload.SupportedAgencies)
+	}
+	byID := map[string]string{}
+	for _, a := range payload.SupportedAgencies {
+		byID[a.ID] = a.Name
+	}
+	if byID["CT"] != "Caltrain" || byID["BA"] != "BART" {
+		t.Errorf("expected CT/Caltrain and BA/BART, got %+v", byID)
 	}
 }
 

@@ -3,13 +3,23 @@
 <h1>Calendar overrides</h1>
 <p class="note">
     Forces a specific schedule for a date, overriding the 511 holiday-calendar-derived
-    determination used by <code>/caltrain/scheduletype</code> and the departure tracker.
-    Applies globally to Caltrain (CT). Re-submitting an existing date edits it in place.
+    determination used by <code>/agency/{operator}/scheduletype</code> (and the legacy
+    <code>/caltrain/scheduletype</code>) and the departure tracker. Scoped per agency —
+    Caltrain (CT) is the only agency this service tracks departures for today, but an
+    override can be recorded for any agency. Re-submitting an existing agency/date edits
+    it in place.
 </p>
 
 {{if .Error}}<p class="note" style="border-color:#fecaca;background:#fef2f2;color:#b91c1c;">{{.Error}}</p>{{end}}
 
 <form class="filters" method="post" action="/admin/calendar/create">
+    <div>
+        <label for="agency_id">Agency</label>
+        <select id="agency_id" name="agency_id" required>
+            {{$default := .DefaultAgencyID}}
+            {{range .Agencies}}<option value="{{.ID}}"{{if eq .ID $default}} selected{{end}}>{{.Name}} ({{.ID}})</option>{{end}}
+        </select>
+    </div>
     <div>
         <label for="override_date">Date</label>
         <input type="date" id="override_date" name="override_date" required>
@@ -31,6 +41,7 @@
 <table>
     <thead>
         <tr>
+            <th>Agency</th>
             <th>Date</th>
             <th>Schedule type</th>
             <th>Note</th>
@@ -42,6 +53,7 @@
     <tbody>
         {{range .Overrides}}
         <tr>
+            <td class="nowrap">{{.AgencyID}}</td>
             <td class="nowrap">{{.DateText}}</td>
             <td>{{.ScheduleType}}</td>
             <td>{{.Note}}</td>

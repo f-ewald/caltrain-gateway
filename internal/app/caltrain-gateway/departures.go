@@ -12,6 +12,11 @@ const (
 	// departureOperatorID is the 511 agency code for Caltrain.
 	departureOperatorID = "CT"
 
+	// bartOperatorID is the 511 agency code for BART. BART has real
+	// timetable/stops data loaded (see main.go, stops_bart.go), but not
+	// real-time departure tracking, which stays Caltrain-only.
+	bartOperatorID = "BA"
+
 	// operatingDayStartHour is the local hour at which a new Caltrain operating
 	// day begins. Trains departing before this hour belong to the previous
 	// service date, which keeps late-night trains that cross midnight grouped

@@ -104,9 +104,11 @@ func withinServiceWindow(tc *TimetableCollection, now time.Time) (inService bool
 //
 // It fails open: when no timetable is loaded the window cannot be computed, and
 // polling continues. Spending quota on empty responses is recoverable, whereas
-// silently collecting nothing for a day is not.
+// silently collecting nothing for a day is not. Departure tracking is
+// Caltrain-only, so this always checks CT's timetable regardless of what other
+// agencies' data is loaded.
 func shouldPollDepartures(now time.Time) bool {
-	inService, known := withinServiceWindow(GetTimetableCollection(), now)
+	inService, known := withinServiceWindow(GetTimetableCollection(departureOperatorID), now)
 	if !known {
 		return true
 	}

@@ -2,6 +2,7 @@ package caltraingateway
 
 import (
 	"log"
+	"strings"
 	"sync"
 	"time"
 )
@@ -21,8 +22,27 @@ type scheduleState struct {
 	lastAttempt time.Time
 }
 
-// schedule is the process-wide timetable state.
+// schedule is the process-wide timetable state for Caltrain (CT), the
+// original and still most fully-featured agency.
 var schedule = &scheduleState{}
+
+// bartSchedule is the process-wide timetable state for BART (BA).
+var bartSchedule = &scheduleState{}
+
+// scheduleFor returns the schedule state for a known operator (case-insensitive),
+// or nil for any agency this service does not locally load timetable data for.
+// Only CT and BA are backed by real state today; extending this to a third
+// agency means adding one more case here.
+func scheduleFor(operatorID string) *scheduleState {
+	switch strings.ToUpper(operatorID) {
+	case departureOperatorID: // "CT"
+		return schedule
+	case bartOperatorID: // "BA"
+		return bartSchedule
+	default:
+		return nil
+	}
+}
 
 // Publish atomically replaces the timetable and recomputes everything derived
 // from it. A nil collection is ignored so a failed refresh cannot erase a
@@ -74,16 +94,26 @@ func (s *scheduleState) Snapshot() (*TimetableCollection, string, ScheduleMetada
 	return s.collection, s.version, s.metadata, s.refreshedAt, s.lastAttempt
 }
 
-// SetTimetableCollection publishes a timetable collection for the handlers to
-// serve, recomputing its version and validity metadata.
-func SetTimetableCollection(tc *TimetableCollection) {
-	schedule.Publish(tc)
-	if version := schedule.Version(); version != "" {
-		log.Printf("Timetable published, schedule version %s", version)
+// SetTimetableCollection publishes a timetable collection for operatorID,
+// recomputing its version and validity metadata. A call for an operator this
+// service does not track state for (see scheduleFor) is a no-op.
+func SetTimetableCollection(operatorID string, tc *TimetableCollection) {
+	s := scheduleFor(operatorID)
+	if s == nil {
+		return
+	}
+	s.Publish(tc)
+	if version := s.Version(); version != "" {
+		log.Printf("Timetable published for %s, schedule version %s", strings.ToUpper(operatorID), version)
 	}
 }
 
-// GetTimetableCollection returns the currently served timetable, or nil.
-func GetTimetableCollection() *TimetableCollection {
-	return schedule.Collection()
+// GetTimetableCollection returns the currently served timetable for operatorID,
+// or nil when none has loaded or the operator is untracked.
+func GetTimetableCollection(operatorID string) *TimetableCollection {
+	s := scheduleFor(operatorID)
+	if s == nil {
+		return nil
+	}
+	return s.Collection()
 }

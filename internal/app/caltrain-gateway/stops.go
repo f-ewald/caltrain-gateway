@@ -1,5 +1,14 @@
 package caltraingateway
 
+// stopsByOperator maps a supported agency ID to its GTFS stop ID -> parent
+// station name mapping, used by stopsHandler. Both maps are hand-curated
+// snapshots (see GTFSIDToParentName and BARTGTFSIDToParentName) rather than
+// fetched at runtime, since station lists change rarely.
+var stopsByOperator = map[string]map[string]string{
+	departureOperatorID: GTFSIDToParentName,
+	bartOperatorID:      BARTGTFSIDToParentName,
+}
+
 // GTFSIDToParentName maps GTFS stop IDs to their parent station names.
 var GTFSIDToParentName = map[string]string{
 	"70011": "san_francisco",

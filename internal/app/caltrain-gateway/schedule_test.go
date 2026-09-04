@@ -526,9 +526,9 @@ func TestRefreshKeepsPreviousScheduleOnFailure(t *testing.T) {
 	schedule.Publish(good)
 	original := schedule.Version()
 
-	refresher := NewScheduleRefresher(NewKeyPool([]string{"key"}, 10, 10), func(string) (*TimetableCollection, error) {
+	refresher := NewScheduleRefresher(NewKeyPool([]string{"key"}, 10, 10), "CT", func(string) (*TimetableCollection, error) {
 		return nil, errRateLimited
-	}, 3)
+	}, 3, 0)
 
 	if refresher.Refresh() {
 		t.Error("expected the refresh to report failure")
@@ -548,9 +548,9 @@ func TestRefreshPublishesNewSchedule(t *testing.T) {
 	schedule.Publish(collectionOf(makeTimetable("Local", "101", []testCall{{stopID: "70011", clock: "05:43:00"}})))
 	original := schedule.Version()
 
-	refresher := NewScheduleRefresher(NewKeyPool([]string{"key"}, 10, 10), func(string) (*TimetableCollection, error) {
+	refresher := NewScheduleRefresher(NewKeyPool([]string{"key"}, 10, 10), "CT", func(string) (*TimetableCollection, error) {
 		return collectionOf(makeTimetable("Local", "101", []testCall{{stopID: "70011", clock: "06:00:00"}})), nil
-	}, 3)
+	}, 3, 0)
 
 	if !refresher.Refresh() {
 		t.Fatal("expected the refresh to succeed")
@@ -558,6 +558,42 @@ func TestRefreshPublishesNewSchedule(t *testing.T) {
 	if schedule.Version() == original {
 		t.Error("expected the version to change after a real schedule change")
 	}
+}
+
+// TestScheduleRefresherDueForRefresh covers the minInterval gate that lets an
+// agency with a bigger payload (BART) refresh less often than nightly: it must
+// always be due when nothing has published yet or minInterval is zero, and
+// only due again once minInterval has actually elapsed since the last publish.
+func TestScheduleRefresherDueForRefresh(t *testing.T) {
+	restore := swapSchedule(t)
+	defer restore()
+
+	loader := func(string) (*TimetableCollection, error) {
+		return collectionOf(makeTimetable("Local", "101", []testCall{{stopID: "70011", clock: "05:43:00"}})), nil
+	}
+
+	t.Run("zero minInterval is always due", func(t *testing.T) {
+		refresher := NewScheduleRefresher(NewKeyPool([]string{"key"}, 10, 10), "CT", loader, 3, 0)
+		if !refresher.dueForRefresh() {
+			t.Error("expected a zero minInterval to always be due")
+		}
+	})
+
+	t.Run("not yet due right after a publish", func(t *testing.T) {
+		schedule.Publish(collectionOf(makeTimetable("Local", "101", []testCall{{stopID: "70011", clock: "05:43:00"}})))
+		refresher := NewScheduleRefresher(NewKeyPool([]string{"key"}, 10, 10), "CT", loader, 3, 24*time.Hour)
+		if refresher.dueForRefresh() {
+			t.Error("expected a refresh moments after publishing to not be due yet")
+		}
+	})
+
+	t.Run("due when nothing has published yet", func(t *testing.T) {
+		schedule = &scheduleState{}
+		refresher := NewScheduleRefresher(NewKeyPool([]string{"key"}, 10, 10), "CT", loader, 3, 24*time.Hour)
+		if !refresher.dueForRefresh() {
+			t.Error("expected a refresh to be due when nothing has ever published")
+		}
+	})
 }
 
 // TestPublishIgnoresNilCollection guards the invariant that nothing can erase a

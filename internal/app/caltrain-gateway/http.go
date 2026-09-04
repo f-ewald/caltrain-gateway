@@ -272,7 +272,12 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 // The response carries a weak ETag so clients can revalidate a cached copy with
 // If-None-Match instead of re-downloading the payload.
 func timetableHandler(w http.ResponseWriter, r *http.Request) {
-	collection, version, _, _, _ := schedule.Snapshot()
+	state := scheduleFor(resolveOperator(r))
+	if state == nil {
+		http.Error(w, "Unknown or unsupported agency", http.StatusNotFound)
+		return
+	}
+	collection, version, _, _, _ := state.Snapshot()
 	if collection == nil {
 		http.Error(w, "Timetable not loaded", http.StatusServiceUnavailable)
 		return
@@ -400,10 +405,16 @@ func filterServiceAlertsByAgency(sa *ServiceAlertsResponse, agency string) *Serv
 	}
 }
 
-// stopsHandler returns the GTFS ID to parent station name mapping as JSON
+// stopsHandler returns the GTFS ID to parent station name mapping as JSON,
+// for whichever agency the request resolves to (see resolveOperator).
 func stopsHandler(w http.ResponseWriter, r *http.Request) {
+	stops, ok := stopsByOperator[resolveOperator(r)]
+	if !ok {
+		http.Error(w, "Unknown or unsupported agency", http.StatusNotFound)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(GTFSIDToParentName); err != nil {
+	if err := json.NewEncoder(w).Encode(stops); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
 	}
@@ -428,10 +439,29 @@ func uiStatsHandler(w http.ResponseWriter, r *http.Request) {
 	uptimeSeconds, counts := requestStats.GetSnapshot()
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]any{
-		"uptime_seconds": uptimeSeconds,
-		"endpoints":      counts,
-		"version":        BuildVersion(),
+		"uptime_seconds":     uptimeSeconds,
+		"endpoints":          counts,
+		"version":            BuildVersion(),
+		"supported_agencies": supportedAgencyViews(),
 	})
+}
+
+// supportedAgencyView renders an Agency with this API's own snake_case JSON
+// convention, decoupled from Agency's tags (which mirror 511's own
+// "Id"/"Name" field casing for unmarshaling their response).
+type supportedAgencyView struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
+// supportedAgencyViews renders SupportedAgencies for the /ui/stats response.
+func supportedAgencyViews() []supportedAgencyView {
+	agencies := SupportedAgencies()
+	views := make([]supportedAgencyView, len(agencies))
+	for i, a := range agencies {
+		views[i] = supportedAgencyView{ID: a.ID, Name: a.Name}
+	}
+	return views
 }
 
 // SetAPIConnected updates the API connectivity status.
@@ -658,11 +688,40 @@ func SetupRoutes(apiKeyPool *KeyPool, secret, dbUsername, dbPassword string) *ht
 	mux.HandleFunc("/proxy/", metricsMiddleware("/proxy/*", statsMiddleware(authMiddleware(secret, gzipMiddleware(http.StripPrefix("/proxy", proxyHandler(apiKeyPool)).ServeHTTP)))))
 
 	mux.HandleFunc("/up", metricsMiddleware("/up", healthHandler))
-	mux.HandleFunc("/caltrain/timetable", metricsMiddleware("/caltrain/timetable", statsMiddleware(authMiddleware(secret, gzipMiddleware(timetableHandler)))))
-	mux.HandleFunc("/caltrain/timetable/version", metricsMiddleware("/caltrain/timetable/version", statsMiddleware(authMiddleware(secret, gzipMiddleware(scheduleVersionHandler)))))
-	mux.HandleFunc("/caltrain/stops", metricsMiddleware("/caltrain/stops", statsMiddleware(authMiddleware(secret, gzipMiddleware(stopsHandler)))))
-	mux.HandleFunc("/caltrain/servicealerts", metricsMiddleware("/caltrain/servicealerts", statsMiddleware(authMiddleware(secret, gzipMiddleware(serviceAlertsHandler)))))
-	mux.HandleFunc("/caltrain/scheduletype", metricsMiddleware("/caltrain/scheduletype", statsMiddleware(authMiddleware(secret, gzipMiddleware(scheduleTypeHandler(apiKeyPool))))))
+
+	// Each endpoint's inner chain (auth + gzip + handler) is built once and
+	// reused by both its legacy /caltrain/... route and its generic
+	// /agency/{operator}/... route, so there is exactly one handler
+	// implementation per endpoint behind the two paths.
+	timetableChain := authMiddleware(secret, gzipMiddleware(timetableHandler))
+	timetableVersionChain := authMiddleware(secret, gzipMiddleware(scheduleVersionHandler))
+	stopsChain := authMiddleware(secret, gzipMiddleware(stopsHandler))
+	serviceAlertsChain := authMiddleware(secret, gzipMiddleware(serviceAlertsHandler))
+	scheduleTypeChain := authMiddleware(secret, gzipMiddleware(scheduleTypeHandler(apiKeyPool)))
+
+	mux.HandleFunc("/caltrain/timetable", metricsMiddleware("/caltrain/timetable", statsMiddleware(timetableChain)))
+	mux.HandleFunc("/caltrain/timetable/version", metricsMiddleware("/caltrain/timetable/version", statsMiddleware(timetableVersionChain)))
+	mux.HandleFunc("/caltrain/stops", metricsMiddleware("/caltrain/stops", statsMiddleware(stopsChain)))
+	mux.HandleFunc("/caltrain/servicealerts", metricsMiddleware("/caltrain/servicealerts", statsMiddleware(serviceAlertsChain)))
+	mux.HandleFunc("/caltrain/scheduletype", metricsMiddleware("/caltrain/scheduletype", statsMiddleware(scheduleTypeChain)))
+
+	// Generic, agency-aware equivalents. timetable/timetable-version/stops
+	// serve locally-loaded data for a fixed set of agencies (today: CT and
+	// BA, see loadedAgencyIDs in agencies.go); any other agency is gated to a
+	// 404 (see agencyGatedHandler). servicealerts and scheduletype already
+	// accept an arbitrary agency internally, so the path segment is simply
+	// forwarded into the query parameter they already read.
+	mux.HandleFunc("/agency/{operator}/timetable",
+		metricsMiddleware("/agency/{operator}/timetable", statsMiddleware(agencyGatedHandler(loadedAgencyIDs, timetableChain))))
+	mux.HandleFunc("/agency/{operator}/timetable/version",
+		metricsMiddleware("/agency/{operator}/timetable/version", statsMiddleware(agencyGatedHandler(loadedAgencyIDs, timetableVersionChain))))
+	mux.HandleFunc("/agency/{operator}/stops",
+		metricsMiddleware("/agency/{operator}/stops", statsMiddleware(agencyGatedHandler(loadedAgencyIDs, stopsChain))))
+	mux.HandleFunc("/agency/{operator}/servicealerts",
+		metricsMiddleware("/agency/{operator}/servicealerts", statsMiddleware(pathParamToQuery("agency", serviceAlertsChain))))
+	mux.HandleFunc("/agency/{operator}/scheduletype",
+		metricsMiddleware("/agency/{operator}/scheduletype", statsMiddleware(pathParamToQuery("operator_id", scheduleTypeChain))))
+
 	mux.HandleFunc("/ui", metricsMiddleware("/ui", uiHandler))
 	mux.HandleFunc("/ui/stats", metricsMiddleware("/ui/stats", uiStatsHandler))
 	mux.HandleFunc("/ui/health", metricsMiddleware("/ui/health", uiHealthHandler))

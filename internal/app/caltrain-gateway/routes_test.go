@@ -187,6 +187,10 @@ func TestRoutingRegisteredEndpoints(t *testing.T) {
 		"/caltrain/timetable/version",
 		"/caltrain/stops",
 		"/caltrain/servicealerts",
+		"/agency/CT/timetable",
+		"/agency/CT/timetable/version",
+		"/agency/CT/stops",
+		"/agency/CT/servicealerts",
 		"/ui",
 		"/ui/stats",
 		"/ui/health",
@@ -207,6 +211,208 @@ func TestRoutingRegisteredEndpoints(t *testing.T) {
 				t.Errorf("%s must be served locally, but reached the upstream", path)
 			}
 		})
+	}
+}
+
+// TestRoutingAgencyRoutesMatchLegacyForCT confirms /agency/CT/... produces the
+// exact same response as its /caltrain/... counterpart, since both are backed
+// by the identical inner handler chain.
+func TestRoutingAgencyRoutesMatchLegacyForCT(t *testing.T) {
+	tc := NewTimetableCollection()
+	tt, err := LoadTimetable("example_timetable.json")
+	if err != nil {
+		t.Fatalf("failed to load timetable: %v", err)
+	}
+	tc.AddTimetable(tt)
+	SetTimetableCollection("CT", tc)
+	t.Cleanup(func() { SetTimetableCollection("CT", nil) })
+
+	pairs := []struct{ legacy, generic string }{
+		{"/caltrain/timetable", "/agency/CT/timetable"},
+		{"/caltrain/timetable/version", "/agency/CT/timetable/version"},
+		{"/caltrain/stops", "/agency/CT/stops"},
+		{"/caltrain/scheduletype?date=2026-03-02", "/agency/CT/scheduletype?date=2026-03-02"},
+	}
+
+	for _, pair := range pairs {
+		t.Run(pair.generic, func(t *testing.T) {
+			mux, _, _ := newRoutingHarness(t, "", "")
+
+			legacyRec := httptest.NewRecorder()
+			mux.ServeHTTP(legacyRec, httptest.NewRequest(http.MethodGet, pair.legacy, nil))
+
+			genericRec := httptest.NewRecorder()
+			mux.ServeHTTP(genericRec, httptest.NewRequest(http.MethodGet, pair.generic, nil))
+
+			if legacyRec.Code != genericRec.Code {
+				t.Fatalf("status mismatch: %s=%d %s=%d", pair.legacy, legacyRec.Code, pair.generic, genericRec.Code)
+			}
+			if legacyRec.Body.String() != genericRec.Body.String() {
+				t.Errorf("body mismatch between %s and %s", pair.legacy, pair.generic)
+			}
+		})
+	}
+
+	// Path segments are case-insensitive.
+	mux, _, _ := newRoutingHarness(t, "", "")
+	rec := httptest.NewRecorder()
+	mux.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/agency/ct/stops", nil))
+	if rec.Code != http.StatusOK {
+		t.Errorf("expected /agency/ct/stops (lowercase) to work, got %d", rec.Code)
+	}
+}
+
+// TestRoutingAgencyRoutesServeBART confirms /agency/BA/... serves BART's own
+// (independently loaded) timetable and stops data, distinct from Caltrain's,
+// rather than just being routed and gated like an as-yet-unsupported agency.
+func TestRoutingAgencyRoutesServeBART(t *testing.T) {
+	ctTC := NewTimetableCollection()
+	ctTT, err := LoadTimetable("example_timetable.json")
+	if err != nil {
+		t.Fatalf("failed to load CT timetable: %v", err)
+	}
+	ctTC.AddTimetable(ctTT)
+	SetTimetableCollection("CT", ctTC)
+	t.Cleanup(func() { SetTimetableCollection("CT", nil) })
+
+	bartTC := NewTimetableCollection()
+	bartTC.AddTimetable(ctTT) // any non-nil collection distinguishes "loaded" from "not loaded"
+	SetTimetableCollection("BA", bartTC)
+	t.Cleanup(func() { SetTimetableCollection("BA", nil) })
+
+	mux, _, _ := newRoutingHarness(t, "", "")
+
+	t.Run("timetable", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		mux.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/agency/BA/timetable", nil))
+		if rec.Code != http.StatusOK {
+			t.Fatalf("expected 200 once BART's timetable is loaded, got %d: %s", rec.Code, rec.Body.String())
+		}
+	})
+
+	t.Run("timetable version", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		mux.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/agency/BA/timetable/version", nil))
+		if rec.Code != http.StatusOK {
+			t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
+		}
+	})
+
+	t.Run("stops", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		mux.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/agency/BA/stops", nil))
+		if rec.Code != http.StatusOK {
+			t.Fatalf("expected 200, got %d", rec.Code)
+		}
+		if !strings.Contains(rec.Body.String(), "embarcadero") {
+			t.Errorf("expected a BART station in the stops response, got %q", rec.Body.String())
+		}
+		if strings.Contains(rec.Body.String(), "\"70011\"") {
+			t.Errorf("expected BART's stops, not Caltrain's, got %q", rec.Body.String())
+		}
+	})
+
+	// CT and BA must not see each other's stops.
+	t.Run("CT stops are unaffected", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		mux.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/agency/CT/stops", nil))
+		if !strings.Contains(rec.Body.String(), "\"70011\":\"san_francisco\"") {
+			t.Errorf("expected Caltrain's stops, got %q", rec.Body.String())
+		}
+	})
+}
+
+// TestRoutingAgencyRoutesGateUnsupportedAgencies confirms timetable,
+// timetable/version and stops explicitly refuse any agency other than CT/BA,
+// since the app only locally loads those two agencies' data — and that the
+// message distinguishes a real-but-unsupported agency from a made-up one.
+func TestRoutingAgencyRoutesGateUnsupportedAgencies(t *testing.T) {
+	SetAgencies([]Agency{
+		{ID: "CT", Name: "Caltrain"},
+		{ID: "BA", Name: "Bay Area Rapid Transit"},
+		{ID: "SF", Name: "San Francisco Municipal Transportation Agency"},
+	})
+	t.Cleanup(func() { SetAgencies(nil) })
+
+	paths := []string{"/agency/SF/timetable", "/agency/SF/timetable/version", "/agency/SF/stops"}
+	for _, path := range paths {
+		t.Run(path, func(t *testing.T) {
+			mux, _, upstreamCalls := newRoutingHarness(t, "", "")
+
+			rec := httptest.NewRecorder()
+			mux.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))
+
+			if rec.Code != http.StatusNotFound {
+				t.Fatalf("expected 404 for an unsupported-but-known agency, got %d", rec.Code)
+			}
+			if !strings.Contains(rec.Body.String(), "San Francisco Municipal Transportation Agency") {
+				t.Errorf("expected the error to name the known agency, got %q", rec.Body.String())
+			}
+			if calls := upstreamCalls.Load(); calls != 0 {
+				t.Error("an agency-gated 404 must never reach the upstream")
+			}
+		})
+	}
+
+	t.Run("/agency/ZZ/timetable", func(t *testing.T) {
+		mux, _, _ := newRoutingHarness(t, "", "")
+		rec := httptest.NewRecorder()
+		mux.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/agency/ZZ/timetable", nil))
+
+		if rec.Code != http.StatusNotFound {
+			t.Fatalf("expected 404 for an unknown agency, got %d", rec.Code)
+		}
+		if !strings.Contains(rec.Body.String(), "unknown agency") {
+			t.Errorf("expected the error to say the agency is unknown, got %q", rec.Body.String())
+		}
+	})
+}
+
+// TestRoutingAgencyServiceAlertsPassesPathSegmentThrough confirms the
+// /agency/{operator}/servicealerts route filters using the path segment,
+// identically to the legacy ?agency= query parameter.
+func TestRoutingAgencyServiceAlertsPassesPathSegmentThrough(t *testing.T) {
+	sa, err := parseServiceAlertsJSON([]byte(`{
+		"Header": {"GtfsRealtimeVersion": "1.0", "incrementality": 0, "Timestamp": 1700000000},
+		"Entities": [
+			{
+				"Id": "alert-ct",
+				"Alert": {
+					"ActivePeriods": [{"Start": 1700000000}],
+					"InformedEntities": [{"AgencyId": "CT"}],
+					"cause": 1,
+					"effect": 6
+				}
+			},
+			{
+				"Id": "alert-ba",
+				"Alert": {
+					"ActivePeriods": [{"Start": 1700000000}],
+					"InformedEntities": [{"AgencyId": "BA"}],
+					"cause": 2,
+					"effect": 3
+				}
+			}
+		]
+	}`))
+	if err != nil {
+		t.Fatalf("failed to parse test data: %v", err)
+	}
+	SetServiceAlerts(sa)
+	t.Cleanup(func() { SetServiceAlerts(nil) })
+
+	mux, _, _ := newRoutingHarness(t, "", "")
+
+	rec := httptest.NewRecorder()
+	mux.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/agency/BA/servicealerts", nil))
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", rec.Code)
+	}
+	if !strings.Contains(rec.Body.String(), "alert-ba") {
+		t.Errorf("expected the BA alert in the response, got %q", rec.Body.String())
+	}
+	if strings.Contains(rec.Body.String(), "alert-ct") {
+		t.Errorf("expected the CT alert to be filtered out, got %q", rec.Body.String())
 	}
 }
 

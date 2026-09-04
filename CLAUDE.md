@@ -58,7 +58,8 @@ Go HTTP service that proxies and caches requests to the 511.org transit API for 
   - **service_window.go** — Derives service hours from the timetable to gate departure polling
   - **lines.go** — Transit line model and loading (from file or URL)
   - **ratelimiter.go** — `KeyPool` for round-robin API key rotation with per-key rate limiting (`golang.org/x/time/rate`)
-  - **stops.go** — Static mapping of GTFS stop IDs to parent station names (e.g., `"70011"` → `"san_francisco"`)
+  - **stops.go** — Static mapping of GTFS stop IDs to parent station names (e.g., `"70011"` → `"san_francisco"`), plus `stopsByOperator` mapping each agency to its map
+  - **stops_bart.go** — `BARTGTFSIDToParentName`: BART's equivalent of `stops.go`'s map, a hand-curated snapshot of 511's `transit/stops?operator_id=BA`
   - **cache.go** — Global response cache (2-min TTL, `go-cache`)
   - **environment.go** — Environment variable loading
   - **metrics.go** — Prometheus metrics (`github.com/prometheus/client_golang`): per-route HTTP
@@ -67,6 +68,13 @@ Go HTTP service that proxies and caches requests to the 511.org transit API for 
     site rather than the raw request path, so the `/proxy/` and `/transit/` prefix routes (which
     forward arbitrary upstream paths) stay a bounded `"/proxy/*"` / `"/transit/*"` label instead of
     an unbounded one.
+  - **agencies.go** — Directory of 511 transit operators (`transit/gtfsoperators`), loaded once at
+    startup. Used only to make `/agency/{operator}/...` error messages and the admin agency picker
+    accurate; a failed/empty load never affects Caltrain (`CT`) support, which is a direct string
+    comparison, not a directory lookup.
+  - **agency_routes.go** — `agencyGatedHandler` and `pathParamToQuery`: the two small adapters that
+    let the generic `/agency/{operator}/...` routes reuse the exact same handler chains as their
+    `/caltrain/...` counterparts (see Routing below).
 
 ### API Endpoints
 
@@ -87,6 +95,49 @@ Go HTTP service that proxies and caches requests to the 511.org transit API for 
 does not register `"/"`: in `net/http` that is the catch-all, and the proxy used to live there, so
 the service forwarded every unrecognised path upstream. Unmatched paths now return 404 and no
 longer consume the 511 quota.
+
+### Generic, agency-aware endpoints (`/agency/{operator}/...`)
+
+Every `/caltrain/*` endpoint (`timetable`, `timetable/version`, `stops`, `servicealerts`,
+`scheduletype`) has a generic sibling under `/agency/{operator}/...`, e.g.
+`/agency/CT/timetable`, `/agency/BA/timetable`. Both `/caltrain/*` and `/agency/CT/...` share the
+exact same inner handler chain — registered once in `SetupRoutes` and reused by both routes — so
+there is no duplicated logic and the legacy `/caltrain/*` paths are unaffected during the migration
+period (no deprecation signal is emitted).
+
+Two agencies have real, locally-loaded data today: Caltrain (`CT`) and BART (`BA`). The 5
+endpoints are not equally agency-aware, though:
+
+- **`scheduletype`** takes an arbitrary agency ID all the way through to 511's holiday-calendar API
+  and our own calendar-overrides table, so it already works for any of the ~43 Bay Area agencies
+  511 knows about — `pathParamToQuery` just forwards the `{operator}` path value into the
+  `operator_id` query parameter the handler already reads.
+- **`servicealerts`** fetches and merges both CT's and BA's alerts at startup (`main.go`) into one
+  combined response; the existing `agency` filter (`filterServiceAlertsByAgency`) then finds either
+  agency's alerts in it. Any other agency's filter just comes back empty (`200`), same as before.
+- **`timetable`, `timetable/version`, `stops`** are backed by per-agency state: a `scheduleState`
+  per operator (`schedule_state.go`'s `scheduleFor`) for the first two, and a
+  `stopsByOperator` map (`stops.go`) for the last. `agencyGatedHandler` gates these three to the
+  set of agencies with real state (`CT`, `BA`); any other agency gets `404`, with a message that
+  distinguishes a real 511 agency with no data loaded (via the `agencies.go` directory) from a
+  made-up one. `resolveOperator` (`agency_routes.go`) reads the `{operator}` path value and
+  defaults to `CT` when absent, which is what makes `/caltrain/...` and `/agency/CT/...` resolve to
+  the same data without the handlers needing to know which path was used.
+
+BART's data differs from Caltrain's in three ways, driven by its larger footprint (14 lines vs. 5,
+~1MB per line's timetable):
+
+- Only 511's `Monitored` lines are loaded (`caltraingateway.GetMonitoredLines`), excluding bus
+  bridges and other non-real-time-tracked variants.
+- Its timetable refreshes at most weekly rather than nightly
+  (`bartTimetableRefreshMinInterval` in `main.go`; `ScheduleRefresher.minInterval` in
+  `schedule_refresh.go` gates the actual fetch while still waking daily at the same hour).
+   - Its stop-ID → station-name map (`stops_bart.go`) is a hand-curated snapshot of 511's
+   `transit/stops?operator_id=BA`, fetched once and committed, exactly like Caltrain's `stops.go` —
+   station lists change rarely enough that neither is fetched at runtime.
+
+Real-time departure tracking (the SIRI StopMonitoring poller, `train_departures` table,
+`/admin/departures`) remains Caltrain-only; extending it to BART is still future work.
 
 - The proxy is served at `/proxy/` (prefix stripped) and at `/transit/` (prefix **not** stripped).
   Leaving `/transit/` intact is what makes both forms produce the same upstream URL and therefore
@@ -113,7 +164,11 @@ Key constraints to keep in mind when changing this code:
 - **`main.go` must keep the `_ "time/tzdata"` import.** The runtime image is a bare Alpine with no
   tzdata, so without it every timezone lookup silently falls back to UTC in production.
 - **API quota is 60 requests/hour per key across all endpoints.** Keep the poll interval at or
-  above the 1-minute floor.
+  above the 1-minute floor. Departure polling (CT-only, default 30/hour) and the service-alerts
+  refresh (now covering both CT and BA, `serviceAlertsRefreshInterval` in `main.go`, 12/hour
+  combined) are the two recurring costs; adding a second agency's alerts to the same interval
+  without widening it would have doubled that recurring cost, so the interval was widened from
+  5 to 10 minutes to keep the combined footprint the same as when only CT was polled.
 
 ### Schedule Versioning and Refresh
 

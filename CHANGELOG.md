@@ -1,5 +1,31 @@
 # Changelog
 
+## Unreleased
+
+- Widen the 511 holiday-calendar cache TTL from 24 to 48 hours (`holidaysCacheTTL` in
+  `holidays.go`). Holiday calendars are fetched lazily — only on an actual `scheduletype` request
+  for that agency, never proactively — so this caps quota usage per agency to at most one 511
+  request every two days no matter how many agencies are queried.
+- Add generic, agency-aware endpoints alongside every `/caltrain/*` one, under
+  `/agency/{operator}/...` (e.g. `/agency/CT/timetable`, `/agency/BA/scheduletype?date=`). The
+  legacy `/caltrain/*` paths are unchanged and keep working during the migration; both forms share
+  the same handler code, so there is no duplicated logic. `scheduletype` works for any of 511's
+  ~43 Bay Area agencies already; `servicealerts` filters whatever alerts are loaded; `timetable`,
+  `timetable/version` and `stops` are gated to the agencies this service has real state for,
+  returning `404` (distinguishing a known-but-unloaded agency from an unrecognised one) otherwise.
+- Add real BART (`BA`) timetable, stops and service-alerts data, loaded and served alongside
+  Caltrain's — the first two agencies with real, independently-refreshed state. BART loads only
+  511's `Monitored` lines (excludes bus bridges), refreshes its timetable at most weekly rather
+  than nightly given its larger payload, and its service alerts are fetched and merged with
+  Caltrain's on the existing refresh loop (widened from 5 to 10 minutes to keep the combined 511
+  quota footprint the same as when only Caltrain was polled). Its stop-ID → station-name map is a
+  hand-curated snapshot of 511's own data, like Caltrain's. Real-time departure tracking remains
+  Caltrain-only.
+- Show the supported transit agencies (currently Caltrain and BART) on the `/ui` dashboard and in
+  `GET /ui/stats`.
+- The calendar-overrides admin page (`/admin/calendar`) now has a real agency picker, backed by
+  511's own agency directory, instead of always applying to Caltrain.
+
 ## v1.8.0 (2026-09-04)
 
 - Add a Prometheus exporter at `GET /metrics` (unauthenticated, standard for scraping): per-route

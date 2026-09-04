@@ -26,9 +26,14 @@ type ScheduleVersionResponse struct {
 // one failed run before clients are warned.
 const staleAfter = 36 * time.Hour
 
-// buildScheduleVersionResponse renders the current schedule state as of now.
-func buildScheduleVersionResponse(now time.Time) (ScheduleVersionResponse, bool) {
-	collection, version, metadata, refreshedAt, _ := schedule.Snapshot()
+// buildScheduleVersionResponse renders the current schedule state for
+// operatorID as of now.
+func buildScheduleVersionResponse(operatorID string, now time.Time) (ScheduleVersionResponse, bool) {
+	state := scheduleFor(operatorID)
+	if state == nil {
+		return ScheduleVersionResponse{}, false
+	}
+	collection, version, metadata, refreshedAt, _ := state.Snapshot()
 	if collection == nil {
 		return ScheduleVersionResponse{}, false
 	}
@@ -63,7 +68,7 @@ func formatTimestamp(t time.Time) string {
 // scheduleVersionHandler serves a small document describing the loaded
 // schedule, so clients can revalidate a cached timetable without downloading it.
 func scheduleVersionHandler(w http.ResponseWriter, r *http.Request) {
-	response, ok := buildScheduleVersionResponse(time.Now())
+	response, ok := buildScheduleVersionResponse(resolveOperator(r), time.Now())
 	if !ok {
 		http.Error(w, "Timetable not loaded", http.StatusServiceUnavailable)
 		return

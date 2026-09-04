@@ -71,6 +71,24 @@ integration tests, which skip unless it is set.
 | GET | `/caltrain/timetable` | Get all train departures by stop ID |
 | GET | `/caltrain/timetable?weekday=Monday` | Get departures filtered by weekday |
 | GET | `/caltrain/timetable/version` | Schedule version, validity window and freshness |
+| GET | `/caltrain/stops` | GTFS stop ID → station name mapping |
+| GET | `/caltrain/servicealerts` | Service alerts, optionally `?agency=` filtered |
+| GET | `/caltrain/scheduletype?date=` | Which schedule (weekday/saturday/sunday/holiday) applies to a date |
+
+### Generic, agency-aware endpoints
+
+Each `/caltrain/*` endpoint above also has a generic equivalent under `/agency/{operator}/...`,
+e.g. `/agency/CT/timetable`, `/agency/BA/timetable`, `/agency/CT/scheduletype?date=2026-09-07`.
+Both `/caltrain/*` and `/agency/CT/...` are served by the same code and return identical
+responses — the `/caltrain/*` paths are not deprecated and keep working alongside the generic ones.
+
+Two agencies have real, locally-loaded `timetable`/`timetable/version`/`stops` data: Caltrain
+(`CT`) and BART (`BA`, monitored lines only — see [Schedule freshness](#schedule-freshness)).
+Requesting any other agency through those three returns `404` rather than silently mislabelling
+Caltrain's schedule as another agency's. `scheduletype` and `servicealerts` already accept any
+agency ID transparently — the former talks directly to 511's holiday-calendar API, and the latter's
+alerts are fetched for both CT and BA and merged, with any other agency simply returning an empty
+result.
 
 The proxy is served under `/proxy/`. Root-level `/transit/` paths remain supported for existing
 callers and forward to the same upstream URL, so both forms share cached responses. No catch-all
@@ -95,13 +113,19 @@ Supported weekday values: `Monday`, `Tuesday`, `Wednesday`, `Thursday`, `Friday`
 
 ## Schedule freshness
 
-The gateway serves a copy of the Caltrain timetable, refreshed nightly at 03:00 Pacific
+The gateway serves a copy of Caltrain's timetable, refreshed nightly at 03:00 Pacific
 (`TIMETABLE_REFRESH_HOUR`). Overnight keeps the ~6 upstream requests clear of daytime traffic,
 which already carries departure polling against a 60 requests/hour per-key budget.
 
-Refreshes are **atomic**: a run either loads every line or is abandoned, leaving the previous
-schedule in place. A partial refresh would drop whole lines and change the version, pushing every
-client to download a truncated timetable.
+It also serves BART's timetable (monitored lines only — 10 of BART's 14, excluding bus bridges and
+other non-real-time-tracked variants), refreshed at most once a week rather than nightly: BART has
+roughly 3x Caltrain's lines and a correspondingly larger payload, and its schedule changes less
+often, so a full weekly re-fetch is enough. Both agencies' refreshers wake daily at the same hour,
+but BART's skips the actual fetch until a week has passed since its last successful one.
+
+Refreshes are **atomic** per agency: a run either loads every line for that agency or is abandoned,
+leaving that agency's previous schedule in place. A partial refresh would drop whole lines and
+change the version, pushing every client to download a truncated timetable.
 
 Clients can validate a cached copy two ways.
 

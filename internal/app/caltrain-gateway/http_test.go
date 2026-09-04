@@ -413,7 +413,7 @@ func TestLogRequestMiddleware(t *testing.T) {
 func TestTimetableHandler(t *testing.T) {
 	t.Run("timetable not loaded", func(t *testing.T) {
 		// Ensure timetable collection is nil
-		SetTimetableCollection(nil)
+		SetTimetableCollection("CT", nil)
 
 		req := httptest.NewRequest("GET", "/caltrain/timetable", nil)
 		rec := httptest.NewRecorder()
@@ -434,7 +434,7 @@ func TestTimetableHandler(t *testing.T) {
 			t.Fatalf("failed to load timetable: %v", err)
 		}
 		tc.AddTimetable(tt)
-		SetTimetableCollection(tc)
+		SetTimetableCollection("CT", tc)
 
 		req := httptest.NewRequest("GET", "/caltrain/timetable", nil)
 		rec := httptest.NewRecorder()
@@ -470,7 +470,7 @@ func TestTimetableHandler(t *testing.T) {
 			t.Fatalf("failed to load timetable: %v", err)
 		}
 		tc.AddTimetable(tt)
-		SetTimetableCollection(tc)
+		SetTimetableCollection("CT", tc)
 
 		// Test with Monday (should return results - weekday schedule)
 		req := httptest.NewRequest("GET", "/caltrain/timetable?weekday=Monday", nil)
@@ -497,7 +497,7 @@ func TestTimetableHandler(t *testing.T) {
 			t.Fatalf("failed to load timetable: %v", err)
 		}
 		tc.AddTimetable(tt)
-		SetTimetableCollection(tc)
+		SetTimetableCollection("CT", tc)
 
 		// Test with Saturday (should return empty - example has weekday only)
 		req := httptest.NewRequest("GET", "/caltrain/timetable?weekday=Saturday", nil)
@@ -519,7 +519,7 @@ func TestTimetableHandler(t *testing.T) {
 
 	t.Run("with invalid weekday", func(t *testing.T) {
 		tc := NewTimetableCollection()
-		SetTimetableCollection(tc)
+		SetTimetableCollection("CT", tc)
 
 		req := httptest.NewRequest("GET", "/caltrain/timetable?weekday=InvalidDay", nil)
 		rec := httptest.NewRecorder()

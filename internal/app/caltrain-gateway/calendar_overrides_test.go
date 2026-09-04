@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
+	"strings"
 	"testing"
 	"time"
 )
@@ -227,5 +229,69 @@ func TestScheduleTypeHandler_WithOverride(t *testing.T) {
 	}
 	if !result.Overridden {
 		t.Error("expected overridden=true in the response")
+	}
+}
+
+func TestCalendarOverridesCreateHandler_AcceptsNonCTAgency(t *testing.T) {
+	requireCalendarOverridesTestDatabase(t)
+	SetAgencies([]Agency{{ID: "CT", Name: "Caltrain"}, {ID: "BA", Name: "Bay Area Rapid Transit"}})
+	t.Cleanup(func() { SetAgencies(nil) })
+
+	form := url.Values{
+		"agency_id":     {"BA"},
+		"override_date": {"2026-11-26"},
+		"schedule_type": {string(ScheduleSunday)},
+		"note":          {"Thanksgiving"},
+	}
+	req := httptest.NewRequest(http.MethodPost, "/admin/calendar/create", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rec := httptest.NewRecorder()
+	calendarOverridesCreateHandler(rec, req)
+
+	if rec.Code != http.StatusFound {
+		t.Fatalf("expected redirect after create, got %d: %s", rec.Code, rec.Body.String())
+	}
+
+	row, err := GetCalendarOverride("BA", time.Date(2026, 11, 26, 0, 0, 0, 0, time.UTC))
+	if err != nil {
+		t.Fatalf("GetCalendarOverride failed: %v", err)
+	}
+	if row == nil {
+		t.Fatal("expected the BA override to be stored")
+	}
+	if row.AgencyID != "BA" || row.ScheduleType != string(ScheduleSunday) {
+		t.Errorf("unexpected stored override: %+v", row)
+	}
+
+	// The list page should render the agency dropdown and the stored row's
+	// Agency column without error.
+	listRec := httptest.NewRecorder()
+	calendarOverridesListHandler(listRec, httptest.NewRequest(http.MethodGet, "/admin/calendar", nil))
+	if listRec.Code != http.StatusOK {
+		t.Fatalf("expected list page to render, got %d", listRec.Code)
+	}
+	if !strings.Contains(listRec.Body.String(), "BA") {
+		t.Error("expected the BA agency to appear on the list page")
+	}
+}
+
+func TestCalendarOverridesCreateHandler_RejectsEmptyAgency(t *testing.T) {
+	requireCalendarOverridesTestDatabase(t)
+
+	form := url.Values{
+		"agency_id":     {""},
+		"override_date": {"2026-11-26"},
+		"schedule_type": {string(ScheduleSunday)},
+	}
+	req := httptest.NewRequest(http.MethodPost, "/admin/calendar/create", strings.NewReader(form.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rec := httptest.NewRecorder()
+	calendarOverridesCreateHandler(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected the form to re-render with an error, got %d", rec.Code)
+	}
+	if !strings.Contains(rec.Body.String(), "Agency is required") {
+		t.Errorf("expected an 'Agency is required' error, got %q", rec.Body.String())
 	}
 }

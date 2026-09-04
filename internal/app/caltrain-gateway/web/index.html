@@ -103,6 +103,12 @@
                     this._setStatus(root.getElementById("db-status"), health.database);
 
                     root.getElementById("last-updated").textContent = new Date().toLocaleString();
+
+                    const agenciesEl = root.getElementById("agencies");
+                    const agencies = data.supported_agencies || [];
+                    agenciesEl.textContent = agencies.length
+                        ? agencies.map((a) => `${a.name} (${a.id})`).join(", ")
+                        : "none loaded yet";
                 } catch (e) {
                     console.error("Failed to fetch stats:", e);
                 }
@@ -148,6 +154,7 @@
                     <h1>Caltrain Gateway</h1>
                     <p class="meta">Version: <span id="version">-</span></p>
                     <p class="meta">Uptime: <span id="uptime">-</span></p>
+                    <p class="meta">Supported agencies: <span id="agencies">-</span></p>
                     <p class="meta">Last updated: <span id="last-updated">-</span></p>
                     <table>
                         <thead>

@@ -11,9 +11,11 @@ import (
 //go:embed web/calendar_overrides_list.html
 var calendarOverridesListHTML string
 
-// calendarOverrideAgencyID is the only agency overrides apply to today.
-// Multi-agency support will make this a request parameter later.
-const calendarOverrideAgencyID = departureOperatorID
+// defaultCalendarOverrideAgencyID preselects the admin form's agency dropdown.
+// Caltrain is the only agency this service has locally-loaded data for today,
+// but an override can be recorded for any agency_id the operator enters —
+// overrides are just labelled data, independent of what data is loaded.
+const defaultCalendarOverrideAgencyID = departureOperatorID
 
 // validScheduleTypes are the schedule types selectable in the admin dropdown,
 // matching the ScheduleType values ResolveScheduleType/DetermineScheduleType produce.
@@ -51,9 +53,11 @@ func (v calendarOverrideView) UpdatedAtText() string {
 
 // calendarOverridesPage is the view model for the list/create template.
 type calendarOverridesPage struct {
-	Overrides     []calendarOverrideView
-	ScheduleTypes []ScheduleType
-	Error         string
+	Overrides       []calendarOverrideView
+	ScheduleTypes   []ScheduleType
+	Agencies        []Agency
+	DefaultAgencyID string
+	Error           string
 }
 
 // calendarOverridesListHandler renders the create form and the existing overrides.
@@ -75,10 +79,26 @@ func renderCalendarOverridesPage(w http.ResponseWriter, formError string) {
 	}
 	renderAdminPage(w, "calendar_overrides_list", calendarOverridesListHTML,
 		newAdminPage(tabCalendar, "Calendar overrides", calendarOverridesPage{
-			Overrides:     views,
-			ScheduleTypes: validScheduleTypes,
-			Error:         formError,
+			Overrides:       views,
+			ScheduleTypes:   validScheduleTypes,
+			Agencies:        calendarOverrideAgencyOptions(),
+			DefaultAgencyID: defaultCalendarOverrideAgencyID,
+			Error:           formError,
 		}))
+}
+
+// calendarOverrideAgencyOptions returns the agencies offered in the admin
+// dropdown. It falls back to just the default agency when the directory
+// (agencies.go) has not loaded, so the form always has at least one option.
+func calendarOverrideAgencyOptions() []Agency {
+	if all := AllAgencies(); len(all) > 0 {
+		return all
+	}
+	name, _ := AgencyName(defaultCalendarOverrideAgencyID)
+	if name == "" {
+		name = defaultCalendarOverrideAgencyID
+	}
+	return []Agency{{ID: defaultCalendarOverrideAgencyID, Name: name}}
 }
 
 // calendarOverridesCreateHandler creates an override for a date, or edits one
@@ -96,10 +116,15 @@ func calendarOverridesCreateHandler(w http.ResponseWriter, r *http.Request) {
 	dateParam := strings.TrimSpace(r.PostFormValue("override_date"))
 	scheduleType := strings.TrimSpace(r.PostFormValue("schedule_type"))
 	note := strings.TrimSpace(r.PostFormValue("note"))
+	agencyID := strings.ToUpper(strings.TrimSpace(r.PostFormValue("agency_id")))
 
 	date, err := time.Parse(dateLayout, dateParam)
 	if err != nil {
 		renderCalendarOverridesPage(w, "Invalid date, expected YYYY-MM-DD")
+		return
+	}
+	if agencyID == "" {
+		renderCalendarOverridesPage(w, "Agency is required")
 		return
 	}
 	if !isValidScheduleType(scheduleType) {
@@ -107,7 +132,7 @@ func calendarOverridesCreateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := UpsertCalendarOverride(calendarOverrideAgencyID, date, scheduleType, note); err != nil {
+	if err := UpsertCalendarOverride(agencyID, date, scheduleType, note); err != nil {
 		http.Error(w, "Failed to save calendar override", http.StatusInternalServerError)
 		return
 	}
