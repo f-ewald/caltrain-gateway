@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.8.0 (2026-09-04)
 
 - Add a Prometheus exporter at `GET /metrics` (unauthenticated, standard for scraping): per-route
   HTTP request count and duration, 511 proxy cache hit/miss, and upstream 511 call outcome and
